@@ -2,8 +2,8 @@ package com.sca.controller;
 
 import javax.websocket.server.PathParam;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AsociadosController {
 	
-	Logger log = LoggerFactory.getLogger(String.class);
+	// Logger log = LoggerFactory.getLogger(String.class);
 	
 	@Autowired
 	AsociadosServiceImpl asociadosServiceImpl;

@@ -1,7 +1,7 @@
 package com.sca.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MesServiceImpl extends ResponseEntityExceptionHandler implements MesService {
 	
-	Logger log = LoggerFactory.getLogger(String.class);
+	// Logger log = LoggerFactory.getLogger(String.class);
 	
 	@Autowired
 	MesRepository mesRepository;
