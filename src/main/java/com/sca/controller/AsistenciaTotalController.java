@@ -65,7 +65,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 	
 	@PutMapping(value = "/updateAsistenciaTotal", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Actualizar un asistencia total", notes = "Esta operación actualiza una asistencia total a la base de datos")
-	public ResponseEntity<Object> updateAsistenciaTotal(@RequestBody AsistenciaTotal asistencia, BindingResult bindingResult) throws BindException {
-		return asistenciaTotalServiceImpl.update(asistencia, bindingResult);
+	public ResponseEntity<Object> updateAsistenciaTotal(@RequestBody AsistenciaTotal asistenciaTotal, BindingResult bindingResult) throws BindException {
+		return asistenciaTotalServiceImpl.update(asistenciaTotal, bindingResult);
 	}
 }

@@ -37,35 +37,35 @@ public class AsistenciaController {
 Logger log = LoggerFactory.getLogger(String.class);
 	
 	@Autowired
-	AsistenciaServiceImpl AsistenciasServiceImpl;
+	AsistenciaServiceImpl asistenciasServiceImpl;
 	
-	@PostMapping(value = "/addAsistencias", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Agrega un Asistencias", notes = "Esta operación agrega un Asistencias a la base de datos")
-	public ResponseEntity<Object> addAsistencias(@RequestBody @Validated Asistencia asistencia, BindingResult bindingResult) throws BindException{
-		return AsistenciasServiceImpl.save(asistencia,bindingResult);
+	@PostMapping(value = "/addAsistencia", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Agrega un Asistencia", notes = "Esta operación agrega un Asistencia a la base de datos")
+	public ResponseEntity<Object> addAsistencia(@RequestBody @Validated Asistencia asistencia, BindingResult bindingResult) throws BindException{
+		return asistenciasServiceImpl.save(asistencia,bindingResult);
 	}
 	
-	@GetMapping(value = "/getAllAsistencias", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Consultar Asistenciass", notes = "Esta operación devuelve todos los Asistenciass a la base de datos")
-	public Respuesta getAllAsistenciass() {
-		return AsistenciasServiceImpl.findAll();
+	@GetMapping(value = "/getAllAsistencia", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Consultar Asistencia", notes = "Esta operación devuelve todos los Asistencia a la base de datos")
+	public Respuesta getAllAsistencia() {
+		return asistenciasServiceImpl.findAll();
 	}
 	
-	@GetMapping(value = "/getByIdAsistencias/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Consultar Asistencias por id", notes = "Esta operación consulta un Asistencias por su identificador personal")
-	public Respuesta getByIdAsistencias(@PathParam("id") @PathVariable Long id) {
-		return AsistenciasServiceImpl.finById(id);
+	@GetMapping(value = "/getByIdAsistencia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Consultar Asistencia por id", notes = "Esta operación consulta un Asistencia por su identificador personal")
+	public Respuesta getByIdAsistencia(@PathParam("id") @PathVariable Long id) {
+		return asistenciasServiceImpl.finById(id);
 	}
 	
-	@DeleteMapping(value = "/deleteAsistencias/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Eliminar un Asistencias", notes = "Esta operación elimina un Asistencias de la base de datos")
-	public Respuesta deleteAsistencias(@PathParam("id") @PathVariable Long id) {
-		return AsistenciasServiceImpl.delete(id);
+	@DeleteMapping(value = "/deleteAsistencia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Eliminar un Asistencias", notes = "Esta operación elimina un Asistencia de la base de datos")
+	public Respuesta deleteAsistencia(@PathParam("id") @PathVariable Long id) {
+		return asistenciasServiceImpl.delete(id);
 	}
 	
-	@PutMapping(value = "/updateAsistencias", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Actualizar un Asistencias", notes = "Esta operación actualiza un Asistencias a la base de datos")
-	public ResponseEntity<Object> updateAsistencias(@RequestBody Asistencia asistencia, BindingResult bindingResult) throws BindException {
-		return AsistenciasServiceImpl.update(asistencia, bindingResult);
+	@PutMapping(value = "/updateAsistencia", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Actualizar un Asistencia", notes = "Esta operación actualiza un Asistencia a la base de datos")
+	public ResponseEntity<Object> updateAsistencia(@RequestBody Asistencia asistencia, BindingResult bindingResult) throws BindException {
+		return asistenciasServiceImpl.update(asistencia, bindingResult);
 	}
 }
