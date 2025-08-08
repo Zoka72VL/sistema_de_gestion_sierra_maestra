@@ -143,4 +143,21 @@ public class AsociadosServiceImpl extends ResponseEntityExceptionHandler impleme
 
 		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
 	}
+
+	@Override
+	public Respuesta contar() {
+		respuesta = new Respuesta();
+		try {
+			respuesta.setCodigo("200");
+			respuesta.setStatus("Ok");
+			respuesta.setDescripcion("Se cuentan todos los asociados");
+			respuesta.setData(asociadosRepository.findAll().size());
+		} catch (Exception e) {
+			respuesta.setCodigo("400");
+			respuesta.setStatus("Error");
+			respuesta.setDescripcion("No se pudieron recuperar los asociados");
+			respuesta.setData(e.getMessage());
+		}
+		return respuesta;
+	}
 }

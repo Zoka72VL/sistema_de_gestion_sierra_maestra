@@ -46,7 +46,7 @@ public class AsociadosController {
 	}
 	
 	@GetMapping(value = "/getAllAsociados", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Consultar Asociadoss", notes = "Esta operación devuelve todos los Asociadoss a la base de datos")
+	@ApiOperation(value = "Consultar Asociados", notes = "Esta operación devuelve todos los Asociadoss a la base de datos")
 	public Respuesta getAllAsociadoss() {
 		try {
 			return asociadosServiceImpl.findAll();
@@ -72,5 +72,16 @@ public class AsociadosController {
 	@ApiOperation(value = "Actualizar un Asociados", notes = "Esta operación actualiza un Asociados a la base de datos")
 	public ResponseEntity<Object> updateAsociados(@RequestBody Asociados asociados, BindingResult bindingResult) throws BindException {
 		return asociadosServiceImpl.update(asociados, bindingResult);
+	}
+
+	@GetMapping(value = "/contarAsociados", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Contar Asociados", notes = "Esta operación cuenta todos los Asociadoss en la base de datos")
+	public Respuesta contarAsociados() {
+		try {
+			return asociadosServiceImpl.contar();
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 }
