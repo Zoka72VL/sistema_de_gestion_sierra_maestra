@@ -13,7 +13,7 @@ import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
 
 @Entity
-@Table(name="Mes")
+@Table(name="mes")
 public class Mes {
 
 	@Id

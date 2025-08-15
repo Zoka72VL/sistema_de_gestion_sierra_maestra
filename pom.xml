@@ -78,11 +78,11 @@
 			<version>1.7</version>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.factura</groupId>
 			<artifactId>factura</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 
 	<build>

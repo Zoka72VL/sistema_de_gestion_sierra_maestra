@@ -28,10 +28,10 @@ public class Cerveza {
 	@Column(name="tipo",nullable = false, length = 30)
 	private String tipoCerveza;
 
-	@Column(name="grado alcoholico", nullable=false)
+	@Column(name="grado_alcoholico", nullable=false)
 	private Double gradoAlcoholico;
 
-	@Column(name="amargor IBU", nullable=false)
+	@Column(name="amargor_IBU", nullable=false)
 	private Double amargorIbu;
 
 	@Column(name="descripcion", nullable=true)

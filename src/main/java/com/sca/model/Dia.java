@@ -15,7 +15,7 @@ import com.sca.validator.ValidarExpresionesRegulares;
 import lombok.Getter;
 
 @Entity
-@Table(name="Dia")
+@Table(name="dia")
 @Getter
 public class Dia {
 

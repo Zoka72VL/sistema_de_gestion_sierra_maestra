@@ -19,7 +19,6 @@ public class Asistencia {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 	
-
 	@OneToOne
 	@JoinColumn(name = "id_condicion", nullable = false)
     private Condicion id_condicion;

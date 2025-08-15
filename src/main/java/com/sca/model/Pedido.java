@@ -17,7 +17,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 // import javax.persistence.OneToOne;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Entity;
 
+@Entity
+@Table(name="pedido")
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,12 +71,10 @@ public class Pedido {
     
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    @Column(name="usuario")
     private Asociados usuario;
     
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    @Column(name="cliente")
     private Cliente cliente;
     
     @Column(name="totalGral")
