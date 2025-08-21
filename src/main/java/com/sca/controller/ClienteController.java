@@ -68,4 +68,15 @@ public class ClienteController {
 	public ResponseEntity<Object> updateCliente(@RequestBody Cliente cliente, BindingResult bindingResult) throws BindException {
 		return clientesServiceImpl.update(cliente, bindingResult);
 	}
+
+	@GetMapping(value = "/contarClientes", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Contar Clientes", notes = "Esta operación cuenta todos los Clientes en la base de datos")
+	public Respuesta contarAsociados() {
+		try {
+			return clientesServiceImpl.contarClientes();
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
 }

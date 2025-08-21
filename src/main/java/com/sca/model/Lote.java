@@ -2,7 +2,12 @@ package com.sca.model;
 // import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
+import java.util.HashSet;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,41 +32,50 @@ public class Lote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "El ID no puede ser nulo")
     private Long id;
 
     // @Column(name = "cerveza", nullable = false)
     // private String cerveza;
 
+    @NotNull(message = "La cerveza es obligatoria")
     @ManyToOne
-    @JoinColumn(name = "cerveza_id")  // FK en tabla LOTE
+    @JoinColumn(name = "cerveza_id", nullable = false)  // FK en tabla LOTE
     private Cerveza cerveza;
 
+    @NotNull(message = "La cantidad de litros es obligatoria")
+    @Min(value = 1, message = "La cantidad de litros debe ser mayor a 0")
     @Column(name = "cantidad_litros", nullable = false)
     private Integer cantidadLitros;
 
+    @NotEmpty(message = "El estado es obligatorio")
     @Column(name = "estado", nullable = false)
     private String estado;
 
     @Column(name = "notas")
     private String notas;
 
+    @NotNull(message = "La fecha de carga es obligatoria")
     @Column(name = "fecha_carga", nullable = false)
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCarga;
 
+    @NotNull(message = "La fecha de vencimiento es obligatoria")
     @Column(name = "fecha_vencimiento", nullable = false)
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaVencimiento;
 
+    @NotNull(message = "La fecha de carga en madurador es obligatoria")
     @Column(name = "fecha_carga_madurador", nullable = false)
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaCargaMadurador;
     
     @OneToMany(mappedBy = "lote", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Barril> barriles;
+    @NotNull(message = "La lista de barriles no puede ser nula")
+    private Set<Barril> barriles = new HashSet<>();
 
     // @OneToMany(mappedBy = "lote")
     // private Set<Madurador> madurador;

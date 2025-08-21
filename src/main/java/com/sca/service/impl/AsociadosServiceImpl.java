@@ -145,7 +145,7 @@ public class AsociadosServiceImpl extends ResponseEntityExceptionHandler impleme
 	}
 
 	@Override
-	public Respuesta contar() {
+	public Respuesta contarAsociados() {
 		respuesta = new Respuesta();
 		try {
 			respuesta.setCodigo("200");
