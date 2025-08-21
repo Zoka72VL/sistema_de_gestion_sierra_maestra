@@ -19,5 +19,5 @@ public interface MaduradorService {
 	
 	public Respuesta finById(Long id);
 
-	public Respuesta findMaduradorPorEstado(String estado);
+	public Respuesta finByEstado(String estado);
 }

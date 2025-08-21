@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.sca.model.Barril;
 import com.sca.model.Respuesta;
+import com.sca.model.Lote;
 import com.sca.repository.BarrilRepository;
 import com.sca.service.BarrilService;
 
@@ -149,6 +150,23 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos de los Barriles por Estado");
 			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getEstado()==estado));
+		} catch (Exception e) {
+			respuesta.setCodigo("400");
+			respuesta.setStatus("Error");
+			respuesta.setDescripcion("No se pudieron mostrar los datos de los Barriles");
+			respuesta.setData(e.getMessage());
+		}
+		return respuesta;
+	}
+
+	@Override
+	public Respuesta findByLote(Lote lote) {
+		respuesta = new Respuesta();
+		try {
+			respuesta.setCodigo("200");
+			respuesta.setStatus("Ok");
+			respuesta.setDescripcion("Datos de los Barriles por Estado");
+			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getLote()==lote));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");

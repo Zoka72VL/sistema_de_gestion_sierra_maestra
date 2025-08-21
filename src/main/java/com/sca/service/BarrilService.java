@@ -6,6 +6,7 @@ import org.springframework.validation.BindingResult;
 
 import com.sca.model.Barril;
 import com.sca.model.Respuesta;
+import com.sca.model.Lote;
 
 public interface BarrilService {
 
@@ -20,4 +21,6 @@ public interface BarrilService {
 	public Respuesta finById(Long id);
 	
 	public Respuesta findByEstado(String estado);
+
+	public Respuesta findByLote(Lote lote);
 }

@@ -69,9 +69,9 @@ public class MaduradorController {
 		return maduradorsServiceImpl.update(madurador, bindingResult);
 	}
 
-	@GetMapping(value = "/findMaduradorPorEstado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/finByEstado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Maduradores por Estado", notes = "Esta operación devuelve todos los Maduradores filtrados por estado")
-	public Respuesta findMaduradorPorEstado(@PathVariable String estado) {
-    	return maduradorsServiceImpl.findMaduradorPorEstado(estado);
+	public Respuesta finByEstado(@PathVariable String estado) {
+    	return maduradorsServiceImpl.finByEstado(estado);
 	}
 }

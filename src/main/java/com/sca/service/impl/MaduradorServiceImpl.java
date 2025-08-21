@@ -142,7 +142,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 	}
 
 	@Override
-	public Respuesta findMaduradorPorEstado(String estado) {
+	public Respuesta finByEstado(String estado) {
 		respuesta = new Respuesta();
 		try {
 			respuesta.setCodigo("200");
