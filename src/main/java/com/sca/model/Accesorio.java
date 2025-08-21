@@ -31,13 +31,14 @@ public class Accesorio {
     
     @Column(name = "notas")
     private String notas; 
+    
     // Constructores
-    public Accesorio(Long id, String nombre, String estado, String notas, Barril barril) {
+    public Accesorio(Long id, String nombre, String estado, String notas) {
         this.id = id;
         this.nombre = nombre;
         this.estado = estado;
         this.notas = notas;
-        
+    }
 
     public Accesorio() {
     }
