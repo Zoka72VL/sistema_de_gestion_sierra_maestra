@@ -78,7 +78,7 @@ public class AsociadosController {
 	@ApiOperation(value = "Contar Asociados", notes = "Esta operación cuenta todos los Asociadoss en la base de datos")
 	public Respuesta contarAsociados() {
 		try {
-			return asociadosServiceImpl.contar();
+			return asociadosServiceImpl.contarAsociados();
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}

@@ -19,7 +19,7 @@ public interface AsociadosService {
 	
 	public Respuesta finById(Long id);
 
-	public Respuesta contar();
+	public Respuesta contarAsociados();
 	
 	
 }

@@ -140,4 +140,21 @@ Logger log = LoggerFactory.getLogger(String.class);
 
 		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
 	}
+
+	@Override
+	public Respuesta contarClientes() {
+		respuesta = new Respuesta();
+		try {
+			respuesta.setCodigo("200");
+			respuesta.setStatus("Ok");
+			respuesta.setDescripcion("Se cuentan todos los Clientes");
+			respuesta.setData(clienteRepository.findAll().size());
+		} catch (Exception e) {
+			respuesta.setCodigo("400");
+			respuesta.setStatus("Error");
+			respuesta.setDescripcion("No se cuentan mostrar los Clientes");
+			respuesta.setData(e.getMessage());
+		}
+		return respuesta;
+	}
 }

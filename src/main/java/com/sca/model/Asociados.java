@@ -14,7 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+// import javax.persistence.OneToOne;
 //import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -27,6 +27,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
 
+
+// ESTA ES LA CLASE USUARIO, NO SE LE CAMBIO EL NOMBRE PARA NO ROMPER EL SISTEMA
 @Entity
 @Table(name="asociado")
 @JsonIdentityInfo(
@@ -39,6 +41,17 @@ public class Asociados {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 	
+	// @OneToOne
+	// @JoinColumn(name="id_firma")
+    // private Firma id_firma;
+
+	@Column(name="id_firma")
+	private Integer id_firma;
+
+	@ValidarExpresionesRegulares(customMessage="El legajo debe tener 3 digitos", expresionRegular = ExpresionRegular.LEGAJO)
+	@NotBlank(message = "El legajo no puede estar en blanco")
+	@Column(name="legajo")
+    private String legajo;
 
 	@NotBlank(message = "El nombre no puede estar en blanco")
 	@Column(name="nombre")
@@ -51,18 +64,22 @@ public class Asociados {
 	@Column(name="apellido")
 	private String apellido;
 	
-	@ValidarExpresionesRegulares(customMessage="El legajo debe tener 3 digitos", expresionRegular = ExpresionRegular.LEGAJO)
-	@NotBlank(message = "El legajo no puede estar en blanco")
-	@Column(name="legajo")
-    private String legajo;
-	
-	@OneToOne
-	@JoinColumn(name="id_firma")
-    private Firma id_firma;
-	
 	@Column(name="documento")
 	private String documento;
+
+	@Column(name="email")
+	private String email;
 	
+	@Column(name="rol")
+	private String rol;
+
+	@Column(name="contrasena")
+	private String contrasena;
+
+	@Column(name="activo")
+	@NotNull
+	private int activo;
+
 	@ManyToMany
     @JoinTable(
         name = "asociado_categoria", // Nombre de la tabla intermedia
@@ -70,10 +87,6 @@ public class Asociados {
         inverseJoinColumns = @JoinColumn(name = "categoria_id") // Llave foránea de la tabla 'categoria'
     )
     private Set<Categoria> categorias;
-	
-	@Column(name="activo")
-	@NotNull
-	private int activo;
 	
 	@Column(name="telefono")
 	@NotNull
@@ -89,7 +102,7 @@ public class Asociados {
 
 	public Asociados(long id, @NotBlank(message = "El nombre no puede estar en blanco") @NotNull String nombre,
 			@NotBlank(message = "El apellido no puede estar en blanco") String apellido,
-			@NotBlank(message = "El legajo no puede estar en blanco") String legajo, Firma id_firma, String documento,
+			@NotBlank(message = "El legajo no puede estar en blanco") String legajo, Integer id_firma, String documento,
 			Set<Categoria> categorias,@NotNull int activo, @NotNull String telefono) {
 		super();
 		this.id = id;
@@ -137,11 +150,19 @@ public class Asociados {
 		this.legajo = legajo;
 	}
 
-	public Firma getId_firma() {
+	// public Firma getId_firma() {
+	// 	return id_firma;
+	// }
+
+	// public void setId_firma(Firma id_firma) {
+	// 	this.id_firma = id_firma;
+	// }
+
+	public Integer getId_firma() {
 		return id_firma;
 	}
 
-	public void setId_firma(Firma id_firma) {
+	public void setId_firma(Integer id_firma) {
 		this.id_firma = id_firma;
 	}
 
