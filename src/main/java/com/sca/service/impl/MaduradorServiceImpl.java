@@ -140,4 +140,21 @@ Logger log = LoggerFactory.getLogger(String.class);
 
 		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
 	}
+
+	@Override
+	public Respuesta findMaduradorPorEstado(String estado) {
+		respuesta = new Respuesta();
+		try {
+			respuesta.setCodigo("200");
+			respuesta.setStatus("Ok");
+			respuesta.setDescripcion("Se muestran todos los Maduradores con el estado "+estado);
+			respuesta.setData(maduradorRepository.findAll().stream().filter(a -> a.getEstado().equals(estado)));
+		} catch (Exception e) {
+			respuesta.setCodigo("400");
+			respuesta.setStatus("Error");
+			respuesta.setDescripcion("No se pudieron filtrar los Maduradores");
+			respuesta.setData(e.getMessage());
+		}
+		return respuesta;
+	}
 }

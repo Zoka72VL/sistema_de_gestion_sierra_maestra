@@ -68,4 +68,10 @@ public class MaduradorController {
 	public ResponseEntity<Object> updateMadurador(@RequestBody Madurador madurador, BindingResult bindingResult) throws BindException {
 		return maduradorsServiceImpl.update(madurador, bindingResult);
 	}
+
+	@GetMapping(value = "/findMaduradorPorEstado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Consultar Maduradores por Estado", notes = "Esta operación devuelve todos los Maduradores filtrados por estado")
+	public Respuesta findMaduradorPorEstado(@PathVariable String estado) {
+    	return maduradorsServiceImpl.findMaduradorPorEstado(estado);
+	}
 }
