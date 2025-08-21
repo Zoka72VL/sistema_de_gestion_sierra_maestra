@@ -140,4 +140,22 @@ Logger log = LoggerFactory.getLogger(String.class);
 
 		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
 	}
+
+	@Override
+public Respuesta findAccesoriosPorEstado(String estado) {
+    Respuesta respuesta = new Respuesta();
+    try {
+        respuesta.setCodigo("200");
+        respuesta.setStatus("Ok");
+        respuesta.setDescripcion("Datos de los Accesorios por Estado");
+        respuesta.setData(accesorioRepository.findAll().stream()
+                        .filter(a -> a.getEstado().equals(estado)));
+    } catch (Exception e) {
+        respuesta.setCodigo("400");
+        respuesta.setStatus("Error");
+        respuesta.setDescripcion("No se pudieron mostrar los datos de los Accesorios");
+        respuesta.setData(e.getMessage());
+    }
+    return respuesta;
+}
 }

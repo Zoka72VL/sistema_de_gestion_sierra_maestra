@@ -68,4 +68,10 @@ public class BarrilController {
 	public ResponseEntity<Object> updateBarril(@RequestBody Barril Barril, BindingResult bindingResult) throws BindException {
 		return barrilsServiceImpl.update(Barril, bindingResult);
 	}
+
+	@GetMapping(value = "/findByEstado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Consultar Barriles por Estado", notes = "Esta operación devuelve todos los Barriles filtrados por estado")
+    public Respuesta findByEstado(@PathVariable String estado) {
+       return barrilsServiceImpl.findByEstado(estado);
+}
 }

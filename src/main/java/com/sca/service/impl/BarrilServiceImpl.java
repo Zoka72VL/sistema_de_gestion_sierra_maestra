@@ -140,4 +140,22 @@ Logger log = LoggerFactory.getLogger(String.class);
 
 		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
 	}
+
+	@Override
+	public Respuesta findByEstado(String estado) {
+		respuesta = new Respuesta();
+		try {
+			respuesta.setCodigo("200");
+			respuesta.setStatus("Ok");
+			respuesta.setDescripcion("Datos de los Barriles por Estado");
+			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getEstado()==estado));
+		} catch (Exception e) {
+			respuesta.setCodigo("400");
+			respuesta.setStatus("Error");
+			respuesta.setDescripcion("No se pudieron mostrar los datos de los Barriles");
+			respuesta.setData(e.getMessage());
+		}
+		return respuesta;
+	}
 }
+

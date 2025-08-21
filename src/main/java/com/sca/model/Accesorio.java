@@ -30,21 +30,14 @@ public class Accesorio {
     private String estado;
     
     @Column(name = "notas")
-    private String notas;
-
-    // Relación ManyToOne con Lote
-    @ManyToOne
-    @JoinColumn(name = "barril_id")  // Crea la columna lote_id en la tabla barril para asociar barriles con un lote
-    private Barril barril;
-
+    private String notas; 
     // Constructores
     public Accesorio(Long id, String nombre, String estado, String notas, Barril barril) {
         this.id = id;
         this.nombre = nombre;
         this.estado = estado;
         this.notas = notas;
-        this.barril = barril;
-    }
+        
 
     public Accesorio() {
     }
@@ -88,11 +81,9 @@ public class Accesorio {
         this.notas = notas;
     }
 
-    public Barril getBarril() {
-        return barril;
-    }
 
-    public void setBarril(Barril barril) {
-        this.barril = barril;
-    }
 }
+
+
+   
+  

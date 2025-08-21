@@ -18,4 +18,6 @@ public interface AccesorioService {
 	public Respuesta findAll();
 	
 	public Respuesta finById(Long id);
+	
+	public Respuesta findAccesoriosPorEstado(String estado);
 }

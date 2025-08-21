@@ -18,4 +18,6 @@ public interface BarrilService {
 	public Respuesta findAll();
 	
 	public Respuesta finById(Long id);
+	
+	public Respuesta findByEstado(String estado);
 }

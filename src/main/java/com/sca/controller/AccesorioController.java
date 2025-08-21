@@ -68,4 +68,10 @@ public class AccesorioController {
 	public ResponseEntity<Object> updateAccesorio(@RequestBody Accesorio accesorio, BindingResult bindingResult) throws BindException {
 		return accesoriosServiceImpl.update(accesorio, bindingResult);
 	}
+
+	@GetMapping(value = "/findAccesoriosPorEstado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Consultar Accesorios por Estado", notes = "Esta operación devuelve todos los Accesorios filtrados por estado")
+	public Respuesta findAccesoriosPorEstado(@PathVariable String estado) {
+    	return accesoriosServiceImpl.findAccesoriosPorEstado(estado);
+}
 }
