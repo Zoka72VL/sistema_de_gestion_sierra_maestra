@@ -149,7 +149,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos de los Barriles por Estado");
-			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getEstado()==estado));
+			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getEstado().equals(estado)));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");
@@ -166,7 +166,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos de los Barriles por Lote");
-			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getLote()==lote));
+			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getLote().equals(lote)));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");
