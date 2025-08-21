@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sca.model.Barril;
 import com.sca.model.Respuesta;
+import com.sca.model.Lote;
 import com.sca.service.impl.BarrilServiceImpl;
 
 import io.swagger.annotations.Api;
@@ -73,5 +74,11 @@ public class BarrilController {
     @ApiOperation(value = "Consultar Barriles por Estado", notes = "Esta operación devuelve todos los Barriles filtrados por estado")
     public Respuesta findByEstado(@PathVariable String estado) {
        return barrilsServiceImpl.findByEstado(estado);
-}
+	}
+
+	@GetMapping(value = "/findByLote/{lote}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Consultar Barriles por Lote", notes = "Esta operación devuelve todos los Barriles filtrados por lote")
+    public Respuesta findByLote(@PathVariable Lote lote) {
+       return barrilsServiceImpl.findByLote(lote);
+	}
 }

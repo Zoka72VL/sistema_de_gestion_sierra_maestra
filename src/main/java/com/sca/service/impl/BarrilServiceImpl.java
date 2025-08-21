@@ -165,12 +165,12 @@ Logger log = LoggerFactory.getLogger(String.class);
 		try {
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
-			respuesta.setDescripcion("Datos de los Barriles por Estado");
+			respuesta.setDescripcion("Datos de los Barriles por Lote");
 			respuesta.setData(barrilRepository.findAll().stream().filter(n -> n.getLote()==lote));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");
-			respuesta.setDescripcion("No se pudieron mostrar los datos de los Barriles");
+			respuesta.setDescripcion("No se pudieron filtrar los de los Barriles");
 			respuesta.setData(e.getMessage());
 		}
 		return respuesta;
