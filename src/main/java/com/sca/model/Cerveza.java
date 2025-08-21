@@ -14,10 +14,18 @@ import javax.persistence.Table;
 // import javax.persistence.OneToMany;
 // import javax.persistence.OneToOne;
 // import javax.persistence.ManyToOne;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name="cervezas")
 public class Cerveza {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -72,8 +80,6 @@ public class Cerveza {
 		this.descripcion = descripcion;
 		this.precioPorLitro = precioPorLitro;
 	}
-	
-	
 
 	public Cerveza(Long id, String nombreCerveza, String tipoCerveza, Double gradoAlcoholico, Double amargorIbu,
 			String descripcion, Double precioPorLitro, Boolean estado) {
@@ -85,78 +91,5 @@ public class Cerveza {
 		this.descripcion = descripcion;
 		this.precioPorLitro = precioPorLitro;
 		this.estado = estado;
-	}
-
-	public Double getAmargorIbu() {
-		return amargorIbu;
-	}
-
-	public void setAmargorIbu(Double amargorIbu) {
-		this.amargorIbu = amargorIbu;
-	}
-
-	
-	
-	public Boolean getEstado() {
-		return estado;
-	}
-
-	public void setEstado(Boolean estado) {
-		this.estado = estado;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getNombreCerveza() {
-		return nombreCerveza;
-	}
-
-	public void setNombreCerveza(String nombreCerveza) {
-		this.nombreCerveza = nombreCerveza;
-	}
-
-	public String getTipoCerveza() {
-		return tipoCerveza;
-	}
-
-	public void setTipoCerveza(String tipoCerveza) {
-		this.tipoCerveza = tipoCerveza;
-	}
-
-	public Double getGradoAlcoholico() {
-		return gradoAlcoholico;
-	}
-
-	public void setGradoAlcoholico(Double gradoAlcoholico) {
-		this.gradoAlcoholico = gradoAlcoholico;
-	}
-
-	public Double getPrecioPorLitro() {
-		return precioPorLitro;
-	}
-
-	public void setPrecioPorLitro(Double precioPorLitro) {
-		this.precioPorLitro = precioPorLitro;
-	}
-	
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-
-	@Override
-	public String toString() {
-		return "Cerveza [id=" + id + ", nombreCerveza=" + nombreCerveza + ", tipoCerveza=" + tipoCerveza
-				+ ", gradoAlcoholico=" + gradoAlcoholico + ", amargorIbu=" + amargorIbu + ", descripcion=" + descripcion
-				+ ", precioPorLitro=" + precioPorLitro + ", estado=" + estado + "]";
 	}
 }

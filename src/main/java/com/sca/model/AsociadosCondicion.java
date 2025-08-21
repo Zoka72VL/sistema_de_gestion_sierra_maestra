@@ -1,7 +1,5 @@
 package com.sca.model;
-
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,11 +9,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "asociado_condicion")
 @JsonIdentityInfo(
@@ -51,43 +55,4 @@ public class AsociadosCondicion {
 		this.condicion = condicion;
 		this.fecha = fecha;
 	}
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Asociados getAsociado() {
-        return asociado;
-    }
-
-    public void setAsociado(Asociados asociado) {
-        this.asociado = asociado;
-    }
-
-    public Condicion getCondicion() {
-        return condicion;
-    }
-
-    public void setCondicion(Condicion condicion) {
-        this.condicion = condicion;
-    }
-
-    @Override
-    public String toString() {
-        return "AsociadoCondicion [id=" + id + ", asociado=" + asociado + ", condicion=" + condicion + "]";
-    }
-
-	public Date getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
-    
-    
 }

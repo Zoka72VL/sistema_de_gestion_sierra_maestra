@@ -9,10 +9,18 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name="porcentajeMes")
 public class PorcentajeMes {
+    
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -42,49 +50,5 @@ public class PorcentajeMes {
 		this.porcentaje_aumento = porcentaje_aumento;
 		this.mes = mes;
 		this.ano = ano;
-	}
-
-
-
-	public long getid() {
-        return id;
-    }
-
-    public void setid(long id) {
-        this.id = id;
-    }
-
-    public Double getporcentaje_aumento() {
-        return porcentaje_aumento;
-    }
-
-    public void setporcentaje_aumento(Double porcentaje_aumento) {
-        this.porcentaje_aumento = porcentaje_aumento;
-    }
-
-    public Mes getMes() {
-        return mes;
-    }
-
-    public void setMes(Mes mes) {
-        this.mes = mes;
-    }
-
-	public double getPorcentaje_aumento() {
-		return porcentaje_aumento;
-	}
-
-	public void setPorcentaje_aumento(double porcentaje_aumento) {
-		this.porcentaje_aumento = porcentaje_aumento;
-	}
-
-	public int getAno() {
-		return ano;
-	}
-
-	public void setAno(int ano) {
-		this.ano = ano;
-	}
-    
-    
+	} 
 }

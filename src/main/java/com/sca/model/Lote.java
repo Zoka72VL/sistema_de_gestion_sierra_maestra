@@ -4,11 +4,9 @@ import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +23,14 @@ import javax.persistence.TemporalType;
 import javax.persistence.OneToMany;
 // import javax.persistence.OneToOne;
 import javax.persistence.ManyToOne;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "lote")
 public class Lote {
@@ -80,8 +85,6 @@ public class Lote {
     // @OneToMany(mappedBy = "lote")
     // private Set<Madurador> madurador;
 
-
-    // Constructores
     public Lote() {}
 
     public Lote(Cerveza cerveza, Integer cantidadLitros, String estado, String notas, Date fechaCarga, Date fechaVencimiento, Date fechaCargaMadurador) {
@@ -91,71 +94,6 @@ public class Lote {
         this.notas = notas;
         this.fechaCarga = fechaCarga;
         this.fechaVencimiento = fechaVencimiento;
-        this.fechaCargaMadurador = fechaCargaMadurador;
-    }
-
-    // Getters y Setters correctos
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Cerveza getCerveza() {
-        return cerveza;
-    }
-
-    public void setCerveza(Cerveza cerveza) {
-        this.cerveza = cerveza;
-    }
-
-    public Integer getCantidadLitros() {
-        return cantidadLitros;
-    }
-
-    public void setCantidadLitros(Integer cantidadLitros) {
-        this.cantidadLitros = cantidadLitros;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public String getNotas() {
-        return notas;
-    }
-
-    public void setNotas(String notas) {
-        this.notas = notas;
-    }
-
-    public Date getFechaCarga() {
-        return fechaCarga;
-    }
-
-    public void setFechaCarga(Date fechaCarga) {
-        this.fechaCarga = fechaCarga;
-    }
-
-    public Date getFechaVencimiento() {
-        return fechaVencimiento;
-    }
-
-    public void setFechaVencimiento(Date fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
-    }
-
-    public Date getFechaCargaMadurador() {
-        return fechaCargaMadurador;
-    }
-
-    public void setFechaCargaMadurador(Date fechaCargaMadurador) {
         this.fechaCargaMadurador = fechaCargaMadurador;
     }
 }

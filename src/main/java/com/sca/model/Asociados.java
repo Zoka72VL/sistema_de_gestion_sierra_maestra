@@ -1,9 +1,7 @@
 package com.sca.model;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +25,14 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
 
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 // ESTA ES LA CLASE USUARIO, NO SE LE CAMBIO EL NOMBRE PARA NO ROMPER EL SISTEMA
 @Entity
 @Table(name="asociado")
@@ -115,103 +120,4 @@ public class Asociados {
 		this.activo = activo;
 		this.telefono = telefono;
 	}
-
-
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getApellido() {
-		return apellido;
-	}
-
-	public void setApellido(String apellido) {
-		this.apellido = apellido;
-	}
-
-	public String getLegajo() {
-		return legajo;
-	}
-
-	public void setLegajo(String legajo) {
-		this.legajo = legajo;
-	}
-
-	// public Firma getId_firma() {
-	// 	return id_firma;
-	// }
-
-	// public void setId_firma(Firma id_firma) {
-	// 	this.id_firma = id_firma;
-	// }
-
-	public Integer getId_firma() {
-		return id_firma;
-	}
-
-	public void setId_firma(Integer id_firma) {
-		this.id_firma = id_firma;
-	}
-
-	public Set<Categoria> getCategorias() {
-		return categorias;
-	}
-
-	public void setCategorias(Set<Categoria> categorias) {
-		this.categorias = categorias;
-	}
-
-	public int getActivo() {
-		return activo;
-	}
-
-	public void setActivo(int activo) {
-		this.activo = activo;
-	}
-
-	@Override
-	public String toString() {
-		return "Asociados [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", legajo=" + legajo
-				+ ", id_firma=" + id_firma + ", categorias=" + categorias + ", activo=" + activo + ", telefono="
-				+ telefono + "]";
-	}
-
-	public String getTelefono() {
-		return telefono;
-	}
-
-	public void setTelefono(String telefono) {
-		this.telefono = telefono;
-	}
-
-	public String getDocumento() {
-		return documento;
-	}
-
-	public void setDocumento(String documento) {
-		this.documento = documento;
-	}
-
-	public List<AsociadosCondicion> getCondiciones() {
-		return condiciones;
-	}
-
-	public void setCondiciones(List<AsociadosCondicion> condiciones) {
-		this.condiciones = condiciones;
-	}	
-	
-	
 }

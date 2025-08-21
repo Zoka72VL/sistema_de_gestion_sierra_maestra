@@ -9,10 +9,18 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name="sueldoBasico")
 public class SueldoBasico {
+    
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -38,37 +46,5 @@ public class SueldoBasico {
     public SueldoBasico(long id, Double sueldo_basico) {
         this.id = id;
         this.sueldo_basico = sueldo_basico;
-    }
-
-    public long getid() {
-        return id;
-    }
-
-    public void setid(long id) {
-        this.id = id;
-    }
-
-    public Double getsueldo_basico() {
-        return sueldo_basico;
-    }
-
-    public void setsueldo_basico(Double sueldo_basico) {
-        this.sueldo_basico = sueldo_basico;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-
-    public PorcentajeMes getPorcentajeMes() {
-        return porcentajeMes;
-    }
-
-    public void setPorcentajeMes(PorcentajeMes porcentajeMes) {
-        this.porcentajeMes = porcentajeMes;
     }
 }

@@ -1,5 +1,4 @@
 package com.sca.model;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +8,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name="asistenciaTotal")
 public class AsistenciaTotal {
@@ -56,70 +62,4 @@ public class AsistenciaTotal {
 		this.tiempo_hora_primera_quincena = tiempo_hora_primera_quincena;
 		this.tiempo_hora_segunda_quincena = tiempo_hora_segunda_quincena;
 	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public Mes getId_mes() {
-		return id_mes;
-	}
-
-	public void setId_mes(Mes id_mes) {
-		this.id_mes = id_mes;
-	}
-
-	public int getAno() {
-		return ano;
-	}
-
-	public void setAno(int ano) {
-		this.ano = ano;
-	}
-
-	public Asociados getId_asistencia() {
-		return id_asistencia;
-	}
-
-	public void setId_asistencia(Asociados id_asistencia) {
-		this.id_asistencia = id_asistencia;
-	}
-
-	public String getTiempo_hora_anual() {
-		return tiempo_hora_anual;
-	}
-
-	public void setTiempo_hora_anual(String tiempo_hora_anual) {
-		this.tiempo_hora_anual = tiempo_hora_anual;
-	}
-
-	public String getTiempo_hora_mensual() {
-		return tiempo_hora_mensual;
-	}
-
-	public void setTiempo_hora_mensual(String tiempo_hora_mensual) {
-		this.tiempo_hora_mensual = tiempo_hora_mensual;
-	}
-
-	public String getTiempo_hora_primera_quincena() {
-		return tiempo_hora_primera_quincena;
-	}
-
-	public void setTiempo_hora_primera_quincena(String tiempo_hora_primera_quincena) {
-		this.tiempo_hora_primera_quincena = tiempo_hora_primera_quincena;
-	}
-
-	public String getTiempo_hora_segunda_quincena() {
-		return tiempo_hora_segunda_quincena;
-	}
-
-	public void setTiempo_hora_segunda_quincena(String tiempo_hora_segunda_quincena) {
-		this.tiempo_hora_segunda_quincena = tiempo_hora_segunda_quincena;
-	}
-
-   
 }

@@ -16,14 +16,25 @@ import javax.persistence.OneToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Entity;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.PositiveOrZero;
-
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="pedido")
 public class Pedido {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull(message = "El ID no puede ser nulo")
@@ -54,23 +65,23 @@ public class Pedido {
     @Column(name="envio", nullable = false)
     private Boolean envio;
     
-        @ManyToMany
-        @JoinTable(
-            name = "pedido_accesorio",
-            joinColumns = @JoinColumn(name = "pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "accesorio_id")
-        )
-        @Column(name="accesorios")
-        private Set<Accesorio> accesorios = new HashSet<>();
-    
-        @ManyToMany
-        @JoinTable(
-            name = "pedido_cerveza",
-            joinColumns = @JoinColumn(name = "pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "cerveza_id")
-        )
-        @Column(name="cervezas")
-        private Set<Cerveza> cervezas = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+        name = "pedido_accesorio",
+        joinColumns = @JoinColumn(name = "pedido_id"),
+        inverseJoinColumns = @JoinColumn(name = "accesorio_id")
+    )
+    @Column(name="accesorios")
+    private Set<Accesorio> accesorios = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "pedido_cerveza",
+        joinColumns = @JoinColumn(name = "pedido_id"),
+        inverseJoinColumns = @JoinColumn(name = "cerveza_id")
+    )
+    @Column(name="cervezas")
+    private Set<Cerveza> cervezas = new HashSet<>();
     
     @OneToMany
     @JoinColumn(name = "pedido_id")
@@ -91,102 +102,4 @@ public class Pedido {
     @PositiveOrZero(message = "El total general no puede ser negativo")
     @Column(name="totalGral", nullable = false)
     private Double totalGral;
-
-    public Pedido(){}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getFechaPedido() {
-        return fechaPedido;
-    }
-
-    public void setFechaPedido(Date fechaPedido) {
-        this.fechaPedido = fechaPedido;
-    }
-
-    public Date getFechaEntrega() {
-        return fechaEntrega;
-    }
-
-    public void setFechaEntrega(Date fechaEntrega) {
-        this.fechaEntrega = fechaEntrega;
-    }
-
-    public String getDireccionEntrega() {
-        return direccionEntrega;
-    }
-
-    public void setDireccionEntrega(String direccionEntrega) {
-        this.direccionEntrega = direccionEntrega;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public Boolean getEnvio() {
-        return envio;
-    }
-
-    public void setEnvio(Boolean envio) {
-        this.envio = envio;
-    }
-
-    public Set<Accesorio> getAccesorios() {
-        return accesorios;
-    }
-
-    public void setAccesorios(Set<Accesorio> accesorios) {
-        this.accesorios = accesorios;
-    }
-
-    public Set<Cerveza> getCervezas() {
-        return cervezas;
-    }
-
-    public void setCervezas(Set<Cerveza> cervezas) {
-        this.cervezas = cervezas;
-    }
-
-    public Set<Barril> getBarriles() {
-        return barriles;
-    }
-
-    public void setBarriles(Set<Barril> barriles) {
-        this.barriles = barriles;
-    }
-
-    public Asociados getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Asociados usuario) {
-        this.usuario = usuario;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public Double getTotalGral() {
-        return totalGral;
-    }
-
-    public void setTotalGral(Double totalGral) {
-        this.totalGral = totalGral;
-    }
 }

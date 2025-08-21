@@ -1,5 +1,4 @@
 package com.sca.model;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,15 +7,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
-
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name="dia")
-@Getter
 public class Dia {
 
 	@Id
@@ -38,29 +40,4 @@ public class Dia {
 		this.id = id;
 		this.nombre = nombre;
 	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	@Override
-	public String toString() {
-		return "Dia [id=" + id + ", nombre=" + nombre + "]";
-	}
-	
-	
-	
-	
 }

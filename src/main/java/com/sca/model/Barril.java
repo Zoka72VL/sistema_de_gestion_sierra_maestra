@@ -14,7 +14,14 @@ import javax.persistence.Table;
 // import javax.persistence.OneToMany;
 // import javax.persistence.OneToOne;
 import javax.persistence.ManyToOne;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "barril")
 public class Barril {
@@ -53,46 +60,5 @@ public class Barril {
         this.litros = litros;
         this.estado = estado;
         this.notas = notas;
-    }
-
-    // Getters y setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getLitros() {
-        return litros;
-    }
-
-    public void setLitros(Integer litros) {
-        this.litros = litros;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public String getNotas() {
-        return notas;
-    }
-
-    public void setNotas(String notas) {
-        this.notas = notas;
-    }
-
-    public Lote getLote() {
-        return lote;
-    }
-
-    public void setLote(Lote lote) {
-        this.lote = lote;
     }
 }
