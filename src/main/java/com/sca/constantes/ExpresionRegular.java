@@ -8,4 +8,6 @@ public class ExpresionRegular {
 	public static final String CUIT = "^\\d{2}-\\d{8}-\\d|\\d{1,9}$"; // Valida que el cuit este en formato xx-xxxxxxxx-x o sean numeros
 	public static final String TELEFONO = "^\\(\\d{3}\\) \\d{3}-\\d{4}$"; // Valida que el telefono se valide en formato (xxx) xxx-xxxx
 	public static final String LEGAJO = "^\\d{3}$"; // Valida que el legajo tenga 3 digitos	
+	public static final String DIA_SEMANA_CAP = "^(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)$";
+	public static final String LOTE_ESTADO = "^(Disponible|Producción|Padurando|Terminado|Sucio)$";
 }

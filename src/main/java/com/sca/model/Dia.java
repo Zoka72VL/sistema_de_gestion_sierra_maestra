@@ -28,7 +28,7 @@ public class Dia {
 	@NotBlank(message = "El nombre no puede estar en blanco")
 	@Column(name="nombre")
 	@NotNull
-	@ValidarExpresionesRegulares(customMessage = "El nombre no es válido", expresionRegular = ExpresionRegular.NOMBREAPELLIDO)
+	@ValidarExpresionesRegulares(customMessage = "El nombre no es válido", expresionRegular = ExpresionRegular.DIA_SEMANA_CAP)
     private String nombre;
 	
 	public Dia() {

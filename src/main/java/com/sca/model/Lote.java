@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.sca.constantes.ExpresionRegular;
+import com.sca.validator.ValidarExpresionesRegulares;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -55,6 +59,7 @@ public class Lote {
 
     @NotEmpty(message = "El estado es obligatorio")
     @Column(name = "estado", nullable = false)
+    @ValidarExpresionesRegulares(customMessage = "El estado no es válido", expresionRegular = ExpresionRegular.LOTE_ESTADO)
     private String estado;
 
     @Column(name = "notas")
