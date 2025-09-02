@@ -48,8 +48,10 @@ public class Cerveza {
 	@Column(name="precioLitro", nullable = true)
 	private Double precioPorLitro;
 
-	@Column(name="estado")
-	private Boolean estado;
+    @NotEmpty(message = "El estado es obligatorio")
+    @Column(name = "estado", nullable = false)
+    @ValidarExpresionesRegulares(customMessage = "El estado no es válido", expresionRegular = ExpresionRegular.CERVEZA_ESTADO)
+    private String estado;
 
 	// @OneToMany(mappedBy = "cerveza")
     // private Set<Lote> lote;
