@@ -2,6 +2,11 @@ package com.sca.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,12 +34,26 @@ Logger log = LoggerFactory.getLogger(String.class);
 
 	String resp = "";
 
+	private static final Set<String> ALLOWED_STATES = new HashSet<>(Arrays.asList(
+			"Activo","Cargado","Sucio","Mantenimiento","Inactivo"
+	));
+
 	//El ExceptionHandler me sirve para recuperar o en viar el status del error del pedido
 	@ExceptionHandler(BindException.class)
 	@Override
 	public ResponseEntity<Object> save(Madurador madurador, BindingResult bindingResult) throws BindException {
 		respuesta = new Respuesta();
 		try {
+			// Set default estado if not provided
+			if (madurador.getEstado() == null || madurador.getEstado().trim().isEmpty()) {
+				madurador.setEstado("Activo");
+			} else if (!ALLOWED_STATES.contains(madurador.getEstado())) {
+				respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
+				respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
+				respuesta.setDescripcion("Estado no válido. Valores permitidos: " + ALLOWED_STATES);
+				respuesta.setData(madurador.getEstado());
+				return handleExceptionInternal(new IllegalArgumentException("Estado no válido"), respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
+			}
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Se agrego una Madurador");
@@ -64,11 +83,19 @@ Logger log = LoggerFactory.getLogger(String.class);
 		respuesta = new Respuesta();
 		System.out.println(id);
 		try {
-			Madurador madurador = maduradorRepository.findById(id).get();
-			maduradorRepository.deleteById(id);
+			Madurador madurador = maduradorRepository.findById(id).orElse(null);
+			if (madurador == null) {
+				respuesta.setCodigo("404");
+				respuesta.setStatus("Error");
+				respuesta.setDescripcion("Madurador no encontrado");
+				respuesta.setData(null);
+				return respuesta;
+			}
+			madurador.setEstado("Inactivo");
+			maduradorRepository.save(madurador);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
-			respuesta.setDescripcion("Se elimino un Madurador");
+			respuesta.setDescripcion("Se inactivó el Madurador");
 			respuesta.setData(madurador);
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
@@ -117,10 +144,32 @@ Logger log = LoggerFactory.getLogger(String.class);
 	public ResponseEntity<Object> update(Madurador madurador, BindingResult bindingResult) throws BindException {
 		respuesta = new Respuesta();
 		try {
+			// Validate estado if provided
+			if (madurador.getEstado() != null && !madurador.getEstado().trim().isEmpty() && !ALLOWED_STATES.contains(madurador.getEstado())) {
+				respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
+				respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
+				respuesta.setDescripcion("Estado no válido. Valores permitidos: " + ALLOWED_STATES);
+				respuesta.setData(madurador.getEstado());
+				return handleExceptionInternal(new IllegalArgumentException("Estado no válido"), respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
+			}
+
+			// Merge with existing entity to avoid overwriting null fields
+			Madurador toSave = madurador;
+			if (madurador.getId() != null) {
+				Madurador existing = maduradorRepository.findById(madurador.getId()).orElse(null);
+				if (existing != null) {
+					if (madurador.getLitros() == null) madurador.setLitros(existing.getLitros());
+					if (madurador.getEstado() == null) madurador.setEstado(existing.getEstado());
+					if (madurador.getNotas() == null) madurador.setNotas(existing.getNotas());
+					if (madurador.getLote() == null) madurador.setLote(existing.getLote());
+					toSave = madurador;
+				}
+			}
+
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Se modificaron los datos del Madurador");
-			respuesta.setData(maduradorRepository.save(madurador));
+			respuesta.setData(maduradorRepository.save(toSave));
 		} catch (Exception e) {
 			respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
 			respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
@@ -148,7 +197,10 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Se muestran todos los Maduradores con el estado "+estado);
-			respuesta.setData(maduradorRepository.findAll().stream().filter(a -> a.getEstado().equals(estado)));
+			List<Madurador> filtered = maduradorRepository.findAll().stream()
+				.filter(a -> a.getEstado() != null && a.getEstado().equalsIgnoreCase(estado))
+				.collect(Collectors.toList());
+			respuesta.setData(filtered);
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");
