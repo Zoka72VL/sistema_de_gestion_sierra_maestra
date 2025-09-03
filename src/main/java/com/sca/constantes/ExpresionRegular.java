@@ -10,4 +10,5 @@ public class ExpresionRegular {
 	public static final String LEGAJO = "^\\d{3}$"; // Valida que el legajo tenga 3 digitos	
 	public static final String DIA_SEMANA_CAP = "^(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)$";
 	public static final String LOTE_ESTADO = "^(Produccion|Madurando|Terminado|Mantenimiento)$";
+	public static final String CERVEZA_ESTADO = "^(Disponible|Agotada|Produccion|Mantenimiento)$";
 }
