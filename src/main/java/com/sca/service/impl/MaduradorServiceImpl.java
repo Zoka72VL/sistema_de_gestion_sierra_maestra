@@ -144,7 +144,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 	public ResponseEntity<Object> update(Madurador madurador, BindingResult bindingResult) throws BindException {
 		respuesta = new Respuesta();
 		try {
-			// Validate estado if provided
+			// Valida el estado si lo obtiene
 			if (madurador.getEstado() != null && !madurador.getEstado().trim().isEmpty() && !ALLOWED_STATES.contains(madurador.getEstado())) {
 				respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
 				respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
@@ -153,7 +153,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 				return handleExceptionInternal(new IllegalArgumentException("Estado no válido"), respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
 			}
 
-			// Merge with existing entity to avoid overwriting null fields
+			// Mergea con la entidad existente para evitar campos nulos
 			Madurador toSave = madurador;
 			if (madurador.getId() != null) {
 				Madurador existing = maduradorRepository.findById(madurador.getId()).orElse(null);
