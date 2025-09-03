@@ -18,6 +18,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import javax.validation.constraints.NotEmpty;
+import com.sca.constantes.ExpresionRegular;
+import com.sca.validator.ValidarExpresionesRegulares;
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -84,7 +87,7 @@ public class Cerveza {
 	}
 
 	public Cerveza(Long id, String nombreCerveza, String tipoCerveza, Double gradoAlcoholico, Double amargorIbu,
-			String descripcion, Double precioPorLitro, Boolean estado) {
+			String descripcion, Double precioPorLitro, String estado) {
 		this.id = id;
 		this.nombreCerveza = nombreCerveza;
 		this.tipoCerveza = tipoCerveza;
