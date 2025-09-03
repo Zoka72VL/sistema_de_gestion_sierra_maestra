@@ -10,6 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 // import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import com.sca.constantes.ExpresionRegular;
+import com.sca.validator.ValidarExpresionesRegulares;
+
 // import javax.persistence.ManyToMany;
 // import javax.persistence.OneToMany;
 // import javax.persistence.OneToOne;
@@ -32,7 +36,7 @@ public class Barril {
     
     @Column(name = "litros", nullable = false)
     private Integer litros;
-    
+    @ValidarExpresionesRegulares(customMessage = "El estado no es válido", expresionRegular = ExpresionRegular.ACCESORIO_ESTADO)
     @Column(name = "estado")
     private String estado;
     

@@ -11,4 +11,6 @@ public class ExpresionRegular {
 	public static final String DIA_SEMANA_CAP = "^(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)$";
 	public static final String LOTE_ESTADO = "^(Produccion|Madurando|Terminado|Mantenimiento)$";
 	public static final String CERVEZA_ESTADO = "^(Disponible|Agotada|Produccion|Mantenimiento)$";
+	public static final String ACCESORIO_ESTADO = "^(Disponible|Alquilado|Devuelto|Mantenimiento|Inactivo|Sucio)$";
+	public static final String BARRIL_ESTADO = "^(Disponible|Cargado|Alquilado|Despacho|Devuelto|Sucio)$";
 }

@@ -10,6 +10,11 @@ import javax.persistence.Id;
 // import javax.persistence.JoinColumn;
 // import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+
+import com.sca.constantes.ExpresionRegular;
+import com.sca.validator.ValidarExpresionesRegulares;
+
 // import javax.persistence.ManyToMany;
 // import javax.persistence.OneToMany;
 // import javax.persistence.OneToOne;
@@ -24,6 +29,9 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "accesorio")
+
+
+
 public class Accesorio {
 
     @Id
@@ -32,7 +40,7 @@ public class Accesorio {
     
     @Column(name = "nombre", nullable = false)
     private String nombre;
-    
+    @ValidarExpresionesRegulares(customMessage = "El estado no es válido", expresionRegular = ExpresionRegular.ACCESORIO_ESTADO)
     @Column(name = "estado")
     private String estado;
     
