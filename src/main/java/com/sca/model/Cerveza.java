@@ -34,6 +34,7 @@ public class Cerveza {
 	private Long id;
 
 	@Column(name="nombre",nullable = false, length = 50)
+	@NotEmpty(message = "El nombre no puede estar vacio")
 	private String nombreCerveza;
 
 	@Column(name="tipo",nullable = false, length = 30)

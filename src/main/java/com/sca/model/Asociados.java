@@ -69,6 +69,7 @@ public class Asociados {
 	@Column(name="apellido")
 	private String apellido;
 	
+	@ValidarExpresionesRegulares(customMessage = "El documento no es válido", expresionRegular = ExpresionRegular.DOCUMENTO)
 	@Column(name="documento")
 	private String documento;
 
