@@ -28,7 +28,7 @@ public class AsistenciaTotal {
 	@JoinColumn(name = "id_mes", nullable = false)
 	private Mes id_mes;
     
-	@Column(name="year")
+	@Column(name="anio")
 	private int ano;
 	
 	@ManyToOne

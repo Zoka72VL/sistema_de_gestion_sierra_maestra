@@ -96,6 +96,19 @@
 			<version>2.1.7</version>
 		</dependency>
 
+		<!-- Thymeleaf for server-rendered templates -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<!-- H2 in-memory database for local runs and tests when overridden at runtime -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 
 	</dependencies>
 

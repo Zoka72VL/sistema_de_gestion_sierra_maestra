@@ -1,0 +1,57 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <div th:fragment="lista">
+    <div th:if="${#lists.isEmpty(items)}">No hay lotes.</div>
+    <div th:each="p : ${items}" class="card mb-2 p-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <strong th:text="${p.id}">ID</strong>
+          <div class="muted" th:text="${p.cerveza != null ? p.cerveza.nombre : '---'}">Cerveza</div>
+        </div>
+        <div>
+          <span class="muted me-3" th:text="${p.cantidadLitros} + ' L'">0 L</span>
+          <button class="btn btn-sm btn-outline-secondary me-1" hx-get="/lotes/${p.id}" hx-target="#lote-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" hx-delete="/deleteLote/${p.id}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/lotes/list','#lotes-list')"><i class="bi bi-trash-fill"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:fragment="form">
+    <form th:action="@{/lotes/save}" th:object="${lote}" hx-post="/lotes/save" hx-target="#lotes-list" hx-swap="innerHTML">
+      <input type="hidden" th:field="*{id}" />
+      <div class="mb-2">
+        <label>Cerveza</label>
+        <select class="form-select" th:field="*{cerveza.id}">
+          <option th:each="c : ${cervezas}" th:value="${c.id}" th:text="${c.nombreCerveza}">Cerveza</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Cantidad Litros</label>
+        <input class="form-control" type="number" th:field="*{cantidadLitros}" min="1" required />
+      </div>
+      <div class="mb-2">
+        <label>Estado</label>
+        <input class="form-control" th:field="*{estado}" required />
+      </div>
+      <div class="mb-2">
+        <label>Notas</label>
+        <input class="form-control" th:field="*{notas}" />
+      </div>
+      <div class="mb-2">
+        <label>Fecha Carga</label>
+        <input class="form-control" type="date" th:field="*{fechaCarga}" />
+      </div>
+      <div class="mb-2">
+        <label>Fecha Vencimiento</label>
+        <input class="form-control" type="date" th:field="*{fechaVencimiento}" />
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit"><i class="bi bi-save-fill me-1"></i>Guardar</button>
+        <button type="button" class="btn btn-secondary" onclick="htmx.ajax('GET','/lotes/list','#lotes-list')"><i class="bi bi-x-lg me-1"></i>Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+</html>

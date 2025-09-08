@@ -1,0 +1,131 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
+  <section th:fragment="content">
+    <div class="card p-3 mb-3">
+      <h2 class="m-0">Bienvenido</h2>
+      <p class="muted">Seleccione una sección para empezar. (Las acciones usan HTMX para cargar listas y formularios sin recargar la página.)</p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/pedidos}">
+          <h5><i class="bi bi-basket-fill me-2"></i>Pedidos</h5>
+          <p class="muted">Crear y gestionar pedidos</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/lotes}">
+          <h5><i class="bi bi-box-seam me-2"></i>Lotes</h5>
+          <p class="muted">Administrar lotes</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/clientes}">
+          <h5><i class="bi bi-people-fill me-2"></i>Clientes</h5>
+          <p class="muted">Lista de clientes</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/cervezas}">
+          <h5><i class="bi bi-droplet me-2"></i>Cervezas</h5>
+          <p class="muted">Catalogo de cervezas</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/categorias}">
+          <h5><i class="bi bi-tags-fill me-2"></i>Categorías</h5>
+          <p class="muted">Categorías de productos</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/barriles}">
+          <h5><i class="bi bi-box2-fill me-2"></i>Barriles</h5>
+          <p class="muted">Gestión de barriles</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/accesorios}">
+          <h5><i class="bi bi-gear-fill me-2"></i>Accesorios</h5>
+          <p class="muted">Accesorios y repuestos</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/asociados}">
+          <h5><i class="bi bi-person-badge-fill me-2"></i>Asociados</h5>
+          <p class="muted">Administrar asociados</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/asistencias}">
+          <h5><i class="bi bi-clock-fill me-2"></i>Asistencias</h5>
+          <p class="muted">Registrar asistencias</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/asistencias-total}">
+          <h5><i class="bi bi-bar-chart-fill me-2"></i>Asistencia Total</h5>
+          <p class="muted">Resumen mensual</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/condiciones}">
+          <h5><i class="bi bi-file-earmark-text-fill me-2"></i>Condiciones</h5>
+          <p class="muted">Condiciones contractuales</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/dias}">
+          <h5><i class="bi bi-calendar-fill me-2"></i>Días</h5>
+          <p class="muted">Calendario y días</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/firmas}">
+          <h5><i class="bi bi-pencil-fill me-2"></i>Firmas</h5>
+          <p class="muted">Firmas digitales</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/maduradores}">
+          <h5><i class="bi bi-person-lines-fill me-2"></i>Maduradores</h5>
+          <p class="muted">Equipo de maduración</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/meses}">
+          <h5><i class="bi bi-calendar2-week-fill me-2"></i>Meses</h5>
+          <p class="muted">Meses y periodo</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/porcentajes-mes}">
+          <h5><i class="bi bi-percent me-2"></i>Porcentajes Mes</h5>
+          <p class="muted">Porcentajes por mes</p>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4">
+        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/sueldos-basicos}">
+          <h5><i class="bi bi-cash-stack me-2"></i>Sueldos Básicos</h5>
+          <p class="muted">Configuración salarial</p>
+        </a>
+      </div>
+    </div>
+
+  </section>
+</html>

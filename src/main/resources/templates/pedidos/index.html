@@ -1,0 +1,22 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
+  <section th:fragment="content">
+    <div class="card p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="m-0">Pedidos</h2>
+        <div>
+          <button class="btn btn-outline-primary me-2" hx-get="/pedidos/list" hx-target="#pedidos-list" hx-swap="innerHTML"><i class="bi bi-arrow-repeat me-1"></i>Cargar</button>
+          <button class="btn btn-success" hx-get="/pedidos/form" hx-target="#pedido-form" hx-swap="innerHTML"><i class="bi bi-plus-lg me-1"></i>Nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="pedidos-list"></div>
+    <div id="pedido-form" class="mt-3"></div>
+
+    <script>
+      // auto cargar lista al entrar
+      document.addEventListener('DOMContentLoaded', ()=>{ htmx.ajax('GET','/pedidos/list','#pedidos-list'); });
+    </script>
+  </section>
+</html>

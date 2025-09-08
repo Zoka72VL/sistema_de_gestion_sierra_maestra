@@ -1,0 +1,71 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <div th:fragment="lista">
+    <div th:if="${#lists.isEmpty(items)}">No hay pedidos.</div>
+    <div th:each="p : ${items}" class="card mb-2 p-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <strong th:text="${p.id}">ID</strong>
+          <div class="muted" th:text="${p.direccionEntrega}">Direccion</div>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-secondary me-1" hx-get="/pedidos/${p.id}" hx-target="#pedido-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" hx-delete="/deletePedido/${p.id}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/pedidos/list','#pedidos-list')"><i class="bi bi-trash-fill"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:fragment="form">
+  <form th:action="@{/pedidos/save}" th:object="${pedido}" hx-post="/pedidos/save" hx-target="#pedidos-list" hx-swap="innerHTML">
+      <input type="hidden" th:field="*{id}" />
+      <div class="mb-2">
+        <label>Fecha Pedido</label>
+        <input class="form-control" type="date" th:field="*{fechaPedido}" required />
+      </div>
+      <div class="mb-2">
+        <label>Fecha Entrega</label>
+        <input class="form-control" type="date" th:field="*{fechaEntrega}" required />
+      </div>
+      <div class="mb-2">
+        <label>Direccion</label>
+        <input class="form-control" th:field="*{direccionEntrega}" required />
+      </div>
+      <div class="mb-2">
+        <label>Estado</label>
+        <input class="form-control" th:field="*{estado}" required />
+      </div>
+      <div class="mb-2">
+        <label>Envio</label>
+        <select class="form-select" th:field="*{envio}">
+          <option th:value="true">Si</option>
+          <option th:value="false">No</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Cliente</label>
+        <select class="form-select" th:field="*{cliente.id}">
+          <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nombre + ' ' + c.apellido}">Cliente</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Usuario (Asociado)</label>
+        <select class="form-select" th:field="*{usuario.id}">
+          <option th:each="a : ${asociados}" th:value="${a.id}" th:text="${a.nombre + ' ' + a.apellido}">Asociado</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Cervezas</label>
+        <select class="form-select" multiple th:field="*{cervezas}">
+          <option th:each="c : ${cervezas}" th:value="${c.id}" th:text="${c.nombreCerveza}">Cerveza</option>
+        </select>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit"><i class="bi bi-save-fill me-1"></i>Guardar</button>
+        <button type="button" class="btn btn-secondary" onclick="htmx.ajax('GET','/pedidos/list','#pedidos-list')"><i class="bi bi-x-lg me-1"></i>Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+</html>

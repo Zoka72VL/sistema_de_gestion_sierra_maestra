@@ -36,7 +36,7 @@ public class PorcentajeMes {
     private Mes mes;
     
     @NotNull
-    @Column(name="year")
+    @Column(name="anio")
     private int ano;
 
     public PorcentajeMes() {
