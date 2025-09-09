@@ -1,6 +1,4 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <div th:fragment="lista">
+  <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
     <div th:if="${#lists.isEmpty(items)}">No hay clientes.</div>
     <div th:each="c : ${items}" class="card mb-2 p-2">
       <div class="d-flex justify-content-between align-items-center">
@@ -9,8 +7,8 @@
           <div class="muted" th:text="${c.nombre}">Nombre</div>
         </div>
         <div>
-          <button class="btn btn-sm btn-outline-secondary me-1" hx-get="/clientes/${c.id}" hx-target="#cliente-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" hx-delete="/deleteCliente/${c.id}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/clientes/list','#clientes-list')"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/clientes/{id}(id=${c.id})}" hx-target="#cliente-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteCliente/{id}(id=${c.id})}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/clientes/list', document.querySelector('#clientes-list'))"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>
@@ -24,9 +22,9 @@
         <input class="form-control" th:field="*{nombre}" required />
       </div>
       <div class="d-flex gap-2">
-        <button class="btn btn-primary" type="submit">Guardar</button>
-        <button type="button" class="btn btn-secondary" onclick="htmx.ajax('GET','/clientes/list','#clientes-list')">Cancelar</button>
+  <button class="btn btn-primary" type="submit">Guardar</button>
+  <button type="button" class="btn btn-secondary" hx-get="/clientes/list" hx-target="#clientes-list" hx-swap="innerHTML">Cancelar</button>
       </div>
     </form>
   </div>
-</html>
+

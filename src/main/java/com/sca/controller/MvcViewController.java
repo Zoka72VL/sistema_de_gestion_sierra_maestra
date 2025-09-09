@@ -187,6 +187,22 @@ public class MvcViewController {
     @PostMapping("/cervezas/save")
     public String saveCerveza(com.sca.model.Cerveza cerveza, Model model) {
         try {
+            // Ensure required fields have sensible defaults to avoid validation failures
+            if (cerveza.getTipoCerveza() == null || cerveza.getTipoCerveza().trim().isEmpty()) {
+                cerveza.setTipoCerveza("Otro");
+            }
+            if (cerveza.getGradoAlcoholico() == null) {
+                cerveza.setGradoAlcoholico(4.5);
+            }
+            if (cerveza.getAmargorIbu() == null) {
+                cerveza.setAmargorIbu(10.0);
+            }
+            if (cerveza.getEstado() == null || cerveza.getEstado().trim().isEmpty()) {
+                cerveza.setEstado("Disponible");
+            }
+            if (cerveza.getPrecioPorLitro() == null) {
+                cerveza.setPrecioPorLitro(0.0);
+            }
             BindException be = new BindException(cerveza, "cerveza");
             cervezaService.save(cerveza, be);
         } catch (Exception e) {

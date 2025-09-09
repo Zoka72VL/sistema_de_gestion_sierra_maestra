@@ -1,32 +1,67 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <div th:fragment="lista">
+  <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
     <div th:if="${#lists.isEmpty(items)}">No hay cervezas.</div>
-    <div th:each="c : ${items}" class="card mb-2 p-2">
+  <div th:each="c : ${items}" class="card mb-2 p-2">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${c.id}">ID</strong>
-          <div class="muted" th:text="${c.nombre}">Nombre</div>
+      <div class="muted" th:text="${c.nombreCerveza}">Nombre</div>
         </div>
         <div>
-          <button class="btn btn-sm btn-outline-secondary me-1" hx-get="/cervezas/${c.id}" hx-target="#cerveza-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" hx-delete="/deleteCerveza/${c.id}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/cervezas/list','#cervezas-list')"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/cervezas/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteCerveza/{id}(id=${c.id})}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/cervezas/list', document.querySelector('#cervezas-list'))"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>
   </div>
 
   <div th:fragment="form">
-    <form th:action="@{/cervezas/save}" th:object="${cerveza}" hx-post="/cervezas/save" hx-target="#cervezas-list" hx-swap="innerHTML">
+  <form th:action="@{/cervezas/save}" th:object="${cerveza}" hx-post="/cervezas/save" hx-target="#cervezas-list" hx-swap="innerHTML">
       <input type="hidden" th:field="*{id}" />
       <div class="mb-2">
-        <label>Nombre</label>
-        <input class="form-control" th:field="*{nombre}" required />
+        <label for="nombre">Nombre</label>
+        <input id="nombre" class="form-control" th:field="*{nombreCerveza}" placeholder="Nombre de la cerveza" required />
       </div>
+
+      <div class="mb-2 row">
+        <div class="col">
+          <label for="tipo">Tipo</label>
+          <input id="tipo" class="form-control" th:field="*{tipoCerveza}" placeholder="Tipo (Ej: Lager, Ale, Otro)" />
+        </div>
+        <div class="col">
+          <label for="grado">Grado Alcoholico</label>
+          <input id="grado" type="number" step="0.1" class="form-control" th:field="*{gradoAlcoholico}" placeholder="4.5" />
+        </div>
+      </div>
+
+      <div class="mb-2 row">
+        <div class="col">
+          <label for="ibu">Amargor (IBU)</label>
+          <input id="ibu" type="number" class="form-control" th:field="*{amargorIbu}" placeholder="10" />
+        </div>
+        <div class="col">
+          <label for="precio">Precio por Litro</label>
+          <input id="precio" type="number" step="0.01" class="form-control" th:field="*{precioPorLitro}" placeholder="0.00" />
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" class="form-control" th:field="*{descripcion}" rows="2" placeholder="Descripción breve"></textarea>
+      </div>
+
+      <div class="mb-2">
+        <label for="estado">Estado</label>
+        <select id="estado" class="form-select" th:field="*{estado}">
+          <option th:value="'Disponible'">Disponible</option>
+          <option th:value="'Agotado'">Agotado</option>
+          <option th:value="'Pendiente'">Pendiente</option>
+        </select>
+      </div>
+
       <div class="d-flex gap-2">
         <button class="btn btn-primary" type="submit">Guardar</button>
-        <button type="button" class="btn btn-secondary" onclick="htmx.ajax('GET','/cervezas/list','#cervezas-list')">Cancelar</button>
+        <button type="button" class="btn btn-secondary" hx-get="/cervezas/list" hx-target="#cervezas-list" hx-swap="innerHTML">Cancelar</button>
       </div>
     </form>
   </div>
-</html>
+  
