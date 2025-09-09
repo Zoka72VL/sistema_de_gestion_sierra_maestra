@@ -34,7 +34,7 @@ import lombok.Setter;
 import lombok.ToString;
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 @Entity
 @Table(name = "lote")
