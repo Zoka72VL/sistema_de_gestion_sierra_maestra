@@ -1,6 +1,6 @@
   <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
     <div th:if="${#lists.isEmpty(items)}">No hay pedidos.</div>
-    <div th:each="p : ${items}" class="card mb-2 p-2">
+  <div th:each="p : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/pedidos/view/{id}(id=${p.id})}, data-view-target='#pedido-form'">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${p.id}">ID</strong>

@@ -1,13 +1,15 @@
   <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
     <div th:if="${#lists.isEmpty(items)}">No hay cervezas.</div>
-  <div th:each="c : ${items}" class="card mb-2 p-2">
+  <div th:each="c : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/cervezas/view/{id}(id=${c.id})}, data-view-target='#cerveza-form'" style="cursor:pointer" role="button" tabindex="0">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${c.id}">ID</strong>
-      <div class="muted" th:text="${c.nombreCerveza}">Nombre</div>
+          <div class="muted" th:text="${c.nombreCerveza}">Nombre</div>
         </div>
         <div>
-          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/cervezas/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
+          <span class="muted me-3" th:text="${c.tipoCerveza}">Tipo</span>
+          <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/cervezas/view/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
+          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/cervezas/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
           <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteCerveza/{id}(id=${c.id})}" hx-confirm="Eliminar?"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
@@ -64,5 +66,23 @@
         <button type="button" class="btn btn-secondary" hx-get="/cervezas/list" hx-target="#cervezas-list" hx-swap="innerHTML">Cancelar</button>
       </div>
     </form>
+  </div>
+  
+  <div th:fragment="view">
+    <div class="card p-3">
+      <h6>Detalles de la Cerveza</h6>
+      <div><strong>Nombre:</strong> <span th:text="${cerveza.nombreCerveza}">-</span></div>
+      <div><strong>Tipo:</strong> <span th:text="${cerveza.tipoCerveza}">-</span></div>
+      <div><strong>Grado Alcoholico:</strong> <span th:text="${cerveza.gradoAlcoholico}">-</span></div>
+      <div><strong>IBU:</strong> <span th:text="${cerveza.amargorIbu}">-</span></div>
+      <div><strong>Precio/Litro:</strong> <span th:text="${cerveza.precioPorLitro}">-</span></div>
+      <div><strong>Estado:</strong> <span th:text="${cerveza.estado}">-</span></div>
+      <div class="mt-2"><strong>Descripción:</strong>
+        <p th:text="${cerveza.descripcion}">-</p>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-sm btn-secondary" hx-get="/cervezas/list" hx-target="#cervezas-list" hx-swap="innerHTML">Cerrar</button>
+      </div>
+    </div>
   </div>
   

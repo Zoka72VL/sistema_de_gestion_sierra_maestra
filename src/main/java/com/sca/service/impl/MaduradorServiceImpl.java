@@ -130,7 +130,8 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos del Madurador");
-			respuesta.setData(maduradorRepository.findById(id));
+			// Return the entity or null so Thymeleaf expressions like ${madurador.id} work
+			respuesta.setData(maduradorRepository.findById(id).orElse(null));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");

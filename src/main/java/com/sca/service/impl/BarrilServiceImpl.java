@@ -104,7 +104,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos de la Categoria");
-			respuesta.setData(barrilRepository.findById(id));
+			respuesta.setData(barrilRepository.findById(id).orElse(null));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");

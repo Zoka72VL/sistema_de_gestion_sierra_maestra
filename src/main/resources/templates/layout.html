@@ -238,7 +238,7 @@
     } catch (err) { console.error('flatpickr init failed', err); }
   </script>
   <script>
-    // Attach flatpickr to dynamic content inserted by HTMX
+  // Attach flatpickr to dynamic content inserted by HTMX
     try {
       document.addEventListener('htmx:afterSwap', function(evt){
         try {
@@ -267,6 +267,54 @@
       });
       mo.observe(document.body, { childList: true, subtree: true });
     } catch(err) { console.error('flatpickr dynamic attach failed', err); }
+  </script>
+  <script>
+    // Delegated click handler: make cards with data-view-url clickable and load via HTMX or fetch
+    (function(){
+      function handleCardClick(e){
+        try{
+          var card = e.target.closest && e.target.closest('[data-view-url]');
+          if (!card) return;
+          // ignore clicks on interactive controls inside the card
+          if (e.target.closest) {
+            var ctl = e.target.closest('button, input, select, textarea');
+            if (ctl) return;
+            var anc = e.target.closest('a');
+            if (anc) {
+              // allow anchors without href or hx-* attributes (used as stretched-link)
+              if (anc.hasAttribute('href') || anc.hasAttribute('hx-get') || anc.hasAttribute('hx-post')) return;
+            }
+          }
+          var url = card.getAttribute('data-view-url');
+          var targetSel = card.getAttribute('data-view-target');
+          console.debug('[card-click] card=', card, 'url=', url, 'targetSel=', targetSel, 'event target=', e.target);
+          if (!url || !targetSel) return;
+          var target = document.querySelector(targetSel);
+          if (!target) { console.debug('[card-click] target not found for', targetSel); return; }
+          e.preventDefault();
+          if (window.htmx && typeof htmx !== 'undefined') {
+            try {
+              // prefer passing selector to htmx so it can find the target itself
+              htmx.ajax('GET', url, {target: targetSel});
+              console.debug('[card-click] htmx.ajax invoked', url, targetSel);
+              return;
+            } catch(err) {
+              console.debug('[card-click] htmx.ajax failed', err);
+              // fallthrough to fetch
+            }
+          }
+          // fetch fallback
+          fetch(url, { credentials: 'same-origin' })
+            .then(function(r){
+              console.debug('[card-click] fetch response', r.status, url);
+              return r.text();
+            })
+            .then(function(html){ target.innerHTML = html; console.debug('[card-click] swapped html into', targetSel); })
+            .catch(function(err){ console.debug('[card-click] fetch failed', err); });
+        }catch(err){ console.debug('[card-click] handler error', err); }
+      }
+      document.addEventListener('click', handleCardClick, true);
+    })();
   </script>
 </body>
 </html>

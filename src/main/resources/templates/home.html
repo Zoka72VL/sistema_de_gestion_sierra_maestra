@@ -1,13 +1,23 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
   <section th:fragment="content">
-    <div class="card p-3 mb-3">
-      <h2 class="m-0">Bienvenido</h2>
-      <p class="muted">Seleccione una sección para empezar. (Las acciones usan HTMX para cargar listas y formularios sin recargar la página.)</p>
+    <div class="row g-4 mb-3">
+      <div class="col-12 col-lg-8">
+        <div class="card p-3 h-100">
+          <h2 class="m-0">Bienvenido</h2>
+          <p class="muted">Seleccione una sección para empezar.</p>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4 d-flex align-items-start">
+        <div class="card p-3 w-100 h-100">
+          <h6 class="mb-2">Estado del sistema</h6>
+          <p class="small text-muted mb-0">Última actualización: <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">–</span></p>
+        </div>
+      </div>
     </div>
 
-    <div class="row g-4">
-      <div class="col-12 col-lg-8">
+  <div class="row g-4 align-items-stretch">
+  <div class="col-12 col-lg-8">
         <!-- Grouped submenus: uses Bootstrap cards with list-group for clear separation -->
         <div class="row g-3">
           <div class="col-12">
@@ -56,9 +66,9 @@
         </div>
       </div>
 
-      <div class="col-12 col-lg-4">
+      <div class="col-12 col-lg-4 d-flex flex-column">
         <!-- Quick actions / shortcuts -->
-        <div class="row g-3">
+        <div class="row g-3 flex-grow-1 d-flex flex-column">
           <div class="col-12">
             <div class="card bg-light p-3">
               <h6 class="mb-2">Accesos rápidos</h6>
@@ -71,8 +81,8 @@
             </div>
           </div>
 
-          <div class="col-12">
-            <div class="card">
+          <div class="col-12 flex-grow-1">
+            <div class="card h-100">
               <div class="card-body d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Administración</h6>
                 <small class="text-muted">Configuración</small>
@@ -88,12 +98,7 @@
             </div>
           </div>
 
-          <div class="col-12">
-            <div class="card p-3">
-              <h6 class="mb-2">Estado del sistema</h6>
-              <p class="small text-muted mb-0">Última actualización: <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">–</span></p>
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>

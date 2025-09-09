@@ -103,7 +103,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos del Pedido");
-			respuesta.setData(pedidoRepository.findById(id));
+			respuesta.setData(pedidoRepository.findById(id).orElse(null));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");
