@@ -16,8 +16,12 @@ public class ExpresionesRegularesValidador implements ConstraintValidator<Valida
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
+		// If value is null or empty, let @NotBlank/@NotNull handle presence; only validate non-empty values
+		if (value == null || value.trim().isEmpty()) {
+			return true;
+		}
 		// Realiza tus validaciones aquí
-		if (value == null || !value.matches(regex)) {
+		if (!value.matches(regex)) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(customMessage).addConstraintViolation();
 			return false;
