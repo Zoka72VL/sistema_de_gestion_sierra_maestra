@@ -68,6 +68,7 @@ public class AsociadosServiceImpl extends ResponseEntityExceptionHandler impleme
 		System.out.println(id);
 		try {
 			Asociados asociados = asociadosRepository.findById(id).get();
+			asociados.getCategorias().size();
 			asociadosRepository.deleteById(id);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
