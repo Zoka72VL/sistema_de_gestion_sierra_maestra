@@ -4,6 +4,7 @@ import com.sca.service.InventarioService;
 
 import io.swagger.annotations.Api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "Inventario")
 public class InventarioController {
 
-    
+    @Autowired
     InventarioService inventarioService;
 
     @PostMapping(

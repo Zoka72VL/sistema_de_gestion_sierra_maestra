@@ -3,6 +3,7 @@ package com.sca.service.impl;
 import com.sca.service.InventarioService;
 import com.sca.service.LoteService;
 import com.sca.service.MaduradorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sca.model.Respuesta;
 import com.sca.service.AccesorioService;
 import com.sca.service.BarrilService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +38,18 @@ public class InventarioServiceImpl extends ResponseEntityExceptionHandler implem
     
     private String byteToString(byte[] data){
         return new String(data, StandardCharsets.UTF_8);
-    } 
+    }
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> toMapList(Object rawData) {
+    List<Map<String, Object>> result = new ArrayList<>();
+    for (Object item : (List<?>) rawData) {
+        result.add(objectMapper.convertValue(item, Map.class));
+    }
+    return result;
+}
 
     @Override
     public byte[] invetarioCsv() {
@@ -44,31 +57,26 @@ public class InventarioServiceImpl extends ResponseEntityExceptionHandler implem
         String csv = "";
         
         Respuesta loteResp = lotesService.findAll();
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> loteData = (List<Map<String, Object>>) loteResp.getData();
+        List<Map<String, Object>> loteData = toMapList(loteResp.getData());
         byte[] loteCsv = csvService.generateCsv(loteData);
 
         Respuesta barrilResp = barrilService.findAll();
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> barrilData = (List<Map<String, Object>>) barrilResp.getData();
+        List<Map<String, Object>> barrilData = toMapList(barrilResp.getData());
         byte[] barrilCsv = csvService.generateCsv(barrilData);
 
         Respuesta cervezaResp = cervezaService.findAll();
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> cervezaData = (List<Map<String, Object>>) cervezaResp.getData();
+        List<Map<String, Object>> cervezaData = toMapList(cervezaResp.getData());
         byte[] cervezaCsv = csvService.generateCsv(cervezaData);
 
         Respuesta accesorioResp = accesorioService.findAll();
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> accesorioData = (List<Map<String, Object>>) accesorioResp.getData();
+        List<Map<String, Object>> accesorioData = toMapList(accesorioResp.getData());
         byte[] accesorioCsv = csvService.generateCsv(accesorioData);
 
         Respuesta maduradorResp = maduradorService.findAll();
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> maduradorData = (List<Map<String, Object>>) maduradorResp.getData();
+        List<Map<String, Object>> maduradorData = toMapList(maduradorResp.getData());
         byte[] maduradorCsv = csvService.generateCsv(maduradorData);
 
-        csv += byteToString(loteCsv)+"\n"+byteToString(barrilCsv)+"\n"+byteToString(cervezaCsv)+"\n"+byteToString(accesorioCsv)+"\n"+byteToString(maduradorCsv);
+        csv += "LOTE"+"\n"+byteToString(loteCsv)+"\n"+"BARRIL"+"\n"+byteToString(barrilCsv)+"\n"+"CERVEZA"+"\n"+byteToString(cervezaCsv)+"\n"+"ACCESORIO"+"\n"+byteToString(accesorioCsv)+"\n"+"MADURADOR"+"\n"+byteToString(maduradorCsv);
 
         return csv.getBytes(StandardCharsets.UTF_8);
     }
