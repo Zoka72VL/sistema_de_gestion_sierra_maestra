@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
-
+import javax.validation.constraints.Email;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -73,7 +73,9 @@ public class Asociados {
 	@Column(name="documento")
 	private String documento;
 
-	@Column(name="email")
+	@Email(message = "El correo tiene formato inválido")
+    @NotBlank(message = "El correo es obligatorio")
+    @Column(name = "email")
 	private String email;
 	
 	@Column(name="rol")
