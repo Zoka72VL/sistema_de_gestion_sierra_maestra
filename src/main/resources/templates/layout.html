@@ -137,26 +137,64 @@
     } catch(e) { console.error('htmx debug install failed', e); }
   </script>
   <script>
-    // When the cervezas list region changes, clear the cerveza form area.
-    // This works both with real htmx and the local fallback that directly
-    // swaps innerHTML, so Cancel and successful saves will remove the form.
+    // Clear matching form when a list is swapped/updated. Works for multiple
+    // resource types and covers both htmx swaps and the local fetch fallback.
     (function(){
       try {
-        var listEl = document.querySelector('#cervezas-list');
-        var formEl = document.querySelector('#cerveza-form');
-        if (!listEl) return; // nothing to observe on pages without the list
+        var resources = ['cervezas','pedidos','lotes','barriles','clientes'];
 
-        var observer = new MutationObserver(function(mutations){
-          // any change in the list -> clear the form area if present
-          try {
-            if (!formEl) formEl = document.querySelector('#cerveza-form');
-            if (formEl) formEl.innerHTML = '';
-          } catch (err) { /* ignore */ }
+        resources.forEach(function(r){
+          var listEl = document.querySelector('#' + r + '-list');
+          if (!listEl) return;
+          var observer = new MutationObserver(function(mutations){
+            try {
+              var formId = (r === 'cervezas') ? 'cerveza-form' : r.slice(0, -1) + '-form';
+              var formEl = document.querySelector('#' + formId);
+              if (formEl) formEl.innerHTML = '';
+            } catch (err) { /* ignore */ }
+          });
+          observer.observe(listEl, { childList: true, subtree: false });
         });
-
-        observer.observe(listEl, { childList: true, subtree: false });
-      } catch (err) { console.error('cervezas list observer failed', err); }
+      } catch (err) { console.error('list observers failed', err); }
     })();
+
+    // Centralized handling for delete endpoints: when a delete request completes
+    // successfully, fetch the matching list and swap it in.
+    try {
+      if (window.htmx) {
+        document.addEventListener('htmx:afterRequest', function(e){
+          try {
+            var d = e && e.detail ? e.detail : {};
+            var url = (d.xhr && d.xhr.responseURL) ? d.xhr.responseURL : '';
+            if (!url || !(d.xhr && d.xhr.status === 200)) return;
+
+            var deleteMap = {
+              '/deleteCerveza': 'cervezas',
+              '/deletePedido': 'pedidos',
+              '/deleteLote': 'lotes',
+              '/deleteBarril': 'barriles',
+              '/deleteCliente': 'clientes'
+            };
+
+            Object.keys(deleteMap).forEach(function(prefix){
+              if (url.indexOf(prefix) !== -1) {
+                var resource = deleteMap[prefix];
+                var target = document.querySelector('#' + resource + '-list');
+                if (target) {
+                  try { htmx.ajax('GET', '/' + resource + '/list', {target: target}); } catch(err){
+                    // fallback to direct fetch when htmx.ajax signature differs
+                    fetch('/' + resource + '/list', { credentials: 'same-origin' })
+                      .then(function(r){ return r.text(); })
+                      .then(function(html){ target.innerHTML = html; })
+                      .catch(function(){ /* swallow */ });
+                  }
+                }
+              }
+            });
+          } catch(err) { /* ignore */ }
+        }, false);
+      }
+    } catch(err) { console.error('delete handler install failed', err); }
   </script>
 </body>
 </html>

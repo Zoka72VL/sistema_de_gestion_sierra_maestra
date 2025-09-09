@@ -8,7 +8,7 @@
         </div>
         <div>
           <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/barriles/{id}(id=${b.id})}" hx-target="#barril-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteBarril/{id}(id=${b.id})}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/barriles/list', document.querySelector('#barriles-list'))"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteBarril/{id}(id=${b.id})}" hx-confirm="Eliminar?"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>
