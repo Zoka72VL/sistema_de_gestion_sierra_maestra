@@ -6,7 +6,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${s.id}">ID</strong>
-          <div class="muted" th:text="${s.monto}">Monto</div>
+          <div class="muted" th:text="${s.sueldo_basico}">Monto</div>
         </div>
         <div>
           <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/sueldos-basicos/view/{id}(id=${s.id})}" hx-target="#sueldos-basicos-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
@@ -21,8 +21,20 @@
     <form th:action="@{/sueldos-basicos/save}" th:object="${sueldo}" hx-post="/sueldos-basicos/save" hx-target="#sueldos-basicos-list" hx-swap="innerHTML">
       <input type="hidden" th:field="*{id}" />
       <div class="mb-2">
-        <label>Monto</label>
-        <input class="form-control" th:field="*{monto}" />
+  <label>Monto</label>
+  <input class="form-control" th:field="*{sueldo_basico}" />
+      </div>
+      <div class="mb-2">
+        <label>Categoría</label>
+        <select class="form-select" th:field="*{categoria}" name="categoria.id">
+          <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"></option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Porcentaje Mes</label>
+        <select class="form-select" th:field="*{porcentajeMes}" name="porcentajeMes.id">
+          <option th:each="p : ${porcentajes}" th:value="${p.id}" th:text="${p.porcentaje_aumento} + ' - ' + ${p.mes.nombre} + ' ' + ${p.ano}"></option>
+        </select>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-primary" type="submit">Guardar</button>
@@ -35,7 +47,7 @@
     <div class="card p-3">
       <h6>Detalle Sueldo Básico</h6>
       <div><strong>Id:</strong> <span th:text="${sueldo.id}">-</span></div>
-      <div><strong>Monto:</strong> <span th:text="${sueldo.monto}">-</span></div>
+  <div><strong>Monto:</strong> <span th:text="${sueldo.sueldo_basico}">-</span></div>
       <div class="d-flex justify-content-end mt-2">
         <button class="btn btn-sm btn-secondary" hx-get="/sueldos-basicos/list" hx-target="#sueldos-basicos-list" hx-swap="innerHTML">Cerrar</button>
       </div>
