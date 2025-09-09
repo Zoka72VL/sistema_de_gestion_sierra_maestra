@@ -135,7 +135,7 @@
     // resource types and covers both htmx swaps and the local fetch fallback.
     (function(){
       try {
-  var resources = ['cervezas','pedidos','lotes','barriles','clientes','maduradores','accesorios'];
+  var resources = ['cervezas','pedidos','lotes','barriles','clientes','maduradores','accesorios','categorias','asociados','meses','porcentajes-mes','sueldos-basicos','asistencias','asistencias-total'];
 
   // explicit mapping to correctly derive the associated form id for each list
         var formMap = {
@@ -145,7 +145,14 @@
           'barriles': 'barril-form',
           'clientes': 'cliente-form',
           'maduradores': 'madurador-form',
-          'accesorios': 'accesorio-form'
+          'accesorios': 'accesorio-form',
+          'categorias': 'categoria-form',
+          'asociados': 'asociado-form',
+          'meses': 'meses-form',
+          'porcentajes-mes': 'porcentajes-mes-form',
+          'sueldos-basicos': 'sueldos-basicos-form',
+          'asistencias': 'asistencia-form',
+          'asistencias-total': 'asistencias-total-form'
         };
 
         resources.forEach(function(r){
@@ -178,7 +185,14 @@
               '/deletePedido': 'pedidos',
               '/deleteLote': 'lotes',
               '/deleteBarril': 'barriles',
-              '/deleteCliente': 'clientes'
+              '/deleteCliente': 'clientes',
+              '/deleteCategoria': 'categorias',
+              '/deleteAsociados': 'asociados',
+              '/deleteMes': 'meses',
+              '/deletePorcentaje': 'porcentajes-mes',
+              '/deleteSueldo': 'sueldos-basicos',
+              '/deleteAsistencia': 'asistencias',
+              '/deleteAsistenciaTotal': 'asistencias-total'
             };
 
             Object.keys(deleteMap).forEach(function(prefix){

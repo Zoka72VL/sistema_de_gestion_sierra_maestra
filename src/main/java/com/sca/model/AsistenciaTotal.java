@@ -47,6 +47,9 @@ public class AsistenciaTotal {
 	@Column(name="TiempoSegundaQuincena")
     private String tiempo_hora_segunda_quincena;
 
+	@Column(name="descripcion")
+	private String descripcion;
+	
     public AsistenciaTotal() {
     }
 
