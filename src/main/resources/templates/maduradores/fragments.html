@@ -6,6 +6,10 @@
           <strong th:text="${m.id}">ID</strong>
           <div class="muted" th:text="${m.notas}">Notas</div>
         </div>
+        <div>
+          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/maduradores/{id}(id=${m.id})}" hx-target="#madurador-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteMadurador/{id}(id=${m.id})}" hx-confirm="Eliminar?"><i class="bi bi-trash-fill"></i></button>
+        </div>
       </div>
     </div>
   </div>
