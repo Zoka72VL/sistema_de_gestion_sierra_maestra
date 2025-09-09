@@ -52,6 +52,12 @@ public class MvcViewController {
     com.sca.service.impl.MaduradorServiceImpl maduradorService;
 
     @Autowired
+    com.sca.service.impl.AsistenciaServiceImpl asistenciaService;
+
+    @Autowired
+    com.sca.service.impl.AsistenciaTotalServiceImp asistenciaTotalService;
+
+    @Autowired
     com.sca.service.impl.AccesorioServiceImpl accesorioService;
     
     @Autowired
@@ -514,6 +520,74 @@ public class MvcViewController {
         } catch (Exception e) { }
         model.addAttribute("items", asociadosService.findAll().getData());
         return "asociados/fragments :: lista";
+    }
+
+    @GetMapping("/asistencias/list")
+    public String asistenciasList(Model model) {
+        model.addAttribute("items", asistenciaService.findAll().getData());
+        return "asistencias/fragments :: lista";
+    }
+
+    @GetMapping("/asistencias/form")
+    public String asistenciaForm(Model model) {
+        model.addAttribute("asistencia", new com.sca.model.Asistencia());
+        return "asistencias/fragments :: form";
+    }
+
+    @GetMapping("/asistencias/{id}")
+    public String asistenciaById(@PathVariable Long id, Model model) {
+        model.addAttribute("asistencia", unwrap(asistenciaService.finById(id).getData()));
+        return "asistencias/fragments :: form";
+    }
+
+    @GetMapping("/asistencias/view/{id}")
+    public String asistenciaViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("asistencia", unwrap(asistenciaService.finById(id).getData()));
+        return "asistencias/fragments :: view";
+    }
+
+    @PostMapping("/asistencias/save")
+    public String saveAsistencia(com.sca.model.Asistencia asistencia, Model model) {
+        try {
+            BindException be = new BindException(asistencia, "asistencia");
+            asistenciaService.save(asistencia, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", asistenciaService.findAll().getData());
+        return "asistencias/fragments :: lista";
+    }
+
+    @GetMapping("/asistencias-total/list")
+    public String asistenciasTotalList(Model model) {
+        model.addAttribute("items", asistenciaTotalService.findAll().getData());
+        return "asistencias-total/fragments :: lista";
+    }
+
+    @GetMapping("/asistencias-total/form")
+    public String asistenciaTotalForm(Model model) {
+        model.addAttribute("asistenciaTotal", new com.sca.model.AsistenciaTotal());
+        return "asistencias-total/fragments :: form";
+    }
+
+    @GetMapping("/asistencias-total/{id}")
+    public String asistenciaTotalById(@PathVariable Long id, Model model) {
+        model.addAttribute("asistenciaTotal", unwrap(asistenciaTotalService.finById(id).getData()));
+        return "asistencias-total/fragments :: form";
+    }
+
+    @GetMapping("/asistencias-total/view/{id}")
+    public String asistenciaTotalViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("asistenciaTotal", unwrap(asistenciaTotalService.finById(id).getData()));
+        return "asistencias-total/fragments :: view";
+    }
+
+    @PostMapping("/asistencias-total/save")
+    public String saveAsistenciaTotal(com.sca.model.AsistenciaTotal asistenciaTotal, Model model) {
+        try {
+            BindException be = new BindException(asistenciaTotal, "asistenciaTotal");
+            asistenciaTotalService.save(asistenciaTotal, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", asistenciaTotalService.findAll().getData());
+        return "asistencias-total/fragments :: lista";
     }
 
     @GetMapping("/asistencias")
