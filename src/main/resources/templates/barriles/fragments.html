@@ -17,9 +17,24 @@
   <div th:fragment="form">
     <form th:action="@{/barriles/save}" th:object="${barril}" hx-post="/barriles/save" hx-target="#barriles-list" hx-swap="innerHTML">
       <input type="hidden" th:field="*{id}" />
+      <div class="mb-2 row">
+        <div class="col">
+          <label>Litros</label>
+          <input class="form-control" type="number" th:field="*{litros}" min="1" required />
+        </div>
+        <div class="col">
+          <label>Estado</label>
+          <select class="form-select" th:field="*{estado}">
+            <option th:value="'Disponible'">Disponible</option>
+            <option th:value="'Agotado'">Agotado</option>
+            <option th:value="'Pendiente'">Pendiente</option>
+            <option th:value="'Mantenimiento'">Mantenimiento</option>
+          </select>
+        </div>
+      </div>
       <div class="mb-2">
-        <label>Descripción</label>
-        <input class="form-control" th:field="*{descripcion}" required />
+        <label>Notas</label>
+        <input class="form-control" th:field="*{notas}" />
       </div>
       <div class="mb-2">
         <label>Lote</label>
@@ -28,8 +43,8 @@
         </select>
       </div>
       <div class="d-flex gap-2">
-  <button class="btn btn-primary" type="submit">Guardar</button>
-  <button type="button" class="btn btn-secondary" hx-get="/barriles/list" hx-target="#barriles-list" hx-swap="innerHTML">Cancelar</button>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <button type="button" class="btn btn-secondary" hx-get="/barriles/list" hx-target="#barriles-list" hx-swap="innerHTML">Cancelar</button>
       </div>
     </form>
   </div>

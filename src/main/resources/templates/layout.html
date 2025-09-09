@@ -141,14 +141,25 @@
     // resource types and covers both htmx swaps and the local fetch fallback.
     (function(){
       try {
-        var resources = ['cervezas','pedidos','lotes','barriles','clientes'];
+  var resources = ['cervezas','pedidos','lotes','barriles','clientes','maduradores','accesorios'];
+
+        // explicit mapping to correctly derive the associated form id for each list
+        var formMap = {
+          'cervezas': 'cerveza-form',
+          'pedidos': 'pedido-form',
+          'lotes': 'lote-form',
+          'barriles': 'barril-form',
+          'clientes': 'cliente-form',
+          'maduradores': 'madurador-form',
+          'accesorios': 'accesorio-form'
+        };
 
         resources.forEach(function(r){
           var listEl = document.querySelector('#' + r + '-list');
           if (!listEl) return;
           var observer = new MutationObserver(function(mutations){
             try {
-              var formId = (r === 'cervezas') ? 'cerveza-form' : r.slice(0, -1) + '-form';
+              var formId = formMap[r];
               var formEl = document.querySelector('#' + formId);
               if (formEl) formEl.innerHTML = '';
             } catch (err) { /* ignore */ }

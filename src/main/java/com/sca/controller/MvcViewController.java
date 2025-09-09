@@ -34,6 +34,12 @@ public class MvcViewController {
 
     @Autowired
     com.sca.service.impl.AsociadosServiceImpl asociadosService;
+    
+    @Autowired
+    com.sca.service.impl.MaduradorServiceImpl maduradorService;
+
+    @Autowired
+    com.sca.service.impl.AccesorioServiceImpl accesorioService;
 
     @GetMapping({"/","/home"})
     public String home(Model model) {
@@ -261,6 +267,36 @@ public class MvcViewController {
         model.addAttribute("title", "Accesorios");
         return "accesorios/index";
     }
+    
+    @GetMapping("/accesorios/list")
+    public String accesoriosList(Model model) {
+        model.addAttribute("items", accesorioService.findAll().getData());
+        return "accesorios/fragments :: lista";
+    }
+
+    @GetMapping("/accesorios/form")
+    public String accesorioForm(Model model) {
+        model.addAttribute("accesorio", new com.sca.model.Accesorio());
+        return "accesorios/fragments :: form";
+    }
+
+    @GetMapping("/accesorios/{id}")
+    public String accesorioById(@PathVariable Long id, Model model) {
+        model.addAttribute("accesorio", accesorioService.finById(id).getData());
+        return "accesorios/fragments :: form";
+    }
+
+    @PostMapping("/accesorios/save")
+    public String saveAccesorio(com.sca.model.Accesorio accesorio, Model model) {
+        try {
+            BindException be = new BindException(accesorio, "accesorio");
+            accesorioService.save(accesorio, be);
+        } catch (Exception e) {
+            // ignore
+        }
+        model.addAttribute("items", accesorioService.findAll().getData());
+        return "accesorios/fragments :: lista";
+    }
 
     @GetMapping("/asociados")
     public String asociadosIndex(Model model) {
@@ -302,6 +338,38 @@ public class MvcViewController {
     public String maduradoresIndex(Model model) {
         model.addAttribute("title", "Maduradores");
         return "maduradores/index";
+    }
+    
+    @GetMapping("/maduradores/list")
+    public String maduradoresList(Model model) {
+        model.addAttribute("items", maduradorService.findAll().getData());
+        return "maduradores/fragments :: lista";
+    }
+
+    @GetMapping("/maduradores/form")
+    public String maduradorForm(Model model) {
+        model.addAttribute("madurador", new com.sca.model.Madurador());
+        model.addAttribute("lotes", loteService.findAll().getData());
+        return "maduradores/fragments :: form";
+    }
+
+    @GetMapping("/maduradores/{id}")
+    public String maduradorById(@PathVariable Long id, Model model) {
+        model.addAttribute("madurador", maduradorService.finById(id).getData());
+        model.addAttribute("lotes", loteService.findAll().getData());
+        return "maduradores/fragments :: form";
+    }
+
+    @PostMapping("/maduradores/save")
+    public String saveMadurador(com.sca.model.Madurador madurador, Model model) {
+        try {
+            BindException be = new BindException(madurador, "madurador");
+            maduradorService.save(madurador, be);
+        } catch (Exception e) {
+            // ignore
+        }
+        model.addAttribute("items", maduradorService.findAll().getData());
+        return "maduradores/fragments :: lista";
     }
 
     @GetMapping("/meses")
