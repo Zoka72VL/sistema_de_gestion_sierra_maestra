@@ -103,7 +103,8 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos del Cliente");
-			respuesta.setData(clienteRepository.findById(id));
+			// return the actual Cliente instance (or null) instead of Optional
+			respuesta.setData(clienteRepository.findById(id).orElse(null));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");

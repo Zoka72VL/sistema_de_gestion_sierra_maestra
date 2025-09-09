@@ -79,6 +79,12 @@ public class MvcViewController {
         return "pedidos/fragments :: form";
     }
 
+    @GetMapping("/pedidos/view/{id}")
+    public String pedidoViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("pedido", pedidoService.finById(id).getData());
+        return "pedidos/fragments :: view";
+    }
+
     @PostMapping("/pedidos/save")
     public String savePedido(Pedido pedido, Model model) {
         try {
@@ -116,6 +122,12 @@ public class MvcViewController {
         model.addAttribute("lote", loteService.finById(id).getData());
     model.addAttribute("cervezas", cervezaService.findAll().getData());
         return "lotes/fragments :: form";
+    }
+
+    @GetMapping("/lotes/view/{id}")
+    public String loteViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("lote", loteService.finById(id).getData());
+        return "lotes/fragments :: view";
     }
 
     @PostMapping("/lotes/save")
@@ -205,6 +217,12 @@ public class MvcViewController {
         return "clientes/fragments :: form";
     }
 
+    @GetMapping("/clientes/view/{id}")
+    public String clienteViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("cliente", clienteService.finById(id).getData());
+        return "clientes/fragments :: view";
+    }
+
     @PostMapping("/clientes/save")
     public String saveCliente(com.sca.model.Cliente cliente, Model model) {
         try {
@@ -249,6 +267,12 @@ public class MvcViewController {
     public String cervezaById(@PathVariable Long id, Model model) {
         model.addAttribute("cerveza", cervezaService.finById(id).getData());
         return "cervezas/fragments :: form";
+    }
+
+    @GetMapping("/cervezas/view/{id}")
+    public String cervezaViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("cerveza", cervezaService.finById(id).getData());
+        return "cervezas/fragments :: view";
     }
 
     @PostMapping("/cervezas/save")
@@ -309,6 +333,12 @@ public class MvcViewController {
         model.addAttribute("barril", barrilService.finById(id).getData());
         model.addAttribute("lotes", loteService.findAll().getData());
         return "barriles/fragments :: form";
+    }
+
+    @GetMapping("/barriles/view/{id}")
+    public String barrilViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("barril", barrilService.finById(id).getData());
+        return "barriles/fragments :: view";
     }
 
     @PostMapping("/barriles/save")
@@ -419,6 +449,12 @@ public class MvcViewController {
         model.addAttribute("madurador", maduradorService.finById(id).getData());
         model.addAttribute("lotes", loteService.findAll().getData());
         return "maduradores/fragments :: form";
+    }
+
+    @GetMapping("/maduradores/view/{id}")
+    public String maduradorViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("madurador", maduradorService.finById(id).getData());
+        return "maduradores/fragments :: view";
     }
 
     @PostMapping("/maduradores/save")
