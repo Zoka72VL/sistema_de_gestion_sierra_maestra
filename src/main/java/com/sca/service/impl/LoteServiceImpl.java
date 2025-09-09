@@ -33,6 +33,13 @@ Logger log = LoggerFactory.getLogger(String.class);
 	@ExceptionHandler(BindException.class)
 	@Override
 	public ResponseEntity<Object> save(Lote lote, BindingResult bindingResult) throws BindException {
+		// debug
+		try {
+			System.out.println("[DEBUG] LoteServiceImpl.save invoked with lote=" + lote + " bindingErrors=" + (bindingResult != null ? bindingResult.getErrorCount() : 0));
+			if (bindingResult != null && bindingResult.hasErrors()) {
+				bindingResult.getAllErrors().forEach(err -> System.out.println("[DEBUG] binding error: " + err.getDefaultMessage()));
+			}
+		} catch (Exception e) { System.out.println("[DEBUG] printing lote failed " + e.getMessage()); }
 		respuesta = new Respuesta();
 		try {
 			respuesta.setCodigo("200");

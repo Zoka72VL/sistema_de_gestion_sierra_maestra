@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.BindException;
+import javax.servlet.http.HttpServletRequest;
 
 import com.sca.model.Pedido;
 import com.sca.model.Lote;
@@ -118,15 +119,65 @@ public class MvcViewController {
     }
 
     @PostMapping("/lotes/save")
-    public String saveLote(Lote lote, Model model) {
+    public String saveLote(Lote lote, Model model, HttpServletRequest request) {
         try {
+            // If the form submitted a nested cerveza.id, load the managed Cerveza entity
+            if (lote != null && lote.getCerveza() != null && lote.getCerveza().getId() != null) {
+                try {
+                    Object c = cervezaService.finById(lote.getCerveza().getId()).getData();
+                    if (c instanceof com.sca.model.Cerveza) {
+                        lote.setCerveza((com.sca.model.Cerveza) c);
+                    } else {
+                        lote.setCerveza(null);
+                    }
+                } catch (Exception ex) {
+                    System.out.println("[DEBUG] failed to resolve cerveza id=" + lote.getCerveza().getId() + " : " + ex.getMessage());
+                    lote.setCerveza(null);
+                }
+            }
+            // Fallback: sometimes the binder doesn't instantiate nested bean; check request params
+            if (lote != null && (lote.getCerveza() == null || lote.getCerveza().getId() == null)) {
+                String cervezaIdStr = request.getParameter("cerveza.id");
+                if (cervezaIdStr == null) {
+                    cervezaIdStr = request.getParameter("cerveza");
+                }
+                if (cervezaIdStr != null && !cervezaIdStr.trim().isEmpty()) {
+                    try {
+                        Long cid = Long.parseLong(cervezaIdStr);
+                        Object c = cervezaService.finById(cid).getData();
+                        if (c instanceof com.sca.model.Cerveza) {
+                            lote.setCerveza((com.sca.model.Cerveza) c);
+                        } else {
+                            lote.setCerveza(new com.sca.model.Cerveza());
+                            lote.getCerveza().setId(cid);
+                        }
+                    } catch (Exception ex2) {
+                        System.out.println("[DEBUG] fallback failed to parse/resolve cerveza id='" + cervezaIdStr + "' : " + ex2.getMessage());
+                    }
+                }
+            }
+
             BindException be = new BindException(lote, "lote");
-            loteService.save(lote, be);
+            // capture response to log status/body for debugging
+            try {
+                org.springframework.http.ResponseEntity<Object> resp = loteService.save(lote, be);
+                System.out.println("[DEBUG] saveLote response status=" + resp.getStatusCode() + " body=" + resp.getBody());
+            } catch (Exception inner) {
+                System.out.println("[DEBUG] saveLote threw: " + inner.getMessage());
+            }
         } catch (Exception e) {
             // log si se desea
+            System.out.println("[DEBUG] outer saveLote exception: " + e.getMessage());
         }
         model.addAttribute("items", loteService.findAll().getData());
         return "lotes/fragments :: lista";
+    }
+
+    // Debug: return raw lotes as JSON (only in dev)
+    @GetMapping("/debug/lotes")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public Object debugLotes() {
+        return java.util.Collections.singletonMap("data", loteService.findAll().getData());
     }
 
     // Otros módulos - vistas index básicas
@@ -361,8 +412,31 @@ public class MvcViewController {
     }
 
     @PostMapping("/maduradores/save")
-    public String saveMadurador(com.sca.model.Madurador madurador, Model model) {
+    public String saveMadurador(com.sca.model.Madurador madurador, Model model, javax.servlet.http.HttpServletRequest request) {
         try {
+            // If binder didn't create nested lote, attempt to read lote.id from request and resolve entity
+            if (madurador != null && (madurador.getLote() == null || madurador.getLote().getId() == null)) {
+                String loteIdStr = request.getParameter("lote.id");
+                if (loteIdStr == null) {
+                    loteIdStr = request.getParameter("lote");
+                }
+                if (loteIdStr != null && !loteIdStr.trim().isEmpty()) {
+                    try {
+                        Long lid = Long.parseLong(loteIdStr);
+                        Object l = loteService.finById(lid).getData();
+                        if (l instanceof com.sca.model.Lote) {
+                            madurador.setLote((com.sca.model.Lote) l);
+                        } else {
+                            com.sca.model.Lote temp = new com.sca.model.Lote();
+                            temp.setId(lid);
+                            madurador.setLote(temp);
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("[DEBUG] failed to resolve lote id='" + loteIdStr + "' : " + ex.getMessage());
+                    }
+                }
+            }
+
             BindException be = new BindException(madurador, "madurador");
             maduradorService.save(madurador, be);
         } catch (Exception e) {

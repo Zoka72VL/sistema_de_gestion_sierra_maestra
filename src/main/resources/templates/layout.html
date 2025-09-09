@@ -6,6 +6,8 @@
   <title th:text="${title}">Sierra Maestra</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <!-- Flatpickr datepicker CSS (for Argentine DD/MM/YYYY calendar UI) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <script src="https://unpkg.com/htmx.org@1.9.2" onerror="this.onerror=null;var s=document.createElement('script');s.src='/js/htmx.local.js';document.head.appendChild(s);"></script>
   <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
@@ -113,15 +115,7 @@
                 try {
                   var content = (d.target && d.target.innerHTML) || '';
                   console.info('[htmx] afterSwap target=', d.target.id || d.target, 'status=', d.xhr && d.xhr.status, 'len=', content.length, 'preview=', content.substr(0,200));
-                  try {
-                    var el = d.target;
-                    if (el && el.style) {
-                      var prevBg = el.style.backgroundColor;
-                      el.style.transition = 'background-color 180ms ease-in-out';
-                      el.style.backgroundColor = '#e6ffe6';
-                      setTimeout(function(){ el.style.backgroundColor = prevBg || ''; }, 400);
-                    }
-                  } catch(err){ /* ignore visual flash errors */ }
+                  // visual flash removed (was noisy during rapid development)
                 } catch(e){ console.info('[htmx] afterSwap target=', d.target.id || d.target, 'status=', d.xhr && d.xhr.status); }
               } else if (ev === 'htmx:beforeRequest') {
                 console.info('[htmx] beforeRequest ->', d.path || d.verb || d.target || (d.xhr && d.xhr.responseURL) || d);
@@ -143,7 +137,7 @@
       try {
   var resources = ['cervezas','pedidos','lotes','barriles','clientes','maduradores','accesorios'];
 
-        // explicit mapping to correctly derive the associated form id for each list
+  // explicit mapping to correctly derive the associated form id for each list
         var formMap = {
           'cervezas': 'cerveza-form',
           'pedidos': 'pedido-form',
@@ -206,6 +200,73 @@
         }, false);
       }
     } catch(err) { console.error('delete handler install failed', err); }
+  </script>
+  <!-- Flatpickr datepicker includes and init (Argentine DD/MM/YYYY) -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+  <script>
+    try {
+      document.addEventListener('DOMContentLoaded', function(){
+        if (window.flatpickr) {
+          // initialize any existing inputs
+          try {
+            flatpickr('.date-arg', {
+              dateFormat: 'd/m/Y',
+              allowInput: true,
+              clickOpens: true,
+              locale: 'es'
+            });
+          } catch (e) { console.warn('flatpickr init partial failed', e); }
+          // helper to initialize elements inside a container (for HTMX swaps)
+          window.__initFlatpickrFor = function(container){
+            try {
+              if (!window.flatpickr) return;
+              var root = container || document;
+              var els = root.querySelectorAll && root.querySelectorAll('.date-arg') || [];
+              els.forEach(function(el){
+                // avoid double-init: flatpickr attaches _flatpickr property
+                if (!el._flatpickr) {
+                  flatpickr(el, { dateFormat: 'd/m/Y', allowInput: true, clickOpens: true, locale: 'es' });
+                }
+              });
+            } catch(err) { console.error('initFlatpickrFor failed', err); }
+          };
+          // init for existing document
+          window.__initFlatpickrFor(document);
+        }
+      });
+    } catch (err) { console.error('flatpickr init failed', err); }
+  </script>
+  <script>
+    // Attach flatpickr to dynamic content inserted by HTMX
+    try {
+      document.addEventListener('htmx:afterSwap', function(evt){
+        try {
+          var detail = evt && evt.detail;
+          var target = detail && detail.target;
+          if (window.__initFlatpickrFor && target) {
+            window.__initFlatpickrFor(target);
+          }
+        } catch(e) { /* ignore */ }
+      }, false);
+
+      // MutationObserver fallback: watch for added nodes with class 'date-arg'
+      var mo = new MutationObserver(function(muts){
+        muts.forEach(function(m){
+          m.addedNodes && Array.prototype.forEach.call(m.addedNodes, function(n){
+            try {
+              if (n.nodeType !== 1) return;
+              if (n.classList && n.classList.contains('date-arg')) {
+                if (window.__initFlatpickrFor) window.__initFlatpickrFor(n);
+              }
+              var inner = n.querySelectorAll && n.querySelectorAll('.date-arg') || [];
+              inner.forEach(function(el){ if (window.__initFlatpickrFor) window.__initFlatpickrFor(el); });
+            } catch(err) { /* swallow */ }
+          });
+        });
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    } catch(err) { console.error('flatpickr dynamic attach failed', err); }
   </script>
 </body>
 </html>

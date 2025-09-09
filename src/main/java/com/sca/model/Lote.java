@@ -41,7 +41,6 @@ public class Lote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull(message = "El ID no puede ser nulo")
     private Long id;
 
     // @Column(name = "cerveza", nullable = false)
@@ -68,19 +67,19 @@ public class Lote {
     @NotNull(message = "La fecha de carga es obligatoria")
     @Column(name = "fecha_carga", nullable = false)
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date fechaCarga;
 
     @NotNull(message = "La fecha de vencimiento es obligatoria")
     @Column(name = "fecha_vencimiento", nullable = false)
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date fechaVencimiento;
 
     @NotNull(message = "La fecha de carga en madurador es obligatoria")
     @Column(name = "fecha_carga_madurador", nullable = false)
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date fechaCargaMadurador;
     
     @OneToMany(mappedBy = "lote", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
