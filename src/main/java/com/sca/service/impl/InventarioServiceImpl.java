@@ -77,6 +77,7 @@ public class InventarioServiceImpl extends ResponseEntityExceptionHandler implem
         byte[] maduradorCsv = csvService.generateCsv(maduradorData);
 
         csv += "LOTE"+"\n"+byteToString(loteCsv)+"\n"+"BARRIL"+"\n"+byteToString(barrilCsv)+"\n"+"CERVEZA"+"\n"+byteToString(cervezaCsv)+"\n"+"ACCESORIO"+"\n"+byteToString(accesorioCsv)+"\n"+"MADURADOR"+"\n"+byteToString(maduradorCsv);
+        csv=csv.replace("id,cerveza,", "id,cerveza,,,,,,,,");
 
         return csv.getBytes(StandardCharsets.UTF_8);
     }
