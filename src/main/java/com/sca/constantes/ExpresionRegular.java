@@ -2,12 +2,15 @@ package com.sca.constantes;
 
 public class ExpresionRegular {
 
-	public static final String NOMBREAPELLIDO = "^[A-Z][a-z]*$"; // Solo permite que la primera sea mayuscula y las demás minusculas y no admite otro caracter o número
-	// public static final String DOCUMENTO = "(?:\\d{1,3}(?:\\.\\d{3})*(?:\\.\\d{1,3})?|\\d{1,9})$"; // Permite valores de miles separado con un punto cada o numeros con un maximo de 9 caracteres parael dni
-	public static final String DOCUMENTO = "^\\d{8}$";
+	// Nombres y apellidos: letras (incluye acentos), espacios, guiones y apóstrofes
+	public static final String NOMBREAPELLIDO = "^[A-Za-zÀ-ÖØ-öø-ÿ'\\-\\s]+$";
+	// Documento: permitir entre 7 y 10 dígitos (varios formatos de documento regionales)
+	public static final String DOCUMENTO = "^\\d{7,10}$";
 	public static final String FECHA = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$"; // Valida una fecha en formato dd/mm/aaaa
-	public static final String CUIT = "^\\d{2}-\\d{8}-\\d|\\d{1,9}$"; // Valida que el cuit este en formato xx-xxxxxxxx-x o sean numeros
-	public static final String TELEFONO = "^\\(\\d{3}\\) \\d{3}-\\d{4}$"; // Valida que el telefono se valide en formato (xxx) xxx-xxxx
+	// CUIT: aceptar formato 11 dígitos o formato con guiones XX-XXXXXXXX-X
+	public static final String CUIT = "^(\\d{2}-\\d{8}-\\d|\\d{11})$";
+	// Teléfono: formatos variados, aceptar dígitos, espacios, paréntesis, + y guiones (6-20 caracteres)
+	public static final String TELEFONO = "^[0-9\\s()+\\-]{6,20}$";
 	public static final String LEGAJO = "^\\d{3}$"; // Valida que el legajo tenga 3 digitos	
 	public static final String DIA_SEMANA_CAP = "^(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)$";
 	public static final String LOTE_ESTADO = "^(Produccion|Madurando|Terminado|Mantenimiento)$";

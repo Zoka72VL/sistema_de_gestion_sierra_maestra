@@ -208,10 +208,20 @@ public class MvcViewController {
     @PostMapping("/clientes/save")
     public String saveCliente(com.sca.model.Cliente cliente, Model model) {
         try {
+            // Debug: print incoming cliente fields to help diagnose binding/validation issues
+            try {
+                System.out.println("[DEBUG] saveCliente called with cliente=" + cliente);
+            } catch (Exception x) { /* ignore */ }
             BindException be = new BindException(cliente, "cliente");
-            clienteService.save(cliente, be);
+            // capture response to check service result
+            try {
+                org.springframework.http.ResponseEntity<Object> resp = clienteService.save(cliente, be);
+                System.out.println("[DEBUG] saveCliente response status=" + resp.getStatusCode() + " body=" + resp.getBody());
+            } catch (Exception inner) {
+                System.out.println("[DEBUG] clienteService.save threw: " + inner.getMessage());
+            }
         } catch (Exception e) {
-            // ignore for now
+            System.out.println("[DEBUG] saveCliente outer exception: " + e.getMessage());
         }
         model.addAttribute("items", clienteService.findAll().getData());
         return "clientes/fragments :: lista";
