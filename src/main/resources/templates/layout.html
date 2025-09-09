@@ -276,7 +276,15 @@
           var card = e.target.closest && e.target.closest('[data-view-url]');
           if (!card) return;
           // ignore clicks on interactive controls inside the card
-          if (e.target.closest && e.target.closest('button, a, input, select, textarea')) return;
+          if (e.target.closest) {
+            var ctl = e.target.closest('button, input, select, textarea');
+            if (ctl) return;
+            var anc = e.target.closest('a');
+            if (anc) {
+              // allow anchors without href or hx-* attributes (used as stretched-link)
+              if (anc.hasAttribute('href') || anc.hasAttribute('hx-get') || anc.hasAttribute('hx-post')) return;
+            }
+          }
           var url = card.getAttribute('data-view-url');
           var targetSel = card.getAttribute('data-view-target');
           console.debug('[card-click] card=', card, 'url=', url, 'targetSel=', targetSel, 'event target=', e.target);

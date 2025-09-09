@@ -103,7 +103,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos de la Cerveza");
-			respuesta.setData(cervezaRepository.findById(id));
+			respuesta.setData(cervezaRepository.findById(id).orElse(null));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");

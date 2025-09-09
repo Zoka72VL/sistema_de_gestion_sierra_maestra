@@ -110,7 +110,8 @@ Logger log = LoggerFactory.getLogger(String.class);
 			respuesta.setCodigo("200");
 			respuesta.setStatus("Ok");
 			respuesta.setDescripcion("Datos del Lote");
-			respuesta.setData(loteRepository.findById(id));
+			// Return the entity or null so templates can safely access properties like ${lote.id}
+			respuesta.setData(loteRepository.findById(id).orElse(null));
 		} catch (Exception e) {
 			respuesta.setCodigo("400");
 			respuesta.setStatus("Error");

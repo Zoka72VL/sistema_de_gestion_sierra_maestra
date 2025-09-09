@@ -1,13 +1,13 @@
   <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
     <div th:if="${#lists.isEmpty(items)}">No hay maduradores.</div>
-  <div th:each="m : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/maduradores/view/{id}(id=${m.id})}, data-view-target='#madurador-form'">
-      <a class="stretched-link" th:attr="hx-get=@{/maduradores/view/{id}(id=${m.id})}" hx-target="#madurador-form" hx-swap="innerHTML" aria-label="Ver madurador"></a>
+  <div th:each="m : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/maduradores/view/{id}(id=${m.id})}, data-view-target='#madurador-form'" style="cursor:pointer" role="button" tabindex="0">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${m.id}">ID</strong>
           <div class="muted" th:text="${m.notas}">Notas</div>
         </div>
         <div>
+          <span class="muted me-3" th:text="${m.estado}">Estado</span>
           <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/maduradores/view/{id}(id=${m.id})}" hx-target="#madurador-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
           <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/maduradores/{id}(id=${m.id})}" hx-target="#madurador-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
           <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteMadurador/{id}(id=${m.id})}" hx-confirm="Eliminar?"><i class="bi bi-trash-fill"></i></button>
