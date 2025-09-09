@@ -6,13 +6,13 @@
         <h2 class="m-0">Porcentajes Mes</h2>
         <div>
           <button class="btn btn-outline-primary me-2" hx-get="/porcentajes-mes/list" hx-target="#porcentajes-mes-list" hx-swap="innerHTML">Cargar</button>
-          <button class="btn btn-success" hx-get="/porcentajes-mes/form" hx-target="#porcentaje-mes-form" hx-swap="innerHTML">Nuevo</button>
+          <button class="btn btn-success" hx-get="/porcentajes-mes/form" hx-target="#porcentajes-mes-form" hx-swap="innerHTML">Nuevo</button>
         </div>
       </div>
     </div>
 
-    <div id="#porcentajes-mes-list"></div>
-    <div id="#porcentaje-mes-form" class="mt-3"></div>
-    <script>document.addEventListener('DOMContentLoaded', ()=>{ htmx.ajax('GET','/porcentajes-mes/list','#porcentajes-mes-list'); });</script>
+  <div id="porcentajes-mes-list"></div>
+  <div id="porcentajes-mes-form" class="mt-3"></div>
+  <script>document.addEventListener('DOMContentLoaded', ()=>{ htmx.ajax('GET','/porcentajes-mes/list','#porcentajes-mes-list'); });</script>
   </section>
 </html>

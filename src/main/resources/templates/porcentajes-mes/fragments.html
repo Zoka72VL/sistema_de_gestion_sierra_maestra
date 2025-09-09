@@ -1,12 +1,17 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <div th:fragment="lista">
+  <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
     <div th:if="${#lists.isEmpty(items)}">No hay porcentajes.</div>
-    <div th:each="p : ${items}" class="card mb-2 p-2">
+    <div th:each="p : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/porcentajes-mes/view/{id}(id=${p.id})}, data-view-target='#porcentajes-mes-form'" style="cursor:pointer" role="button" tabindex="0">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${p.id}">ID</strong>
-          <div class="muted" th:text="${p.valor}">Valor</div>
+          <div class="muted" th:text="${p.porcentaje_aumento}">Valor</div>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/porcentajes-mes/view/{id}(id=${p.id})}" hx-target="#porcentajes-mes-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
+          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/porcentajes-mes/{id}(id=${p.id})}" hx-target="#porcentajes-mes-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deletePorcentaje/{id}(id=${p.id})}" hx-confirm="Eliminar?" onclick="event.stopPropagation()"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>
@@ -16,13 +21,34 @@
     <form th:action="@{/porcentajes-mes/save}" th:object="${porcentaje}" hx-post="/porcentajes-mes/save" hx-target="#porcentajes-mes-list" hx-swap="innerHTML">
       <input type="hidden" th:field="*{id}" />
       <div class="mb-2">
-        <label>Valor</label>
-        <input class="form-control" th:field="*{valor}" />
+  <label>Valor</label>
+  <input class="form-control" th:field="*{porcentaje_aumento}" />
+      </div>
+      <div class="mb-2">
+        <label>Mes</label>
+        <select class="form-select" th:field="*{mes}" name="mes.id">
+          <option th:each="m : ${meses}" th:value="${m.id}" th:text="${m.nombre}"></option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label>Año</label>
+        <input class="form-control" th:field="*{ano}" type="number" />
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-primary" type="submit">Guardar</button>
-        <button type="button" class="btn btn-secondary" onclick="htmx.ajax('GET','/porcentajes-mes/list','#porcentajes-mes-list')">Cancelar</button>
+        <button type="button" class="btn btn-secondary" hx-get="/porcentajes-mes/list" hx-target="#porcentajes-mes-list" hx-swap="innerHTML">Cancelar</button>
       </div>
     </form>
+  </div>
+
+  <div th:fragment="view">
+    <div class="card p-3">
+      <h6>Detalle Porcentaje</h6>
+      <div><strong>Id:</strong> <span th:text="${porcentaje.id}">-</span></div>
+  <div><strong>Valor:</strong> <span th:text="${porcentaje.porcentaje_aumento}">-</span></div>
+      <div class="d-flex justify-content-end mt-2">
+        <button class="btn btn-sm btn-secondary" hx-get="/porcentajes-mes/list" hx-target="#porcentajes-mes-list" hx-swap="innerHTML">Cerrar</button>
+      </div>
+    </div>
   </div>
 </html>

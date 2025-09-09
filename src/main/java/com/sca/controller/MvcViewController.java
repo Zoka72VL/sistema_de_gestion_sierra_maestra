@@ -18,6 +18,18 @@ import com.sca.service.impl.LoteServiceImpl;
 @Controller
 public class MvcViewController {
 
+    // Helper: unwrap java.util.Optional values returned inside service Respuesta.data
+    private Object unwrap(Object maybeOptional) {
+        if (maybeOptional instanceof java.util.Optional) {
+            try {
+                return ((java.util.Optional<?>) maybeOptional).orElse(null);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return maybeOptional;
+    }
+
     @Autowired
     PedidoServiceImpl pedidoService;
 
@@ -41,6 +53,21 @@ public class MvcViewController {
 
     @Autowired
     com.sca.service.impl.AccesorioServiceImpl accesorioService;
+    
+    @Autowired
+    com.sca.service.impl.CategoriaServiceImpl categoriaService;
+
+    @Autowired
+    com.sca.service.impl.MesServiceImpl mesService;
+
+    @Autowired
+    com.sca.service.impl.SueldoBasicoServiceImpl sueldoBasicoService;
+
+    @Autowired
+    com.sca.service.impl.PorcentajeMesServiceImpl porcentajeMesService;
+
+    @Autowired
+    com.sca.service.impl.FirmaServiceImpl firmaService;
 
     @GetMapping({"/","/home"})
     public String home(Model model) {
@@ -72,7 +99,7 @@ public class MvcViewController {
 
     @GetMapping("/pedidos/{id}")
     public String pedidoById(@PathVariable Long id, Model model) {
-        model.addAttribute("pedido", pedidoService.finById(id).getData());
+    model.addAttribute("pedido", unwrap(pedidoService.finById(id).getData()));
     model.addAttribute("clientes", clienteService.findAll().getData());
     model.addAttribute("cervezas", cervezaService.findAll().getData());
     model.addAttribute("asociados", asociadosService.findAll().getData());
@@ -81,7 +108,7 @@ public class MvcViewController {
 
     @GetMapping("/pedidos/view/{id}")
     public String pedidoViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("pedido", pedidoService.finById(id).getData());
+    model.addAttribute("pedido", unwrap(pedidoService.finById(id).getData()));
         return "pedidos/fragments :: view";
     }
 
@@ -119,14 +146,14 @@ public class MvcViewController {
 
     @GetMapping("/lotes/{id}")
     public String loteById(@PathVariable Long id, Model model) {
-        model.addAttribute("lote", loteService.finById(id).getData());
+    model.addAttribute("lote", unwrap(loteService.finById(id).getData()));
     model.addAttribute("cervezas", cervezaService.findAll().getData());
         return "lotes/fragments :: form";
     }
 
     @GetMapping("/lotes/view/{id}")
     public String loteViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("lote", loteService.finById(id).getData());
+    model.addAttribute("lote", unwrap(loteService.finById(id).getData()));
         return "lotes/fragments :: view";
     }
 
@@ -213,13 +240,13 @@ public class MvcViewController {
 
     @GetMapping("/clientes/{id}")
     public String clienteById(@PathVariable Long id, Model model) {
-        model.addAttribute("cliente", clienteService.finById(id).getData());
+    model.addAttribute("cliente", unwrap(clienteService.finById(id).getData()));
         return "clientes/fragments :: form";
     }
 
     @GetMapping("/clientes/view/{id}")
     public String clienteViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("cliente", clienteService.finById(id).getData());
+    model.addAttribute("cliente", unwrap(clienteService.finById(id).getData()));
         return "clientes/fragments :: view";
     }
 
@@ -265,13 +292,13 @@ public class MvcViewController {
 
     @GetMapping("/cervezas/{id}")
     public String cervezaById(@PathVariable Long id, Model model) {
-        model.addAttribute("cerveza", cervezaService.finById(id).getData());
+    model.addAttribute("cerveza", unwrap(cervezaService.finById(id).getData()));
         return "cervezas/fragments :: form";
     }
 
     @GetMapping("/cervezas/view/{id}")
     public String cervezaViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("cerveza", cervezaService.finById(id).getData());
+    model.addAttribute("cerveza", unwrap(cervezaService.finById(id).getData()));
         return "cervezas/fragments :: view";
     }
 
@@ -308,6 +335,40 @@ public class MvcViewController {
         model.addAttribute("title", "Categorías");
         return "categorias/index";
     }
+    
+    @GetMapping("/categorias/list")
+    public String categoriasList(Model model) {
+        model.addAttribute("items", categoriaService.findAll().getData());
+        return "categorias/fragments :: lista";
+    }
+
+    @GetMapping("/categorias/form")
+    public String categoriaForm(Model model) {
+        model.addAttribute("categoria", new com.sca.model.Categoria());
+        return "categorias/fragments :: form";
+    }
+
+    @GetMapping("/categorias/{id}")
+    public String categoriaById(@PathVariable Long id, Model model) {
+    model.addAttribute("categoria", unwrap(categoriaService.finById(id).getData()));
+        return "categorias/fragments :: form";
+    }
+
+    @GetMapping("/categorias/view/{id}")
+    public String categoriaViewById(@PathVariable Long id, Model model) {
+    model.addAttribute("categoria", unwrap(categoriaService.finById(id).getData()));
+        return "categorias/fragments :: view";
+    }
+
+    @PostMapping("/categorias/save")
+    public String saveCategoria(com.sca.model.Categoria categoria, Model model) {
+        try {
+            BindException be = new BindException(categoria, "categoria");
+            categoriaService.save(categoria, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", categoriaService.findAll().getData());
+        return "categorias/fragments :: lista";
+    }
 
     @GetMapping("/barriles")
     public String barrilesIndex(Model model) {
@@ -330,14 +391,14 @@ public class MvcViewController {
 
     @GetMapping("/barriles/{id}")
     public String barrilById(@PathVariable Long id, Model model) {
-        model.addAttribute("barril", barrilService.finById(id).getData());
+    model.addAttribute("barril", unwrap(barrilService.finById(id).getData()));
         model.addAttribute("lotes", loteService.findAll().getData());
         return "barriles/fragments :: form";
     }
 
     @GetMapping("/barriles/view/{id}")
     public String barrilViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("barril", barrilService.finById(id).getData());
+    model.addAttribute("barril", unwrap(barrilService.finById(id).getData()));
         return "barriles/fragments :: view";
     }
 
@@ -373,7 +434,7 @@ public class MvcViewController {
 
     @GetMapping("/accesorios/{id}")
     public String accesorioById(@PathVariable Long id, Model model) {
-        model.addAttribute("accesorio", accesorioService.finById(id).getData());
+    model.addAttribute("accesorio", unwrap(accesorioService.finById(id).getData()));
         return "accesorios/fragments :: form";
     }
 
@@ -393,6 +454,66 @@ public class MvcViewController {
     public String asociadosIndex(Model model) {
         model.addAttribute("title", "Asociados");
         return "asociados/index";
+    }
+
+    @GetMapping("/asociados/list")
+    public String asociadosList(Model model) {
+        model.addAttribute("items", asociadosService.findAll().getData());
+        return "asociados/fragments :: lista";
+    }
+
+    @GetMapping("/asociados/form")
+    public String asociadoForm(Model model) {
+    model.addAttribute("asociado", new com.sca.model.Asociados());
+    model.addAttribute("categorias", categoriaService.findAll().getData());
+    model.addAttribute("firmas", firmaService.findAll().getData());
+        return "asociados/fragments :: form";
+    }
+
+    @GetMapping("/asociados/{id}")
+    public String asociadoById(@PathVariable Long id, Model model) {
+    model.addAttribute("asociado", unwrap(asociadosService.finById(id).getData()));
+    model.addAttribute("categorias", categoriaService.findAll().getData());
+    model.addAttribute("firmas", firmaService.findAll().getData());
+        return "asociados/fragments :: form";
+    }
+
+    @GetMapping("/asociados/view/{id}")
+    public String asociadoViewById(@PathVariable Long id, Model model) {
+    model.addAttribute("asociado", unwrap(asociadosService.finById(id).getData()));
+        return "asociados/fragments :: view";
+    }
+
+    @PostMapping("/asociados/save")
+    public String saveAsociado(com.sca.model.Asociados asociado, Model model, HttpServletRequest request) {
+        try {
+            // Resolve selected categoria IDs (sent as parameter 'categoriaIds') into Categoria objects
+            String[] catIds = request.getParameterValues("categoriaIds");
+            if (catIds != null) {
+                java.util.Set<com.sca.model.Categoria> set = new java.util.HashSet<>();
+                for (String sid : catIds) {
+                    try {
+                        Long cid = Long.parseLong(sid);
+                        com.sca.model.Categoria c = new com.sca.model.Categoria();
+                        c.setId(cid);
+                        set.add(c);
+                    } catch (Exception ex) { /* ignore invalid id */ }
+                }
+                asociado.setCategorias(set);
+            }
+            // Resolve id_firma if sent as parameter
+            String idFirma = request.getParameter("id_firma");
+            if (idFirma != null && !idFirma.trim().isEmpty()) {
+                try {
+                    asociado.setId_firma(Integer.valueOf(idFirma));
+                } catch (Exception ex) { }
+            }
+
+            BindException be = new BindException(asociado, "asociado");
+            asociadosService.save(asociado, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", asociadosService.findAll().getData());
+        return "asociados/fragments :: lista";
     }
 
     @GetMapping("/asistencias")
@@ -446,14 +567,14 @@ public class MvcViewController {
 
     @GetMapping("/maduradores/{id}")
     public String maduradorById(@PathVariable Long id, Model model) {
-        model.addAttribute("madurador", maduradorService.finById(id).getData());
+    model.addAttribute("madurador", unwrap(maduradorService.finById(id).getData()));
         model.addAttribute("lotes", loteService.findAll().getData());
         return "maduradores/fragments :: form";
     }
 
     @GetMapping("/maduradores/view/{id}")
     public String maduradorViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("madurador", maduradorService.finById(id).getData());
+    model.addAttribute("madurador", unwrap(maduradorService.finById(id).getData()));
         return "maduradores/fragments :: view";
     }
 
@@ -498,16 +619,200 @@ public class MvcViewController {
         return "meses/index";
     }
 
+    @GetMapping("/meses/list")
+    public String mesesList(Model model) {
+        model.addAttribute("items", mesService.findAll().getData());
+        return "meses/fragments :: lista";
+    }
+
+    @GetMapping("/meses/form")
+    public String mesForm(Model model) {
+        model.addAttribute("mes", new com.sca.model.Mes());
+        return "meses/fragments :: form";
+    }
+
+    @GetMapping("/meses/{id}")
+    public String mesById(@PathVariable Long id, Model model) {
+    model.addAttribute("mes", unwrap(mesService.finById(id).getData()));
+        return "meses/fragments :: form";
+    }
+
+    @GetMapping("/meses/view/{id}")
+    public String mesViewById(@PathVariable Long id, Model model) {
+    model.addAttribute("mes", unwrap(mesService.finById(id).getData()));
+        return "meses/fragments :: view";
+    }
+
+    @PostMapping("/meses/save")
+    public String saveMes(com.sca.model.Mes mes, Model model) {
+        try {
+            BindException be = new BindException(mes, "mes");
+            mesService.save(mes, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", mesService.findAll().getData());
+        return "meses/fragments :: lista";
+    }
+
     @GetMapping("/porcentajes-mes")
     public String porcentajesMesIndex(Model model) {
         model.addAttribute("title", "Porcentajes Mes");
         return "porcentajes-mes/index";
     }
 
+    @GetMapping("/porcentajes-mes/list")
+    public String porcentajesMesList(Model model) {
+        model.addAttribute("items", porcentajeMesService.findAll().getData());
+        return "porcentajes-mes/fragments :: lista";
+    }
+
+    @GetMapping("/porcentajes-mes/form")
+    public String porcentajeForm(Model model) {
+    model.addAttribute("porcentaje", new com.sca.model.PorcentajeMes());
+    model.addAttribute("meses", mesService.findAll().getData());
+    return "porcentajes-mes/fragments :: form";
+    }
+
+    @GetMapping("/porcentajes-mes/{id}")
+    public String porcentajeById(@PathVariable Long id, Model model) {
+    model.addAttribute("porcentaje", unwrap(porcentajeMesService.finById(id).getData()));
+    model.addAttribute("meses", mesService.findAll().getData());
+    return "porcentajes-mes/fragments :: form";
+    }
+
+    @GetMapping("/porcentajes-mes/view/{id}")
+    public String porcentajeViewById(@PathVariable Long id, Model model) {
+    model.addAttribute("porcentaje", unwrap(porcentajeMesService.finById(id).getData()));
+        return "porcentajes-mes/fragments :: view";
+    }
+
+    @PostMapping("/porcentajes-mes/save")
+    public String savePorcentaje(com.sca.model.PorcentajeMes porcentaje, Model model, HttpServletRequest request) {
+        try {
+            // Resolve Mes nested entity when binder did not populate
+            if (porcentaje != null && porcentaje.getMes() != null && porcentaje.getMes().getId() != 0) {
+                try {
+                    Object m = mesService.finById(porcentaje.getMes().getId()).getData();
+                    if (m instanceof com.sca.model.Mes) {
+                        porcentaje.setMes((com.sca.model.Mes) m);
+                    }
+                } catch (Exception ex) { }
+            }
+            // Fallback: check request parameters 'mes.id' or 'mes'
+            if (porcentaje != null && (porcentaje.getMes() == null || porcentaje.getMes().getId() == 0)) {
+                String mesId = request.getParameter("mes.id");
+                if (mesId == null) mesId = request.getParameter("mes");
+                if (mesId != null && !mesId.trim().isEmpty()) {
+                    try {
+                        Long mid = Long.parseLong(mesId);
+                        Object m = mesService.finById(mid).getData();
+                        if (m instanceof com.sca.model.Mes) {
+                            porcentaje.setMes((com.sca.model.Mes) m);
+                        } else {
+                            com.sca.model.Mes tmp = new com.sca.model.Mes();
+                            tmp.setId(mid);
+                            porcentaje.setMes(tmp);
+                        }
+                    } catch (Exception ex) { }
+                }
+            }
+            BindException be = new BindException(porcentaje, "porcentaje");
+            porcentajeMesService.save(porcentaje, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", porcentajeMesService.findAll().getData());
+        return "porcentajes-mes/fragments :: lista";
+    }
+
     @GetMapping("/sueldos-basicos")
     public String sueldosBasicosIndex(Model model) {
         model.addAttribute("title", "Sueldos Básicos");
         return "sueldos-basicos/index";
+    }
+
+    @GetMapping("/sueldos-basicos/list")
+    public String sueldosBasicosList(Model model) {
+        model.addAttribute("items", sueldoBasicoService.findAll().getData());
+        return "sueldos-basicos/fragments :: lista";
+    }
+
+    @GetMapping("/sueldos-basicos/form")
+    public String sueldoForm(Model model) {
+    model.addAttribute("sueldo", new com.sca.model.SueldoBasico());
+    model.addAttribute("categorias", categoriaService.findAll().getData());
+    model.addAttribute("porcentajes", porcentajeMesService.findAll().getData());
+    return "sueldos-basicos/fragments :: form";
+    }
+
+    @GetMapping("/sueldos-basicos/{id}")
+    public String sueldoById(@PathVariable Long id, Model model) {
+    model.addAttribute("sueldo", sueldoBasicoService.finById(id).getData());
+    model.addAttribute("categorias", categoriaService.findAll().getData());
+    model.addAttribute("porcentajes", porcentajeMesService.findAll().getData());
+    return "sueldos-basicos/fragments :: form";
+    }
+
+    @GetMapping("/sueldos-basicos/view/{id}")
+    public String sueldoViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("sueldo", sueldoBasicoService.finById(id).getData());
+        return "sueldos-basicos/fragments :: view";
+    }
+
+    @PostMapping("/sueldos-basicos/save")
+    public String saveSueldo(com.sca.model.SueldoBasico sueldo, Model model, HttpServletRequest request) {
+        try {
+            // Resolve nested Categoria and PorcentajeMes if binder did not populate
+            if (sueldo != null && sueldo.getCategoria() != null && sueldo.getCategoria().getId() != 0) {
+                try {
+                    Object c = categoriaService.finById(sueldo.getCategoria().getId()).getData();
+                    if (c instanceof com.sca.model.Categoria) {
+                        sueldo.setCategoria((com.sca.model.Categoria) c);
+                    }
+                } catch (Exception ex) { }
+            }
+            if (sueldo != null && sueldo.getPorcentajeMes() != null && sueldo.getPorcentajeMes().getId() != 0) {
+                try {
+                    Object p = porcentajeMesService.finById(sueldo.getPorcentajeMes().getId()).getData();
+                    if (p instanceof com.sca.model.PorcentajeMes) {
+                        sueldo.setPorcentajeMes((com.sca.model.PorcentajeMes) p);
+                    }
+                } catch (Exception ex) { }
+            }
+            // Fallback: read request parameters 'categoria.id' and 'porcentajeMes.id'
+            if (sueldo != null && (sueldo.getCategoria() == null || sueldo.getCategoria().getId() == 0)) {
+                String cid = request.getParameter("categoria.id");
+                if (cid == null) cid = request.getParameter("categoria");
+                if (cid != null && !cid.trim().isEmpty()) {
+                    try {
+                        Long idc = Long.parseLong(cid);
+                        Object c = categoriaService.finById(idc).getData();
+                        if (c instanceof com.sca.model.Categoria) {
+                            sueldo.setCategoria((com.sca.model.Categoria) c);
+                        } else {
+                            com.sca.model.Categoria tmp = new com.sca.model.Categoria(); tmp.setId(idc); sueldo.setCategoria(tmp);
+                        }
+                    } catch (Exception ex) { }
+                }
+            }
+            if (sueldo != null && (sueldo.getPorcentajeMes() == null || sueldo.getPorcentajeMes().getId() == 0)) {
+                String pid = request.getParameter("porcentajeMes.id");
+                if (pid == null) pid = request.getParameter("porcentajeMes");
+                if (pid != null && !pid.trim().isEmpty()) {
+                    try {
+                        Long idp = Long.parseLong(pid);
+                        Object p = porcentajeMesService.finById(idp).getData();
+                        if (p instanceof com.sca.model.PorcentajeMes) {
+                            sueldo.setPorcentajeMes((com.sca.model.PorcentajeMes) p);
+                        } else {
+                            com.sca.model.PorcentajeMes tmp = new com.sca.model.PorcentajeMes(); tmp.setId(idp); sueldo.setPorcentajeMes(tmp);
+                        }
+                    } catch (Exception ex) { }
+                }
+            }
+
+            BindException be = new BindException(sueldo, "sueldo");
+            sueldoBasicoService.save(sueldo, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", sueldoBasicoService.findAll().getData());
+        return "sueldos-basicos/fragments :: lista";
     }
 
 }

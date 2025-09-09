@@ -17,14 +17,15 @@ import lombok.Setter;
 import lombok.ToString;
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "asociados")
 @Entity
 @Table(name="categoria")
 public class Categoria {
 	
     @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private long id;
 
     @NotBlank(message = "El nombre no puede estar en blanco")

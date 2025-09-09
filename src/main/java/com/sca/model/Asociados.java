@@ -31,8 +31,8 @@ import lombok.Setter;
 import lombok.ToString;
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"categorias","condiciones"})
 // ESTA ES LA CLASE USUARIO, NO SE LE CAMBIO EL NOMBRE PARA NO ROMPER EL SISTEMA
 @Entity
 @Table(name="asociado")
@@ -44,7 +44,8 @@ public class Asociados {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+	@EqualsAndHashCode.Include
+	private long id;
 	
 	// @OneToOne
 	// @JoinColumn(name="id_firma")

@@ -2,15 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <div th:fragment="lista">
     <div th:if="${#lists.isEmpty(items)}">No hay asociados.</div>
-    <div th:each="a : ${items}" class="card mb-2 p-2">
+    <div th:each="a : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/asociados/view/{id}(id=${a.id})}, data-view-target='#asociado-form'" style="cursor:pointer" role="button" tabindex="0">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${a.id}">ID</strong>
           <div class="muted" th:text="${a.nombre}">Nombre</div>
         </div>
         <div>
-          <button class="btn btn-sm btn-outline-secondary me-1" hx-get="/asociados/${a.id}" hx-target="#asociado-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" hx-delete="/deleteAsociado/${a.id}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/asociados/list','#asociados-list')"><i class="bi bi-trash-fill"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/asociados/view/{id}(id=${a.id})}" hx-target="#asociado-form" hx-swap="innerHTML" title="Ver"><i class="bi bi-eye-fill"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/asociados/{id}(id=${a.id})}" hx-target="#asociado-form" hx-swap="innerHTML" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteAsociados/{id}(id=${a.id})}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/asociados/list','#asociados-list')"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>
@@ -20,13 +21,82 @@
     <form th:action="@{/asociados/save}" th:object="${asociado}" hx-post="/asociados/save" hx-target="#asociados-list" hx-swap="innerHTML">
       <input type="hidden" th:field="*{id}" />
       <div class="mb-2">
-        <label>Nombre</label>
-        <input class="form-control" th:field="*{nombre}" required />
+        <label>Legajo</label>
+        <input class="form-control" th:field="*{legajo}" required />
       </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label>Nombre</label>
+          <input class="form-control" th:field="*{nombre}" required />
+        </div>
+        <div class="col-md-6 mb-2">
+          <label>Apellido</label>
+          <input class="form-control" th:field="*{apellido}" required />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label>Documento</label>
+          <input class="form-control" th:field="*{documento}" />
+        </div>
+        <div class="col-md-6 mb-2">
+          <label>Email</label>
+          <input type="email" class="form-control" th:field="*{email}" required />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label>Teléfono</label>
+          <input class="form-control" th:field="*{telefono}" />
+        </div>
+        <div class="col-md-3 mb-2">
+          <label>Activo</label>
+          <select class="form-select" th:field="*{activo}">
+            <option th:value="1" th:text="'Sí'"></option>
+            <option th:value="0" th:text="'No'"></option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          <label>Firma</label>
+          <select class="form-select" name="id_firma" th:field="*{id_firma}">
+            <option th:each="f : ${firmas}" th:value="${f.id}" th:text="${f.nombre}"></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <label>Categorías</label>
+        <select class="form-select" name="categoriaIds" multiple>
+          <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}" th:selected="${asociado.categorias != null ? asociado.categorias.contains(c) : false}"></option>
+        </select>
+      </div>
+
       <div class="d-flex gap-2">
         <button class="btn btn-primary" type="submit">Guardar</button>
-        <button type="button" class="btn btn-secondary" onclick="htmx.ajax('GET','/asociados/list','#asociados-list')">Cancelar</button>
+        <button type="button" class="btn btn-secondary" hx-get="/asociados/list" hx-target="#asociados-list" hx-swap="innerHTML">Cancelar</button>
       </div>
     </form>
+  </div>
+
+  <div th:fragment="view">
+    <div class="card p-3">
+      <h6>Detalle Asociado</h6>
+      <div><strong>Id:</strong> <span th:text="${asociado.id}">-</span></div>
+      <div><strong>Legajo:</strong> <span th:text="${asociado.legajo}">-</span></div>
+      <div><strong>Nombre:</strong> <span th:text="${asociado.nombre}">-</span></div>
+      <div><strong>Apellido:</strong> <span th:text="${asociado.apellido}">-</span></div>
+      <div><strong>Documento:</strong> <span th:text="${asociado.documento}">-</span></div>
+      <div><strong>Email:</strong> <span th:text="${asociado.email}">-</span></div>
+      <div><strong>Teléfono:</strong> <span th:text="${asociado.telefono}">-</span></div>
+      <div><strong>Activo:</strong> <span th:text="${asociado.activo == 1 ? 'Sí' : 'No'}">-</span></div>
+      <div><strong>Categorías:</strong>
+        <ul>
+          <li th:each="c : ${asociado.categorias}" th:text="${c.nombre}"></li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-end mt-2">
+        <button class="btn btn-sm btn-secondary" hx-get="/asociados/list" hx-target="#asociados-list" hx-swap="innerHTML">Cerrar</button>
+      </div>
+    </div>
   </div>
 </html>
