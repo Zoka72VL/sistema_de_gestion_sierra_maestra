@@ -4,7 +4,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${m.id}">ID</strong>
-          <div class="muted" th:text="${m.nombre}">Nombre</div>
+          <div class="muted" th:text="${m.notas}">Notas</div>
         </div>
       </div>
     </div>
@@ -20,7 +20,14 @@
         </div>
         <div class="col">
           <label>Estado</label>
-          <input class="form-control" th:field="*{estado}" />
+          <select class="form-select" th:field="*{estado}" required>
+            <option value="">Seleccione...</option>
+            <option value="Activo">Activo</option>
+            <option value="Cargado">Cargado</option>
+            <option value="Sucio">Sucio</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
         </div>
       </div>
       <div class="mb-2">
