@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 // import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
 
@@ -46,6 +47,7 @@ public class Barril {
     // Relación ManyToOne con Lote
     @ManyToOne
     @JoinColumn(name = "lote_id")  // Crea la columna lote_id en la tabla barril para asociar barriles con un lote
+    @JsonBackReference
     private Lote lote;
 
     // Constructores

@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.HashSet;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
 
@@ -84,6 +85,7 @@ public class Lote {
     
     @OneToMany(mappedBy = "lote", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @NotNull(message = "La lista de barriles no puede ser nula")
+    @JsonManagedReference
     private Set<Barril> barriles = new HashSet<>();
 
     // @OneToMany(mappedBy = "lote")

@@ -1,9 +1,6 @@
-// package com.sca.service;
+package com.sca.service;
 
-// import java.util.List;
-// import java.util.Map;
+public interface InventarioService {
 
-// public interface InventarioService {
-
-//     byte[] invetarioCsv();
-// }
+    byte[] invetarioCsv();
+}
