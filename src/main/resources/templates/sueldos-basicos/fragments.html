@@ -1,12 +1,17 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <div th:fragment="lista">
+  <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
     <div th:if="${#lists.isEmpty(items)}">No hay sueldos básicos.</div>
-    <div th:each="s : ${items}" class="card mb-2 p-2">
+    <div th:each="s : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/sueldos-basicos/view/{id}(id=${s.id})}, data-view-target='#sueldos-basicos-form'" style="cursor:pointer" role="button" tabindex="0">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong th:text="${s.id}">ID</strong>
           <div class="muted" th:text="${s.monto}">Monto</div>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/sueldos-basicos/view/{id}(id=${s.id})}" hx-target="#sueldos-basicos-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
+          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/sueldos-basicos/{id}(id=${s.id})}" hx-target="#sueldos-basicos-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteSueldo/{id}(id=${s.id})}" hx-confirm="Eliminar?" onclick="event.stopPropagation()"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>
@@ -21,8 +26,19 @@
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-primary" type="submit">Guardar</button>
-        <button type="button" class="btn btn-secondary" onclick="htmx.ajax('GET','/sueldos-basicos/list','#sueldos-basicos-list')">Cancelar</button>
+        <button type="button" class="btn btn-secondary" hx-get="/sueldos-basicos/list" hx-target="#sueldos-basicos-list" hx-swap="innerHTML">Cancelar</button>
       </div>
     </form>
+  </div>
+
+  <div th:fragment="view">
+    <div class="card p-3">
+      <h6>Detalle Sueldo Básico</h6>
+      <div><strong>Id:</strong> <span th:text="${sueldo.id}">-</span></div>
+      <div><strong>Monto:</strong> <span th:text="${sueldo.monto}">-</span></div>
+      <div class="d-flex justify-content-end mt-2">
+        <button class="btn btn-sm btn-secondary" hx-get="/sueldos-basicos/list" hx-target="#sueldos-basicos-list" hx-swap="innerHTML">Cerrar</button>
+      </div>
+    </div>
   </div>
 </html>

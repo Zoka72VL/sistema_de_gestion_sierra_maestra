@@ -41,6 +41,18 @@ public class MvcViewController {
 
     @Autowired
     com.sca.service.impl.AccesorioServiceImpl accesorioService;
+    
+    @Autowired
+    com.sca.service.impl.CategoriaServiceImpl categoriaService;
+
+    @Autowired
+    com.sca.service.impl.MesServiceImpl mesService;
+
+    @Autowired
+    com.sca.service.impl.SueldoBasicoServiceImpl sueldoBasicoService;
+
+    @Autowired
+    com.sca.service.impl.PorcentajeMesServiceImpl porcentajeMesService;
 
     @GetMapping({"/","/home"})
     public String home(Model model) {
@@ -498,16 +510,118 @@ public class MvcViewController {
         return "meses/index";
     }
 
+    @GetMapping("/meses/list")
+    public String mesesList(Model model) {
+        model.addAttribute("items", mesService.findAll().getData());
+        return "meses/fragments :: lista";
+    }
+
+    @GetMapping("/meses/form")
+    public String mesForm(Model model) {
+        model.addAttribute("mes", new com.sca.model.Mes());
+        return "meses/fragments :: form";
+    }
+
+    @GetMapping("/meses/{id}")
+    public String mesById(@PathVariable Long id, Model model) {
+        model.addAttribute("mes", mesService.finById(id).getData());
+        return "meses/fragments :: form";
+    }
+
+    @GetMapping("/meses/view/{id}")
+    public String mesViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("mes", mesService.finById(id).getData());
+        return "meses/fragments :: view";
+    }
+
+    @PostMapping("/meses/save")
+    public String saveMes(com.sca.model.Mes mes, Model model) {
+        try {
+            BindException be = new BindException(mes, "mes");
+            mesService.save(mes, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", mesService.findAll().getData());
+        return "meses/fragments :: lista";
+    }
+
     @GetMapping("/porcentajes-mes")
     public String porcentajesMesIndex(Model model) {
         model.addAttribute("title", "Porcentajes Mes");
         return "porcentajes-mes/index";
     }
 
+    @GetMapping("/porcentajes-mes/list")
+    public String porcentajesMesList(Model model) {
+        model.addAttribute("items", porcentajeMesService.findAll().getData());
+        return "porcentajes-mes/fragments :: lista";
+    }
+
+    @GetMapping("/porcentajes-mes/form")
+    public String porcentajeForm(Model model) {
+        model.addAttribute("porcentaje", new com.sca.model.PorcentajeMes());
+        return "porcentajes-mes/fragments :: form";
+    }
+
+    @GetMapping("/porcentajes-mes/{id}")
+    public String porcentajeById(@PathVariable Long id, Model model) {
+        model.addAttribute("porcentaje", porcentajeMesService.finById(id).getData());
+        return "porcentajes-mes/fragments :: form";
+    }
+
+    @GetMapping("/porcentajes-mes/view/{id}")
+    public String porcentajeViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("porcentaje", porcentajeMesService.finById(id).getData());
+        return "porcentajes-mes/fragments :: view";
+    }
+
+    @PostMapping("/porcentajes-mes/save")
+    public String savePorcentaje(com.sca.model.PorcentajeMes porcentaje, Model model) {
+        try {
+            BindException be = new BindException(porcentaje, "porcentaje");
+            porcentajeMesService.save(porcentaje, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", porcentajeMesService.findAll().getData());
+        return "porcentajes-mes/fragments :: lista";
+    }
+
     @GetMapping("/sueldos-basicos")
     public String sueldosBasicosIndex(Model model) {
         model.addAttribute("title", "Sueldos Básicos");
         return "sueldos-basicos/index";
+    }
+
+    @GetMapping("/sueldos-basicos/list")
+    public String sueldosBasicosList(Model model) {
+        model.addAttribute("items", sueldoBasicoService.findAll().getData());
+        return "sueldos-basicos/fragments :: lista";
+    }
+
+    @GetMapping("/sueldos-basicos/form")
+    public String sueldoForm(Model model) {
+        model.addAttribute("sueldo", new com.sca.model.SueldoBasico());
+        return "sueldos-basicos/fragments :: form";
+    }
+
+    @GetMapping("/sueldos-basicos/{id}")
+    public String sueldoById(@PathVariable Long id, Model model) {
+        model.addAttribute("sueldo", sueldoBasicoService.finById(id).getData());
+        return "sueldos-basicos/fragments :: form";
+    }
+
+    @GetMapping("/sueldos-basicos/view/{id}")
+    public String sueldoViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("sueldo", sueldoBasicoService.finById(id).getData());
+        return "sueldos-basicos/fragments :: view";
+    }
+
+    @PostMapping("/sueldos-basicos/save")
+    public String saveSueldo(com.sca.model.SueldoBasico sueldo, Model model) {
+        try {
+            BindException be = new BindException(sueldo, "sueldo");
+            sueldoBasicoService.save(sueldo, be);
+        } catch (Exception e) { }
+        model.addAttribute("items", sueldoBasicoService.findAll().getData());
+        return "sueldos-basicos/fragments :: lista";
     }
 
 }
