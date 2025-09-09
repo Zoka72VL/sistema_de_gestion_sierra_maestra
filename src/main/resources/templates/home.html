@@ -6,124 +6,95 @@
       <p class="muted">Seleccione una sección para empezar. (Las acciones usan HTMX para cargar listas y formularios sin recargar la página.)</p>
     </div>
 
-    <div class="row g-3">
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/pedidos}">
-          <h5><i class="bi bi-basket-fill me-2"></i>Pedidos</h5>
-          <p class="muted">Crear y gestionar pedidos</p>
-        </a>
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <!-- Grouped submenus: uses Bootstrap cards with list-group for clear separation -->
+        <div class="row g-3">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Producción</h5>
+                <small class="text-muted">Lotes, Maduración y Cervezas</small>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/cervezas}"><i class="bi bi-droplet me-2"></i>Cervezas</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/lotes}"><i class="bi bi-box-seam me-2"></i>Lotes</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/maduradores}"><i class="bi bi-person-lines-fill me-2"></i>Maduradores</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/barriles}"><i class="bi bi-box2-fill me-2"></i>Barriles</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Ventas & Clientes</h5>
+                <small class="text-muted">Pedidos y clientes</small>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/pedidos}"><i class="bi bi-basket-fill me-2"></i>Pedidos</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/clientes}"><i class="bi bi-people-fill me-2"></i>Clientes</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/categorias}"><i class="bi bi-tags-fill me-2"></i>Categorías</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Operaciones</h5>
+                <small class="text-muted">Asistencias y reportes</small>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/asistencias}"><i class="bi bi-clock-fill me-2"></i>Asistencias</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/asistencias-total}"><i class="bi bi-bar-chart-fill me-2"></i>Asistencia Total</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Administración moved to right column -->
+        </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/lotes}">
-          <h5><i class="bi bi-box-seam me-2"></i>Lotes</h5>
-          <p class="muted">Administrar lotes</p>
-        </a>
-      </div>
+      <div class="col-12 col-lg-4">
+        <!-- Quick actions / shortcuts -->
+        <div class="row g-3">
+          <div class="col-12">
+            <div class="card bg-light p-3">
+              <h6 class="mb-2">Accesos rápidos</h6>
+              <div class="d-grid gap-2">
+                <a class="btn btn-outline-primary d-flex align-items-center justify-content-start" th:href="@{/lotes}"><i class="bi bi-box-seam me-2"></i>Nuevo / Listar Lotes</a>
+                <a class="btn btn-outline-success d-flex align-items-center justify-content-start" th:href="@{/pedidos}"><i class="bi bi-basket-fill me-2"></i>Crear Pedido</a>
+                <a class="btn btn-outline-secondary d-flex align-items-center justify-content-start" th:href="@{/clientes}"><i class="bi bi-people-fill me-2"></i>Clientes</a>
+                <a class="btn btn-outline-info d-flex align-items-center justify-content-start" th:href="@{/cervezas}"><i class="bi bi-droplet me-2"></i>Cervezas</a>
+              </div>
+            </div>
+          </div>
 
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/clientes}">
-          <h5><i class="bi bi-people-fill me-2"></i>Clientes</h5>
-          <p class="muted">Lista de clientes</p>
-        </a>
-      </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Administración</h6>
+                <small class="text-muted">Configuración</small>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/asociados}"><i class="bi bi-person-badge-fill me-2"></i>Asociados</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/condiciones}"><i class="bi bi-file-earmark-text-fill me-2"></i>Condiciones</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/firmas}"><i class="bi bi-pencil-fill me-2"></i>Firmas</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/meses}"><i class="bi bi-calendar2-week-fill me-2"></i>Meses</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/porcentajes-mes}"><i class="bi bi-percent me-2"></i>Porcentajes Mes</a></li>
+                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/sueldos-basicos}"><i class="bi bi-cash-stack me-2"></i>Sueldos Básicos</a></li>
+              </ul>
+            </div>
+          </div>
 
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/cervezas}">
-          <h5><i class="bi bi-droplet me-2"></i>Cervezas</h5>
-          <p class="muted">Catalogo de cervezas</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/categorias}">
-          <h5><i class="bi bi-tags-fill me-2"></i>Categorías</h5>
-          <p class="muted">Categorías de productos</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/barriles}">
-          <h5><i class="bi bi-box2-fill me-2"></i>Barriles</h5>
-          <p class="muted">Gestión de barriles</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/accesorios}">
-          <h5><i class="bi bi-gear-fill me-2"></i>Accesorios</h5>
-          <p class="muted">Accesorios y repuestos</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/asociados}">
-          <h5><i class="bi bi-person-badge-fill me-2"></i>Asociados</h5>
-          <p class="muted">Administrar asociados</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/asistencias}">
-          <h5><i class="bi bi-clock-fill me-2"></i>Asistencias</h5>
-          <p class="muted">Registrar asistencias</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/asistencias-total}">
-          <h5><i class="bi bi-bar-chart-fill me-2"></i>Asistencia Total</h5>
-          <p class="muted">Resumen mensual</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/condiciones}">
-          <h5><i class="bi bi-file-earmark-text-fill me-2"></i>Condiciones</h5>
-          <p class="muted">Condiciones contractuales</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/dias}">
-          <h5><i class="bi bi-calendar-fill me-2"></i>Días</h5>
-          <p class="muted">Calendario y días</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/firmas}">
-          <h5><i class="bi bi-pencil-fill me-2"></i>Firmas</h5>
-          <p class="muted">Firmas digitales</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/maduradores}">
-          <h5><i class="bi bi-person-lines-fill me-2"></i>Maduradores</h5>
-          <p class="muted">Equipo de maduración</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/meses}">
-          <h5><i class="bi bi-calendar2-week-fill me-2"></i>Meses</h5>
-          <p class="muted">Meses y periodo</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/porcentajes-mes}">
-          <h5><i class="bi bi-percent me-2"></i>Porcentajes Mes</h5>
-          <p class="muted">Porcentajes por mes</p>
-        </a>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-4">
-        <a class="card h-100 text-decoration-none text-dark p-3" th:href="@{/sueldos-basicos}">
-          <h5><i class="bi bi-cash-stack me-2"></i>Sueldos Básicos</h5>
-          <p class="muted">Configuración salarial</p>
-        </a>
+          <div class="col-12">
+            <div class="card p-3">
+              <h6 class="mb-2">Estado del sistema</h6>
+              <p class="small text-muted mb-0">Última actualización: <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">–</span></p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
