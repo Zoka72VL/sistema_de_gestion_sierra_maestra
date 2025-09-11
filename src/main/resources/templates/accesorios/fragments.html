@@ -25,7 +25,15 @@
 
       <div class="mb-2">
         <label for="estado">Estado</label>
-        <input id="estado" class="form-control" th:field="*{estado}" placeholder="Estado" />
+        <select id="estado" class="form-select" th:field="*{estado}">
+          <option value="">Seleccione...</option>
+          <option value="Disponible">Disponible</option>
+          <option value="Alquilado">Alquilado</option>
+          <option value="Devuelto">Devuelto</option>
+          <option value="Mantenimiento">Mantenimiento</option>
+          <option value="Inactivo">Inactivo</option>
+          <option value="Sucio">Sucio</option>
+        </select>
       </div>
 
       <div class="mb-2">
