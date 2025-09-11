@@ -444,6 +444,12 @@ public class MvcViewController {
         return "accesorios/fragments :: form";
     }
 
+    @GetMapping("/accesorios/view/{id}")
+    public String accesorioViewById(@PathVariable Long id, Model model) {
+        model.addAttribute("accesorio", unwrap(accesorioService.finById(id).getData()));
+        return "accesorios/fragments :: view";
+    }
+
     @PostMapping("/accesorios/save")
     public String saveAccesorio(com.sca.model.Accesorio accesorio, Model model) {
         try {
