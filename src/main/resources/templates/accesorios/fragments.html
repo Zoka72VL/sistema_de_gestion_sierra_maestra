@@ -9,7 +9,7 @@
         <div>
           <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/accesorios/view/{id}(id=${a.id})}" hx-target="#accesorio-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
           <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/accesorios/{id}(id=${a.id})}" hx-target="#accesorio-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteAccesorio/{id}(id=${a.id})}" hx-confirm="Eliminar?" hx-swap="none"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteAccesorio/{id}(id=${a.id})}" hx-confirm="Eliminar?" hx-swap="none" onclick="event.stopPropagation()" hx-on:afterRequest="(function(){ var c = this.closest('.card'); if(c) c.remove(); try{ htmx.ajax('GET','/accesorios/list','#accesorios-list'); }catch(e){ fetch('/accesorios/list',{credentials:'same-origin'}).then(r=>r.text()).then(html=>{ var t=document.querySelector('#accesorios-list'); if(t) t.innerHTML=html; }); } }).call(this)"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>

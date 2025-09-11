@@ -10,7 +10,7 @@
         </div>
         <div>
           <button class="btn btn-sm btn-outline-secondary me-1" hx-get="/asistencias/${a.id}" hx-target="#asistencia-form" hx-swap="innerHTML"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" hx-delete="/deleteAsistencia/${a.id}" hx-confirm="Eliminar?" hx-on:afterRequest="htmx.ajax('GET','/asistencias/list','#asistencias-list')"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" hx-delete="/deleteAsistencia/${a.id}" hx-confirm="Eliminar?" hx-swap="none" onclick="event.stopPropagation()" hx-on:afterRequest="htmx.ajax('GET','/asistencias/list','#asistencias-list')"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>

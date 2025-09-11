@@ -9,7 +9,7 @@
         <div>
           <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/barriles/view/{id}(id=${b.id})}" hx-target="#barril-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
           <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/barriles/{id}(id=${b.id})}" hx-target="#barril-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteBarril/{id}(id=${b.id})}" hx-confirm="Eliminar?"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteBarril/{id}(id=${b.id})}" hx-confirm="Eliminar?" hx-swap="none" onclick="event.stopPropagation()" hx-on:afterRequest="htmx.ajax('GET','/barriles/list','#barriles-list')"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@
           <span class="muted me-3" th:text="${c.tipoCerveza}">Tipo</span>
           <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/cervezas/view/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
           <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/cervezas/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteCerveza/{id}(id=${c.id})}" hx-confirm="Eliminar?"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteCerveza/{id}(id=${c.id})}" hx-confirm="Eliminar?" hx-swap="none" onclick="event.stopPropagation()" hx-on:afterRequest="htmx.ajax('GET','/cervezas/list','#cervezas-list')"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>

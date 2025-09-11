@@ -10,7 +10,7 @@
           <span class="muted me-3" th:text="${p.cantidadLitros} + ' L'">0 L</span>
           <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/lotes/view/{id}(id=${p.id})}" hx-target="#lote-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
           <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/lotes/{id}(id=${p.id})}" hx-target="#lote-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteLote/{id}(id=${p.id})}" hx-confirm="Eliminar?"><i class="bi bi-trash-fill"></i></button>
+          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteLote/{id}(id=${p.id})}" hx-confirm="Eliminar?" hx-swap="none" hx-on:afterRequest="htmx.ajax('GET','/lotes/list','#lotes-list')"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     </div>
