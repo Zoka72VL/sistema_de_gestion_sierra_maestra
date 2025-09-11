@@ -44,17 +44,19 @@
         <input class="form-control" th:field="*{notas}" />
       </div>
       <div class="mb-2">
-        <label>Fecha Carga</label>
-        <!-- Accept DD/MM/YYYY as requested by UX (will be parsed server-side) -->
-  <input class="form-control date-arg" type="text" th:field="*{fechaCarga}" placeholder="DD/MM/YYYY" />
-      </div>
-      <div class="mb-2">
-        <label>Fecha Vencimiento</label>
-  <input class="form-control date-arg" type="text" th:field="*{fechaVencimiento}" placeholder="DD/MM/YYYY" />
+        <label>Fecha Cocina</label>
+        <!-- Accept DD/MM/YYYY as requested by UX (will be parsed server-side).
+             Bind to the existing model property 'fechaCarga' while keeping the
+             input id as 'fechaCocina' for the client-side datepicker logic. -->
+      <input id="fechaCocina" class="form-control date-arg" type="text" th:field="*{fechaCarga}" placeholder="DD/MM/YYYY" />
       </div>
       <div class="mb-2">
         <label>Fecha Carga Madurador</label>
-  <input class="form-control date-arg" type="text" th:field="*{fechaCargaMadurador}" placeholder="DD/MM/YYYY" />
+      <input id="fechaCargaMadurador" class="form-control date-arg" type="text" th:field="*{fechaCargaMadurador}" placeholder="DD/MM/YYYY" />
+      </div>
+      <div class="mb-2">
+        <label>Fecha Vencimiento</label>
+      <input id="fechaVencimiento" class="form-control date-arg" type="text" th:field="*{fechaVencimiento}" placeholder="DD/MM/YYYY" />
       </div>
       <div class="d-flex gap-2">
   <button class="btn btn-primary" type="submit"><i class="bi bi-save-fill me-1"></i>Guardar</button>

@@ -248,6 +248,44 @@
           };
           // init for existing document
           window.__initFlatpickrFor(document);
+              // helper specific for lotes: enforce relations between dates
+              window.__initLoteDatepickersFor = function(container){
+                try {
+                  var root = container || document;
+                  var fCoc = root.querySelector('#fechaCocina');
+                  var fMad = root.querySelector('#fechaCargaMadurador');
+                  var fVen = root.querySelector('#fechaVencimiento');
+                  if (!fCoc) return;
+                  // initialize pickers if not already
+                  if (fCoc && !fCoc._flatpickr) flatpickr(fCoc, { dateFormat: 'd/m/Y', allowInput:true, locale:'es' });
+                  if (fMad && !fMad._flatpickr) flatpickr(fMad, { dateFormat: 'd/m/Y', allowInput:true, locale:'es' });
+                  if (fVen && !fVen._flatpickr) flatpickr(fVen, { dateFormat: 'd/m/Y', allowInput:true, locale:'es' });
+
+                  var fc = fCoc._flatpickr;
+                  var fm = fMad && fMad._flatpickr;
+                  var fv = fVen && fVen._flatpickr;
+
+                  function parseFPDate(fp){ return (fp && fp.selectedDates && fp.selectedDates[0]) ? fp.selectedDates[0] : null; }
+
+                  function updateLimits(){
+                    var dC = parseFPDate(fc);
+                    if (fm) {
+                      fm.set('minDate', dC || null);
+                    }
+                    if (fv) {
+                      fv.set('minDate', dC || null);
+                    }
+                  }
+
+                  // attach change handlers
+                  if (fc) fc.config.onChange.push(updateLimits);
+                  if (fm) fm.config.onChange.push(function(){ /* nothing for now */ });
+                  if (fv) fv.config.onChange.push(function(){ /* nothing for now */ });
+
+                  // run once to set initial limits
+                  updateLimits();
+                } catch(err){ console.error('initLoteDatepickersFor failed', err); }
+              };
         }
       });
     } catch (err) { console.error('flatpickr init failed', err); }
@@ -262,6 +300,12 @@
           if (window.__initFlatpickrFor && target) {
             window.__initFlatpickrFor(target);
           }
+            // initialize lote-specific pickers when the lote form is swapped in
+            try {
+              if (window.__initLoteDatepickersFor && target && (target.id === 'lote-form' || target.querySelector && target.querySelector('#fechaCocina'))) {
+                window.__initLoteDatepickersFor(target);
+              }
+            } catch(err) { /* ignore */ }
         } catch(e) { /* ignore */ }
       }, false);
 
