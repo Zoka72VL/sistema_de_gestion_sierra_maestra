@@ -44,13 +44,13 @@ public class Pedido {
     @NotNull(message = "La fecha de pedido es obligatoria")
     @Column(name = "fecha_pedido", nullable = false)
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date fechaPedido;
 
     @NotNull(message = "La fecha de entrega es obligatoria")
     @Column(name = "fecha_entrega", nullable = false)
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date fechaEntrega;
     
     @NotEmpty(message = "La dirección de entrega es obligatoria")

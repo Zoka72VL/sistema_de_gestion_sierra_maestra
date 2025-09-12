@@ -19,11 +19,12 @@
       <input type="hidden" th:field="*{id}" />
       <div class="mb-2">
         <label>Fecha Pedido</label>
-        <input class="form-control" type="date" th:field="*{fechaPedido}" required />
+        <!-- use flatpickr (DD/MM/YYYY) -->
+        <input id="fechaPedido" class="form-control date-arg" type="text" th:field="*{fechaPedido}" placeholder="DD/MM/YYYY" required />
       </div>
       <div class="mb-2">
         <label>Fecha Entrega</label>
-        <input class="form-control" type="date" th:field="*{fechaEntrega}" required />
+        <input id="fechaEntrega" class="form-control date-arg" type="text" th:field="*{fechaEntrega}" placeholder="DD/MM/YYYY" required />
       </div>
       <div class="mb-2">
         <label>Direccion</label>

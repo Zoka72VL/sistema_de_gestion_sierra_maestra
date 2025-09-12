@@ -248,6 +248,77 @@
           };
           // init for existing document
           window.__initFlatpickrFor(document);
+              // helper specific for pedidos: ensure fechaEntrega >= fechaPedido
+              window.__initPedidoDateConstraintsFor = function(container){
+                try {
+                  var root = container || document;
+                  var fPed = root.querySelector && root.querySelector('#fechaPedido');
+                  var fEnt = root.querySelector && root.querySelector('#fechaEntrega');
+                  if (!fPed || !fEnt) return;
+
+                  var fpPed = fPed._flatpickr;
+                  var fpEnt = fEnt._flatpickr;
+
+                  function parseDateStringToDate(s){
+                    try {
+                      // flatpickr uses d/m/Y; prefer fp instance parse if available
+                      if (fpPed && typeof fpPed.parseDate === 'function') return fpPed.parseDate(s, 'd/m/Y');
+                      if (window.flatpickr && typeof flatpickr.parseDate === 'function') return flatpickr.parseDate(s, 'd/m/Y');
+                      // fallback: attempt ISO parse (not ideal)
+                      var parts = s.split('/'); if (parts.length === 3) return new Date(parts[2], parts[1]-1, parts[0]);
+                    } catch(err){}
+                    return null;
+                  }
+
+                  function updateMin(){
+                    try {
+                      if (fpPed || fpEnt) {
+                        var dPed = fpPed && fpPed.selectedDates && fpPed.selectedDates[0] ? fpPed.selectedDates[0] : parseDateStringToDate(fPed.value);
+                        if (fpEnt) {
+                          fpEnt.set('minDate', dPed || null);
+                          var sel = fpEnt.selectedDates && fpEnt.selectedDates[0];
+                          if (sel && dPed && sel < dPed) {
+                            fpEnt.setDate(dPed, true);
+                            // optionally: brief visual hint could be added here
+                          }
+                        } else {
+                          if (dPed) {
+                            // set native min in yyyy-mm-dd format expected by type=date (but we use text inputs)
+                            var iso = dPed.toISOString().slice(0,10);
+                            fEnt.min = iso;
+                            if (fEnt.value && fEnt.value < iso) fEnt.value = iso;
+                          } else {
+                            fEnt.removeAttribute('min');
+                          }
+                        }
+                      } else {
+                        // no flatpickr instances, use native min attribute
+                        var v = fPed.value || '';
+                        if (v) {
+                          fEnt.min = v;
+                          if (fEnt.value && fEnt.value < v) fEnt.value = v;
+                        } else {
+                          fEnt.removeAttribute('min');
+                        }
+                      }
+                    } catch(err) { /* ignore */ }
+                  }
+
+                  // attach handlers
+                  if (fpPed) {
+                    try { fpPed.config.onChange.push(updateMin); } catch(e) { fPed.addEventListener('change', updateMin); }
+                  } else {
+                    try { fPed.addEventListener('change', updateMin); fPed.addEventListener('input', updateMin); } catch(e){}
+                  }
+                  // also update when entrega is directly manipulated (to keep consistency)
+                  if (fpEnt) {
+                    try { fpEnt.config.onChange.push(function(){ /* nothing for now */ }); } catch(e){}
+                  }
+
+                  // run once initially
+                  updateMin();
+                } catch(err) { console.error('initPedidoDateConstraintsFor failed', err); }
+              };
               // helper specific for lotes: enforce relations between dates
               window.__initLoteDatepickersFor = function(container){
                 try {
@@ -302,7 +373,10 @@
           }
             // initialize lote-specific pickers when the lote form is swapped in
             try {
-              if (window.__initLoteDatepickersFor && target && (target.id === 'lote-form' || target.querySelector && target.querySelector('#fechaCocina'))) {
+              if (window.__initPedidoDateConstraintsFor && target && (target.id === 'pedido-form' || (target.querySelector && target.querySelector('#fechaPedido')))) {
+                window.__initPedidoDateConstraintsFor(target);
+              }
+              if (window.__initLoteDatepickersFor && target && (target.id === 'lote-form' || (target.querySelector && target.querySelector('#fechaCocina')))) {
                 window.__initLoteDatepickersFor(target);
               }
             } catch(err) { /* ignore */ }
