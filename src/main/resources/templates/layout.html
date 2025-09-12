@@ -93,7 +93,16 @@
             if (el.validity.valueMissing) {
               msg = 'Este campo es obligatorio.';
             } else if (el.validity.typeMismatch) {
-              msg = 'Introduzca un valor válido.';
+              // give a clearer message for email fields
+              try {
+                if (el.type && el.type.toLowerCase() === 'email') {
+                  msg = 'Introduzca una dirección de correo válida (por ejemplo usuario@dominio.com). Asegúrese de incluir "@".';
+                } else {
+                  msg = 'Introduzca un valor válido.';
+                }
+              } catch(e) {
+                msg = 'Introduzca un valor válido.';
+              }
             } else if (el.validity.rangeUnderflow) {
               msg = 'El valor debe ser mayor o igual que ' + (el.min || '0') + '.';
             } else if (el.validity.rangeOverflow) {
