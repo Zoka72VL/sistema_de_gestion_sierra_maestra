@@ -75,6 +75,49 @@
     })();
   </script>
   <script>
+    // Global custom validation messages (Spanish) — intercept browser native messages
+    // We attach a capturing 'invalid' listener and set a Spanish message via setCustomValidity.
+    // This replaces the browser's built-in English alerts with our Spanish text.
+    try {
+      document.addEventListener('DOMContentLoaded', function(){
+        // Use capture=true so we catch the invalid event before the browser shows its bubble
+        document.addEventListener('invalid', function(ev){
+          try {
+            var el = ev.target;
+            if (!el || !(el instanceof HTMLElement)) return;
+            // Only consider form controls
+            if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)) return;
+
+            // If a previous custom message exists, keep it cleared
+            var msg = '';
+            if (el.validity.valueMissing) {
+              msg = 'Este campo es obligatorio.';
+            } else if (el.validity.typeMismatch) {
+              msg = 'Introduzca un valor válido.';
+            } else if (el.validity.rangeUnderflow) {
+              msg = 'El valor debe ser mayor o igual que ' + (el.min || '0') + '.';
+            } else if (el.validity.rangeOverflow) {
+              msg = 'El valor debe ser menor o igual que ' + (el.max || '') + '.';
+            } else if (el.validity.stepMismatch) {
+              msg = 'El valor no cumple el paso permitido.';
+            } else if (el.validity.patternMismatch) {
+              // if pattern provided, prefer title attribute as hint
+              msg = el.getAttribute('title') || 'Formato no válido.';
+            } else {
+              msg = 'Valor inválido.';
+            }
+            // set custom message so the browser shows our Spanish text
+            try { el.setCustomValidity(msg); } catch(e){}
+          } catch(err){ /* ignore */ }
+        }, true);
+
+        // Clear any custom message as the user types or changes the control
+        document.addEventListener('input', function(e){ try { var el = e.target; if (el && el.setCustomValidity) el.setCustomValidity(''); } catch(err){} }, true);
+        document.addEventListener('change', function(e){ try { var el = e.target; if (el && el.setCustomValidity) el.setCustomValidity(''); } catch(err){} }, true);
+      });
+    } catch(err) { console.error('install custom validation messages failed', err); }
+  </script>
+  <script>
     // Debug helpers: only active for local dev (localhost / 127.0.0.1)
     try {
       if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
