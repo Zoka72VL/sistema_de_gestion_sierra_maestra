@@ -29,20 +29,20 @@
           <label for="tipo">Tipo</label>
           <input id="tipo" class="form-control" th:field="*{tipoCerveza}" placeholder="Tipo (Ej: Lager, Ale, Otro)" />
         </div>
-        <div class="col">
+          <div class="col">
           <label for="grado">Grado Alcoholico</label>
-          <input id="grado" type="number" step="0.1" class="form-control" th:field="*{gradoAlcoholico}" placeholder="4.5" />
+          <input id="grado" type="number" step="0.1" min="0" class="form-control" th:field="*{gradoAlcoholico}" placeholder="4.5" />
         </div>
       </div>
 
       <div class="mb-2 row">
         <div class="col">
           <label for="ibu">Amargor (IBU)</label>
-          <input id="ibu" type="number" class="form-control" th:field="*{amargorIbu}" placeholder="10" />
+          <input id="ibu" type="number" min="0" class="form-control" th:field="*{amargorIbu}" placeholder="10" />
         </div>
         <div class="col">
           <label for="precio">Precio por Litro</label>
-          <input id="precio" type="number" step="0.01" class="form-control" th:field="*{precioPorLitro}" placeholder="0.00" />
+          <input id="precio" type="number" step="0.01" min="0" class="form-control" th:field="*{precioPorLitro}" placeholder="0.00" />
         </div>
       </div>
 

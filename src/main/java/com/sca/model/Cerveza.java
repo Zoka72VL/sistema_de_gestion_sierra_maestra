@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import com.sca.constantes.ExpresionRegular;
 import com.sca.validator.ValidarExpresionesRegulares;
 @Getter
@@ -41,15 +42,18 @@ public class Cerveza {
 	private String tipoCerveza;
 
 	@Column(name="grado_alcoholico", nullable=false)
+	@Positive(message = "El grado alcohólico debe ser un número positivo")
 	private Double gradoAlcoholico;
 
 	@Column(name="amargor_IBU", nullable=false)
+	@Positive(message = "El amargor (IBU) debe ser un número positivo")
 	private Double amargorIbu;
 
 	@Column(name="descripcion", nullable=true)
 	private String descripcion;
 
 	@Column(name="precioLitro", nullable = true)
+	@Positive(message = "El precio por litro debe ser un número positivo")
 	private Double precioPorLitro;
 
     @NotEmpty(message = "El estado es obligatorio")
