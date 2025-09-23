@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Notificaciones</title></head>
+<body>
+<h1>Notificaciones de Inventario Bajo</h1>
+<div id="notifications"></div>
+<script>
+async function loadNotifications(){
+  let resp = await fetch('/api/notifications');
+  let data = await resp.json();
+  let div = document.getElementById('notifications');
+  div.innerHTML = '';
+  data.forEach(n => {
+    let p = document.createElement('p');
+    p.innerText = n.message + ' (' + n.status + ')';
+    div.appendChild(p);
+  });
+}
+setInterval(loadNotifications, 5000);
+loadNotifications();
+</script>
+</body>
+</html>
