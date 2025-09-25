@@ -2,8 +2,6 @@ package com.sca.controller;
 
 import javax.websocket.server.PathParam;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,49 +32,49 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClienteController {
 
-	// Logger log = LoggerFactory.getLogger(String.class);
-	
-	@Autowired
-	ClienteServiceImpl clientesServiceImpl;
-	
-	@PostMapping(value = "/addCliente", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Agrega un Cliente", notes = "Esta operación agrega un Cliente a la base de datos")
-	public ResponseEntity<Object> addCliente(@RequestBody @Validated Cliente cliente, BindingResult bindingResult) throws BindException{
-		return clientesServiceImpl.save(cliente,bindingResult);
-	}
-	
-	@GetMapping(value = "/getAllCliente", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Consultar Cliente", notes = "Esta operación devuelve todos los Cliente a la base de datos")
-	public Respuesta getAllCliente() {
-		return clientesServiceImpl.findAll();
-	}
-	
-	@GetMapping(value = "/getByIdCliente/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Consultar Cliente por id", notes = "Esta operación consulta un Cliente por su identificador personal")
-	public Respuesta getByIdCliente(@PathParam("id") @PathVariable Long id) {
-		return clientesServiceImpl.finById(id);
-	}
-	
-	@DeleteMapping(value = "/deleteCliente/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Eliminar un Clientes", notes = "Esta operación elimina un Cliente de la base de datos")
-	public Respuesta deleteCliente(@PathParam("id") @PathVariable Long id) {
-		return clientesServiceImpl.delete(id);
-	}
-	
-	@PutMapping(value = "/updateCliente", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Actualizar un Cliente", notes = "Esta operación actualiza un Cliente a la base de datos")
-	public ResponseEntity<Object> updateCliente(@RequestBody Cliente cliente, BindingResult bindingResult) throws BindException {
-		return clientesServiceImpl.update(cliente, bindingResult);
-	}
+    @Autowired
+    ClienteServiceImpl clientesServiceImpl;
 
-	@GetMapping(value = "/contarClientes", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Contar Clientes", notes = "Esta operación cuenta todos los Clientes en la base de datos")
-	public Respuesta contarAsociados() {
-		try {
-			return clientesServiceImpl.contarClientes();
-		}catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
+    @PostMapping(value = "/addCliente", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Agrega un Cliente", notes = "Esta operación agrega un Cliente a la base de datos")
+    public ResponseEntity<Object> addCliente(@RequestBody @Validated Cliente cliente, BindingResult bindingResult) throws BindException {
+        return clientesServiceImpl.save(cliente,bindingResult);
+    }
+
+    @GetMapping(value = "/getAllCliente", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Consultar Cliente", notes = "Devuelve todos los clientes")
+    public Respuesta getAllCliente() {
+        return clientesServiceImpl.findAll();
+    }
+
+    @GetMapping(value = "/getByIdCliente/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Consultar Cliente por id", notes = "Consulta un cliente por su identificador")
+    public Respuesta getByIdCliente(@PathParam("id") @PathVariable Long id) {
+        return clientesServiceImpl.finById(id);
+    }
+
+    @DeleteMapping(value = "/deleteCliente/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Eliminar un Cliente", notes = "Elimina un cliente de la base de datos")
+    public Respuesta deleteCliente(@PathParam("id") @PathVariable Long id) {
+        return clientesServiceImpl.delete(id);
+    }
+
+    @PutMapping(value = "/updateCliente", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Actualizar un Cliente", notes = "Actualiza un cliente en la base de datos")
+    public ResponseEntity<Object> updateCliente(@RequestBody Cliente cliente, BindingResult bindingResult) throws BindException {
+        return clientesServiceImpl.update(cliente, bindingResult);
+    }
+
+    @GetMapping(value = "/contarClientes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Contar Clientes", notes = "Cuenta todos los clientes en la base de datos")
+    public Respuesta contarClientes() {
+        return clientesServiceImpl.contarClientes();
+    }
+
+    // 🔹 Nuevo: login
+    @PostMapping(value = "/loginCliente", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Login Cliente", notes = "Valida documento y contraseña de un cliente")
+    public Respuesta loginCliente(@RequestBody Cliente loginRequest) {
+        return clientesServiceImpl.login(loginRequest.getDocumento(), loginRequest.getContrasenia());
+    }
 }
