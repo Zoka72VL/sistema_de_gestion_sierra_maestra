@@ -9,104 +9,6 @@
           <button class="btn btn-success" onclick="mostrarFormulario()">Nuevo</button>
         </div>
       </div>
-      <!-- Buscadores agregados -->
-       <!-- Buscar por ID -->
-      <div class="row mt-3">
-        <div class="col-md-4 d-flex">
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="Buscar por ID..." 
-            id="buscar-id"
-            name="id"
-            autocomplete="off"
-          >
-          <button 
-            class="btn btn-primary ms-2"
-            type="button"
-            onclick="
-              const id = document.getElementById('buscar-id').value;
-              if(id){
-                htmx.ajax('GET', '/cervezas/buscar-por-id/' + id, '#detalle-cerveza');
-              } else {
-                document.getElementById('detalle-cerveza').innerHTML = '<div class=\'alert alert-warning\'>Ingrese un ID</div>';
-              }
-            "
-          >
-            Buscar
-          </button>
-
-        <!-- Buscar por estado -->
-        </div>
-        <div class="col-md-4 d-flex">
-          <select 
-            class="form-select"
-            id="buscar-estado"
-            name="estado"
-            autocomplete="off"
-          >
-            <option value="">Buscar por estado...</option>
-            <option value="Disponible">Disponible</option>
-            <option value="Agotado">Agotado</option>
-            <option value="Producción">Producción</option>
-            <option value="Mantenimiento">Mantenimiento</option>
-          </select>
-          <button 
-            class="btn btn-primary ms-2"
-            type="button"
-            onclick="
-              const estado = document.getElementById('buscar-estado').value;
-              if(estado){
-                htmx.ajax('GET', '/cervezas/buscar-por-estado/' + encodeURIComponent(estado), '#lista-cervezas-estado');
-                document.getElementById('descargar-excel').style.display = 'inline-block';
-                document.getElementById('descargar-pdf').style.display = 'inline-block';
-                document.getElementById('descargar-excel').setAttribute('data-estado', estado);
-                document.getElementById('descargar-pdf').setAttribute('data-estado', estado);
-              } else {
-                document.getElementById('lista-cervezas-estado').innerHTML = '<div class=\'alert alert-warning\'>Seleccione un estado</div>';
-                document.getElementById('descargar-excel').style.display = 'none';
-                document.getElementById('descargar-pdf').style.display = 'none';
-              }
-            "
-          >
-            Buscar
-          </button>
-          <button 
-            id="descargar-excel"
-            class="btn btn-outline-success ms-2"
-            type="button"
-            style="display:none"
-            onclick="
-              const estadoExcel = this.getAttribute('data-estado');
-              if(estadoExcel){
-                window.open('/cervezas/exportar-estado-excel/' + encodeURIComponent(estadoExcel), '_blank');
-              }
-            "
-          >
-            Descargar Excel
-          </button>
-          <button 
-            id="descargar-pdf"
-            class="btn btn-outline-danger ms-2"
-            type="button"
-            style="display:none"
-            onclick="
-              const estadoPdf = this.getAttribute('data-estado');
-              if(estadoPdf){
-                window.open('/cervezas/exportar-estado-pdf/' + encodeURIComponent(estadoPdf), '_blank');
-              }
-            "
-          >
-            Descargar PDF
-          </button>
-        </div>
-      </div>
-
-      <!-- Detalle de cerveza por ID -->
-      <div id="detalle-cerveza" class="mt-3"></div>
-      
-      <!-- Lista de cervezas por estado -->
-      <div id="lista-cervezas-estado" class="mt-3"></div>
     </div>
 
     <div id="cervezas-list">
@@ -116,7 +18,6 @@
     <div id="cerveza-form" class="mt-3"></div>
 
     <script>
-
     function cargarCervezas() {
         fetch('/getAllCerveza')
             .then(response => response.json())
@@ -416,12 +317,6 @@
 
     // Cargar automáticamente al iniciar
     cargarCervezas();
-
-      document.addEventListener('DOMContentLoaded', ()=>{
-        htmx.ajax('GET','/cervezas/list','#cervezas-list');
-      });
-
-</script>
+    </script>
   </section>
 </html>
-

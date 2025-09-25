@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
   <section th:fragment="content">
     <div class="row g-4 mb-3">
-      <div class="col-12 col-lg-8">
+      <div class="col-12 col-lg-4">
         <div class="card p-3 h-100">
           <h2 class="m-0">Bienvenido</h2>
           <p class="muted">Seleccione una sección para empezar.</p>
@@ -11,15 +11,36 @@
       <div class="col-12 col-lg-4 d-flex align-items-start">
         <div class="card p-3 w-100 h-100">
           <h6 class="mb-2">Estado del sistema</h6>
-          <p class="small text-muted mb-0">Última actualización: <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">–</span></p>
+          <p class="small text-muted mb-0">Última actualización:
+            <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">–</span>
+          </p>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4 d-flex align-items-start">
+        <div class="card p-3 w-100 h-100" id="lowstock-card">
+          <h6 class="mb-2">Alertas de Stock</h6>
+          <div id="lowstock-content">
+            <p class="small text-muted mb-0">Cargando alertas...</p>
+          </div>
+          <h6 class="mt-3">Configurar mínimos</h6>
+          <form id="threshold-form" class="d-flex gap-2">
+            <select id="categoria" class="form-select form-select-sm">
+              <option value="cervezas">Cerveza</option>
+              <option value="barriles">Barril</option>
+              <option value="lotes">Lote</option>
+              <option value="maduradores">Madurador</option>
+            </select>
+            <input type="number" id="minimo" class="form-control form-control-sm" placeholder="Mínimo">
+            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+          </form>
         </div>
       </div>
     </div>
 
-  <div class="row g-4 align-items-stretch">
-  <div class="col-12 col-lg-8">
-        <!-- Grouped submenus: uses Bootstrap cards with list-group for clear separation -->
+    <div class="row g-4 align-items-stretch">
+      <div class="col-12 col-lg-8">
         <div class="row g-3">
+          <!-- Producción -->
           <div class="col-12">
             <div class="card">
               <div class="card-body d-flex justify-content-between align-items-center">
@@ -27,15 +48,16 @@
                 <small class="text-muted">Lotes, Maduración y Cervezas</small>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/cervezas}"><i class="bi bi-droplet me-2"></i>Cervezas</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/lotes}"><i class="bi bi-box-seam me-2"></i>Lotes</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/maduradores}"><i class="bi bi-person-lines-fill me-2"></i>Maduradores</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/barriles}"><i class="bi bi-box2-fill me-2"></i>Barriles</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/accesorios}"><i class="bi bi-tools me-2"></i>Accesorios</a></li>
+                <li class="list-group-item"><a th:href="@{/cervezas}" class="text-decoration-none"><i class="bi bi-droplet me-2"></i>Cervezas</a></li>
+                <li class="list-group-item"><a th:href="@{/lotes}" class="text-decoration-none"><i class="bi bi-box-seam me-2"></i>Lotes</a></li>
+                <li class="list-group-item"><a th:href="@{/maduradores}" class="text-decoration-none"><i class="bi bi-person-lines-fill me-2"></i>Maduradores</a></li>
+                <li class="list-group-item"><a th:href="@{/barriles}" class="text-decoration-none"><i class="bi bi-box2-fill me-2"></i>Barriles</a></li>
+                <li class="list-group-item"><a th:href="@{/gestion-cerveza}" class="text-decoration-none"><i class="bi bi-gear-fill me-2"></i>Gestión Cerveza</a></li>
               </ul>
             </div>
           </div>
 
+          <!-- Ventas -->
           <div class="col-12">
             <div class="card">
               <div class="card-body d-flex justify-content-between align-items-center">
@@ -43,12 +65,13 @@
                 <small class="text-muted">Pedidos y clientes</small>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/pedidos}"><i class="bi bi-basket-fill me-2"></i>Pedidos</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/clientes}"><i class="bi bi-people-fill me-2"></i>Clientes</a></li>
+                <li class="list-group-item"><a th:href="@{/pedidos}" class="text-decoration-none"><i class="bi bi-basket-fill me-2"></i>Pedidos</a></li>
+                <li class="list-group-item"><a th:href="@{/clientes}" class="text-decoration-none"><i class="bi bi-people-fill me-2"></i>Clientes</a></li>
               </ul>
             </div>
           </div>
 
+          <!-- Operaciones -->
           <div class="col-12">
             <div class="card">
               <div class="card-body d-flex justify-content-between align-items-center">
@@ -56,31 +79,31 @@
                 <small class="text-muted">Asistencias y reportes</small>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/asistencias}"><i class="bi bi-clock-fill me-2"></i>Asistencias</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/asistencias-total}"><i class="bi bi-bar-chart-fill me-2"></i>Asistencia Total</a></li>
+                <li class="list-group-item"><a th:href="@{/asistencias}" class="text-decoration-none"><i class="bi bi-clock-fill me-2"></i>Asistencias</a></li>
+                <li class="list-group-item"><a th:href="@{/asistencias-total}" class="text-decoration-none"><i class="bi bi-bar-chart-fill me-2"></i>Asistencia Total</a></li>
               </ul>
             </div>
           </div>
-
-          <!-- Administración moved to right column -->
         </div>
       </div>
 
+      <!-- Lateral -->
       <div class="col-12 col-lg-4 d-flex flex-column">
-        <!-- Quick actions / shortcuts -->
         <div class="row g-3 flex-grow-1 d-flex flex-column">
+          <!-- Accesos rápidos -->
           <div class="col-12">
             <div class="card bg-light p-3">
               <h6 class="mb-2">Accesos rápidos</h6>
               <div class="d-grid gap-2">
-                <a class="btn btn-outline-primary d-flex align-items-center justify-content-start" th:href="@{/lotes}"><i class="bi bi-box-seam me-2"></i>Nuevo / Listar Lotes</a>
-                <a class="btn btn-outline-success d-flex align-items-center justify-content-start" th:href="@{/pedidos}"><i class="bi bi-basket-fill me-2"></i>Crear Pedido</a>
-                <a class="btn btn-outline-secondary d-flex align-items-center justify-content-start" th:href="@{/clientes}"><i class="bi bi-people-fill me-2"></i>Clientes</a>
-                <a class="btn btn-outline-info d-flex align-items-center justify-content-start" th:href="@{/cervezas}"><i class="bi bi-droplet me-2"></i>Cervezas</a>
+                <a th:href="@{/lotes}" class="btn btn-outline-primary d-flex align-items-center"><i class="bi bi-box-seam me-2"></i>Nuevo / Listar Lotes</a>
+                <a th:href="@{/pedidos}" class="btn btn-outline-success d-flex align-items-center"><i class="bi bi-basket-fill me-2"></i>Crear Pedido</a>
+                <a th:href="@{/clientes}" class="btn btn-outline-secondary d-flex align-items-center"><i class="bi bi-people-fill me-2"></i>Clientes</a>
+                <a th:href="@{/cervezas}" class="btn btn-outline-info d-flex align-items-center"><i class="bi bi-droplet me-2"></i>Cervezas</a>
               </div>
             </div>
           </div>
 
+          <!-- Administración -->
           <div class="col-12 flex-grow-1">
             <div class="card h-100">
               <div class="card-body d-flex justify-content-between align-items-center">
@@ -88,19 +111,105 @@
                 <small class="text-muted">Configuración</small>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/asociados}"><i class="bi bi-person-badge-fill me-2"></i>Asociados</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/categorias}"><i class="bi bi-tags-fill me-2"></i>Categorías</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/meses}"><i class="bi bi-calendar2-week-fill me-2"></i>Meses</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/sueldos-basicos}"><i class="bi bi-cash-stack me-2"></i>Sueldos Básicos</a></li>
-                <li class="list-group-item"><a class="text-decoration-none" th:href="@{/porcentajes-mes}"><i class="bi bi-percent me-2"></i>Porcentajes Mes</a></li>
+                <li class="list-group-item"><a th:href="@{/asociados}" class="text-decoration-none"><i class="bi bi-person-badge-fill me-2"></i>Asociados</a></li>
+                <li class="list-group-item"><a th:href="@{/categorias}" class="text-decoration-none"><i class="bi bi-tags-fill me-2"></i>Categorías</a></li>
+                <li class="list-group-item"><a th:href="@{/meses}" class="text-decoration-none"><i class="bi bi-calendar2-week-fill me-2"></i>Meses</a></li>
+                <li class="list-group-item"><a th:href="@{/sueldos-basicos}" class="text-decoration-none"><i class="bi bi-cash-stack me-2"></i>Sueldos Básicos</a></li>
+                <li class="list-group-item"><a th:href="@{/porcentajes-mes}" class="text-decoration-none"><i class="bi bi-percent me-2"></i>Porcentajes Mes</a></li>
               </ul>
             </div>
           </div>
-
-          
         </div>
       </div>
     </div>
-
   </section>
 </html>
+
+<script>
+(function() {
+  const DEFAULT_THRESHOLDS = { cervezas: 100, barriles: 10, lotes: 5, maduradores: 2 };
+
+  async function loadThresholds() {
+    try {
+      const stored = localStorage.getItem('lowstock_thresholds');
+      if (stored) return Object.assign({}, DEFAULT_THRESHOLDS, JSON.parse(stored));
+    } catch(e){}
+    return Object.assign({}, DEFAULT_THRESHOLDS);
+  }
+
+  async function saveThreshold(category, value) {
+    const thresholds = await loadThresholds();
+    thresholds[category] = value;
+    localStorage.setItem('lowstock_thresholds', JSON.stringify(thresholds));
+    return { ok: true };
+  }
+
+  async function safeParse(response) {
+    const ct = response.headers.get('content-type') || '';
+    if (ct.includes('application/json')) { try { return await response.json(); } catch(e){ return {}; } }
+    return await response.text();
+  }
+
+  async function callCheckEndpoint(url) {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) return { ok: false, message: await safeParse(resp) };
+      return { ok: true, message: await safeParse(resp) };
+    } catch (e) { return { ok: false, message: e.message }; }
+  }
+
+  async function loadLowStock() {
+    const thresholds = await loadThresholds();
+    const contentEl = document.getElementById('lowstock-content');
+    contentEl.innerHTML = '<p class="small text-muted mb-0">Actualizando alertas...</p>';
+
+    function formatMessage(category, res) {
+      if (res.ok) {
+        if (/por debajo|⚠|bajo|insuficiente|no alcanza/i.test(res.message)) {
+          return `<li><span class="text-danger">🚨 ${category} Insuficientes</span></li>`;
+        } else {
+          return `<li>✔ ${category} Suficientes</li>`;
+        }
+      } else {
+        return `<li class="text-danger">Error (${category}): ${escapeHtml(res.message)}</li>`;
+      }
+    }
+
+    const items = [];
+    const resC = await callCheckEndpoint(`/reports/cervezas/check-threshold?threshold=${encodeURIComponent(thresholds.cervezas)}`);
+    items.push(formatMessage('Cervezas', resC));
+
+    const resB = await callCheckEndpoint(`/reports/barriles/check-threshold?threshold=${encodeURIComponent(thresholds.barriles)}`);
+    items.push(formatMessage('Barriles', resB));
+
+    const resL = await callCheckEndpoint(`/reports/lotes/check-threshold?threshold=${encodeURIComponent(thresholds.lotes)}`);
+    items.push(formatMessage('Lotes', resL));
+
+    const resM = await callCheckEndpoint(`/finByEstado/Activo?threshold=${encodeURIComponent(thresholds.maduradores)}`);
+    items.push(formatMessage('Maduradores', resM));
+
+    contentEl.innerHTML = `<ul class="mb-0">${items.join('\n')}</ul>`;
+  }
+
+  function escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return String(unsafe).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    loadLowStock();
+    document.getElementById('threshold-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const categoria = document.getElementById('categoria').value;
+      const minimo = parseInt(document.getElementById('minimo').value);
+      if (!Number.isFinite(minimo) || minimo < 0) { alert('❌ Ingrese un mínimo válido'); return; }
+      await saveThreshold(categoria, minimo);
+      alert('✅ Mínimo guardado');
+      await loadLowStock();
+      document.getElementById('minimo').value='';
+    });
+    setInterval(loadLowStock, 60000);
+  });
+})();
+</script>

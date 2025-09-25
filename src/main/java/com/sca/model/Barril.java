@@ -37,7 +37,7 @@ public class Barril {
     
     @Column(name = "litros", nullable = false)
     private Integer litros;
-    @ValidarExpresionesRegulares(customMessage = "El estado no es válido", expresionRegular = ExpresionRegular.ACCESORIO_ESTADO)
+    @ValidarExpresionesRegulares(customMessage = "El estado no es válido", expresionRegular = ExpresionRegular.BARRIL_ESTADO)
     @Column(name = "estado")
     private String estado;
     

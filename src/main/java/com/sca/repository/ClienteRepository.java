@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import com.sca.model.Cliente;
 
 @Repository
-public interface ClienteRepository  extends JpaRepository <Cliente, Long>{
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
+    // 🔹 Método para login (documento + contraseña)
+    Cliente findByDocumentoAndContrasenia(String documento, String contrasenia);
 }

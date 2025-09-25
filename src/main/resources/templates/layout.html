@@ -501,5 +501,49 @@
       document.addEventListener('click', handleCardClick, true);
     })();
   </script>
+
+  <!-- Stock alerts (top-right) -->
+  <div id="stock-alerts" style="position:fixed; top:1rem; right:1rem; z-index:1050;"></div>
+  <script>
+    // Function to display a bootstrap toast
+    function showStockAlert(message, type='warning') {
+      const container = document.getElementById('stock-alerts');
+      const id = 'alert-' + Date.now();
+      const html = `<div id="${id}" class="toast align-items-center text-bg-${type} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>`;
+      container.insertAdjacentHTML('beforeend', html);
+      var el = document.getElementById(id);
+      var toast = new bootstrap.Toast(el, { delay: 8000 });
+      toast.show();
+      // remove after hidden
+      el.addEventListener('hidden.bs.toast', ()=> el.remove());
+    }
+
+    // Poll the server every 60 seconds for low-stock items and show alerts
+    async function pollStockAlerts(){
+      try {
+        const res = await fetch('/api/stock/low');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && data.length>0) {
+          data.forEach(item => {
+            showStockAlert('Stock bajo: ' + item.nombre + ' (qty: ' + item.cantidad + ')');
+          });
+        }
+      } catch(e){
+        // ignore
+      }
+    }
+    // initial poll and interval
+    document.addEventListener('DOMContentLoaded', ()=>{
+      pollStockAlerts();
+      setInterval(pollStockAlerts, 60000);
+    });
+  </script>
+
 </body>
 </html>
