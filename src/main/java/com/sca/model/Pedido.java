@@ -53,17 +53,18 @@ public class Pedido {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date fechaEntrega;
     
-    @NotEmpty(message = "La dirección de entrega es obligatoria")
-    @Column(name="direccionEntrega", nullable = false)
+    @NotNull(message = "El campo envío es obligatorio")
+    @Column(name="envio", nullable = false)
+    private boolean envio;
+
+    // 👇 dirección de entrega solo se valida en el servicio
+    @Column(name="direccionEntrega")
     private String direccionEntrega;
+
     
     @NotEmpty(message = "El estado es obligatorio")
     @Column(name="estado", nullable = false)
     private String estado;
-    
-    @NotNull(message = "El campo envío es obligatorio")
-    @Column(name="envio", nullable = false)
-    private Boolean envio;
     
     @ManyToMany
     @JoinTable(

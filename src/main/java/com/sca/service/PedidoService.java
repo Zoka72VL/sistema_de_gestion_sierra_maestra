@@ -8,14 +8,13 @@ import com.sca.model.Pedido;
 import com.sca.model.Respuesta;
 
 public interface PedidoService {
+    ResponseEntity<Object> save(Pedido pedido, BindingResult bindingResult) throws BindException;
+    ResponseEntity<Object> update(Pedido pedido, BindingResult bindingResult) throws BindException;
+    Respuesta delete(Long id);
+    Respuesta finById(Long id);
+    Respuesta findAll();
 
-	public ResponseEntity<Object> save(Pedido pedido, BindingResult bindingResult) throws BindException;
-	
-	public ResponseEntity<Object> update(Pedido pedido, BindingResult bindingResult) throws BindException;
-	
-	public Respuesta delete(Long id);
-	
-	public Respuesta findAll();
-	
-	public Respuesta finById(Long id);
+    // 🔹 nuevos
+    Respuesta findByCliente(Long clienteId);
+    Respuesta cancel(Long id);
 }

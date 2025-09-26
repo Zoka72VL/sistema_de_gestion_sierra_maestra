@@ -266,7 +266,7 @@
     }
     
     function mostrarFormulario() {
-        fetch('/cervezas/form')
+        fetch('/gestion-cerveza/form')
             .then(response => response.text())
             .then(html => {
                 document.getElementById('cerveza-form').innerHTML = html;
