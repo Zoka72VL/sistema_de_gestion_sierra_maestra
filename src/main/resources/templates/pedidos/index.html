@@ -1,46 +1,117 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::content})">
 <head>
-  <meta charset="utf-8" />
-  <title>Pedidos - Gestión</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Home</title>
+
+  <!-- Fuente Rubik Glitch -->
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: Arial, sans-serif; margin: 18px; background:#fafafa; }
-    h1 { margin-bottom: 8px; }
-    .container { display: grid; grid-template-columns: 430px 1fr; gap: 18px; align-items: start; }
-    .card { border: 1px solid #ddd; padding: 12px; border-radius: 6px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
-    label { display:block; margin:6px 0 2px; font-size:0.9rem; }
-    input[type="text"], input[type="number"], input[type="date"], select { width:100%; padding:6px; box-sizing:border-box; border:1px solid #ddd; border-radius:4px; }
-    .row { display:flex; gap:8px; align-items:center; }
-    .small { width:100px; }
-    .actions button { margin-right:6px; }
-    table { width:100%; border-collapse:collapse; margin-top:8px; background:#fff; }
-    th, td { border: 1px solid #eee; padding: 8px; text-align:left; font-size:0.9rem; vertical-align: middle; }
-    th { background:#f7f7f7; }
-    .muted { color:#666; font-size:0.85rem; }
-    .error { color: #a00; margin:6px 0; }
-    .success { color: #0a0; margin:6px 0; }
-    .access-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-    .access-row input[type="number"] { width:110px; padding:6px; }
-    .btn { padding:6px 10px; border-radius:4px; border:1px solid #bbb; background:#f2f2f2; cursor:pointer; }
-    .btn.primary { background:#2b8cff; color:#fff; border-color:#1677e0; }
-    .btn.danger { background:#ff6961; color:#fff; border-color:#d04a3a; }
-    .small-muted { font-size:0.8rem; color:#777; }
-    .table-actions button { margin-right:6px; }
-    .nowrap { white-space:nowrap; }
-    /* Un poco más de espacio para que no quede tan apretado */
-    .card { padding: 16px; }
-    .container { gap: 20px; }
-    select, input { min-height: 34px; }
+    body {
+      background-color: #251b02;
+      font-family: 'Rubik Glitch', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #ffffff;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #251b02;
+    }
+
+    header img {
+      height: 50px;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    input, select, textarea {
+      background-color: #ffffff;
+      color: #000000;
+      font-family: 'Rubik Glitch', sans-serif;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 6px;
+      margin: 6px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Rubik Glitch', sans-serif;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #333333;
+    }
+
+    @media (min-width: 600px) {
+      button {
+        width: auto;
+      }
+    }
+
+    .card {
+      background-color: #ffffff;
+      color: #000000;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
-  <!-- 🔙 Botón de inicio (igual que en la página de cervezas) -->
-  <div style="margin-bottom:12px;">
-    <a th:href="@{/home}">Inicio</a>
-  </div>
+  <header>
+    <!-- Logo arriba a la izquierda -->
+    <a th:href="@{/}">
+      <img src="/img/logo.png" alt="Logo">
+    </a>
+  </header>
 
-  <h1>Pedidos</h1>
+  <section th:fragment="content">
+    <main>
+      <h2>Inicio</h2>
+
+      <!-- Bloque de alerta de stock -->
+      <div class="card">
+        <h4>Alertas de Stock</h4>
+        <ul id="lowstock-content" style="margin:0; padding-left:18px;"></ul>
+      </div>
+
+
+      <!-- Menú de accesos -->
+      <div class="card">
+        <h4>Menú</h4>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-dark" th:href="@{/cervezas}">Cervezas</a>
+          <a class="btn btn-dark" th:href="@{/lotes}">Lotes</a>
+          <a class="btn btn-dark" th:href="@{/pedidos}">Pedidos</a>
+          <a class="btn btn-dark" th:href="@{/clientes}">Clientes</a>
+        </div>
+      </div>
+    </main>
+  </section>
+</body>
+</html>
+
+
   <div id="msg"></div>
 
   <div class="container">
@@ -50,77 +121,93 @@
       <form id="pedidoForm" autocomplete="off">
         <input type="hidden" id="pedidoId" value="">
 
-        <label>Fecha Pedido</label>
-        <input type="date" id="fechaPedido" required>
+<div class="form-grid">
 
-        <label>Fecha Entrega</label>
-        <input type="date" id="fechaEntrega" required>
+  <div class="form-block">
+    <h5>Fechas</h5>
+    <label>Fecha Pedido
+      <input type="date" id="fechaPedido" required>
+    </label>
+    <label>Fecha Entrega
+      <input type="date" id="fechaEntrega" required>
+    </label>
+  </div>
 
-        <div class="row">
-          <div style="flex:1">
-            <label>Envío</label>
-            <input type="checkbox" id="envio">
-          </div>
-          <div style="flex:2">
-            <label>Dirección de Entrega</label>
-            <input type="text" id="direccionEntrega" value="Sin envío" disabled>
-          </div>
-        </div>
+  <div class="form-block">
+    <h5>Envío</h5>
+    <label><input type="checkbox" id="envio"> Requiere envío</label>
+    <label>Dirección de Entrega
+      <input type="text" id="direccionEntrega" value="Sin envío" disabled>
+    </label>
+  </div>
 
-        <label>Cliente</label>
-        <select id="clienteSelect" required>
-          <option value="">-- Elegir cliente --</option>
-        </select>
+  <div class="form-block">
+    <h5>Cliente & Usuario</h5>
+    <label>Cliente
+      <select id="clienteSelect" required>
+        <option value="">-- Elegir cliente --</option>
+      </select>
+    </label>
+    <label>Usuario (Asociado)
+      <select id="usuarioSelect" required>
+        <option value="">-- Elegir usuario --</option>
+      </select>
+    </label>
+  </div>
 
-        <label>Usuario (Asociado)</label>
-        <select id="usuarioSelect" required>
-          <option value="">-- Elegir usuario --</option>
-        </select>
+  <div class="form-block">
+    <h5>Producto</h5>
+    <label>Cerveza (precio por litro)
+      <select id="cervezaSelect" required>
+        <option value="">-- Elegir cerveza --</option>
+      </select>
+    </label>
+    <small>Precio: <span id="cervezaPrecio">-</span></small>
+    <label>Barril (solo Disponibles)
+      <select id="barrilSelect" required>
+        <option value="">-- Elegir barril --</option>
+      </select>
+    </label>
+    <small>Litros: <span id="barrilLitros">-</span></small>
+  </div>
 
-        <label>Cerveza (precio por litro)</label>
-        <select id="cervezaSelect" required>
-          <option value="">-- Elegir cerveza --</option>
-        </select>
-        <div class="muted">Precio por litro seleccionado: <span id="cervezaPrecio">-</span></div>
+  <div class="form-block">
+    <h5>Estado</h5>
+    <label>Estado del pedido
+      <select id="estadoSelect" required>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Confirmado">Confirmado</option>
+        <option value="En preparación">En preparación</option>
+        <option value="En camino">En camino</option>
+        <option value="Entregado">Entregado</option>
+        <option value="Cancelado">Cancelado</option>
+        <option value="Rechazado">Rechazado</option>
+        <option value="Devuelto">Devuelto</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="estadoPago"> Pagado</label>
+  </div>
 
-        <label>Barril (solo Disponibles)</label>
-        <select id="barrilSelect" required>
-          <option value="">-- Elegir barril --</option>
-        </select>
-        <div class="muted">Litros del barril seleccionado: <span id="barrilLitros">-</span></div>
+  <div class="form-block full-span">
+    <h5>Accesorios</h5>
+    <div id="accesoriosContainer" style="max-height:140px; overflow:auto; padding-right:6px;"></div>
+    <small>Los precios de accesorios se usan solo para calcular el total (no se guardan).</small>
+  </div>
 
-        <label>Estado</label>
-        <select id="estadoSelect" required>
-          <option value="Pendiente">Pendiente</option>
-          <option value="Confirmado">Confirmado</option>
-          <option value="En preparación">En preparación</option>
-          <option value="En camino">En camino</option>
-          <option value="Entregado">Entregado</option>
-          <option value="Cancelado">Cancelado</option>
-          <option value="Rechazado">Rechazado</option>
-          <option value="Devuelto">Devuelto</option>
-        </select>
+  <div class="form-block full-span">
+    <h5>Total</h5>
+    <label>Total general
+      <input type="number" id="totalGral" step="0.01" readonly>
+    </label>
+  </div>
 
-        <label>Estado del pago</label>
-        <div class="row">
-          <input type="checkbox" id="estadoPago">
-          <label for="estadoPago" style="margin-left:6px;">Pagado</label>
-        </div>
+  <div class="actions full-span">
+    <button class="btn primary" type="submit">Guardar</button>
+    <button class="btn" type="button" id="resetBtn">Limpiar</button>
+  </div>
 
+</div>
 
-
-
-        <label>Accesorios (solo Disponibles) — asigná precio por accesorio</label>
-        <div id="accesoriosContainer" style="max-height:140px; overflow:auto; padding-right:6px;"></div>
-        <div class="small-muted">Los precios de accesorios se ingresan acá y se usan sólo para calcular el total (no se persisten).</div>
-
-        <label>Total general</label>
-        <input type="number" id="totalGral" step="0.01" readonly>
-
-        <div style="margin-top:10px;">
-          <button class="btn primary" type="submit">Guardar</button>
-          <button class="btn" type="button" id="resetBtn">Limpiar</button>
-        </div>
       </form>
     </div>
 
@@ -814,9 +901,25 @@ searchBtn.addEventListener('click', () => {
     pedidos = filterPedidosSingleField(field, value, pedidos);
   }
 
+  if (!pedidos.length) {
+    // Mensaje según el campo
+    let campo = '';
+    switch (field) {
+      case 'id': campo = 'ID'; break;
+      case 'fechaPedido': campo = 'fecha de pedido'; break;
+      case 'fechaEntrega': campo = 'fecha de entrega'; break;
+      case 'cliente': campo = 'cliente'; break;
+      case 'usuario': campo = 'usuario'; break;
+      case 'estado': campo = 'estado'; break;
+      case 'cerveza': campo = 'cerveza'; break;
+      case 'direccion': campo = 'dirección'; break;
+      default: campo = 'criterio de búsqueda';
+    }
+    mensaje(`No se ha encontrado ningún pedido para ${campo} con valor "${value}"`, 'error');
+  }
+
   renderPedidosTable(pedidos);
 
-  // limpiar inputs
   searchValue.value = '';
   searchField.value = '';
 });
@@ -833,9 +936,172 @@ showAllBtn.addEventListener('click', () => {
 /* init */
 document.addEventListener('DOMContentLoaded', async () => {
   await loadAll();
+  // ⚡ Setear fecha de pedido al día actual por defecto
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  fechaPedidoInput.value = `${yyyy}-${mm}-${dd}`;
+
   direccionEntregaInput.required = envioInput.checked;
   direccionEntregaInput.disabled = !envioInput.checked;
 });
 </script>
+
+<script>
+(function(){
+  const DEFAULT_THRESHOLDS = { cervezas: 100, barriles: 10, lotes: 5, maduradores: 2 };
+  const STORAGE_KEY = 'lowstock_thresholds';
+
+  // endpoints candidatos (primero el que usás en la página que funciona)
+  const ENDPOINTS = {
+    cervezas: ['/reports/cervezas/check-threshold?threshold={t}', '/checkStockCerveza?threshold={t}'],
+    barriles: ['/reports/barriles/check-threshold?threshold={t}', '/checkStockBarril?threshold={t}'],
+    lotes: ['/reports/lotes/check-threshold?threshold={t}', '/reports/lotes/check-threshold?threshold={t}'],
+    maduradores: ['/reports/maduradores/check-threshold?threshold={t}', '/finByEstado/Activo?threshold={t}']
+  };
+
+  function loadThresholds() {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      return s ? Object.assign({}, DEFAULT_THRESHOLDS, JSON.parse(s)) : Object.assign({}, DEFAULT_THRESHOLDS);
+    } catch(e) {
+      return Object.assign({}, DEFAULT_THRESHOLDS);
+    }
+  }
+  function saveThresholds(obj) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  }
+
+  function escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return String(unsafe).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  }
+
+  async function safeParse(resp) {
+    const ct = resp.headers.get('content-type') || '';
+    try {
+      if (ct.includes('application/json')) {
+        const obj = await resp.json();
+        // tratar formas comunes
+        if (typeof obj === 'string') return obj;
+        if (obj.descripcion) return obj.descripcion;
+        if (obj.message) return obj.message;
+        if (obj.data && typeof obj.data === 'string') return obj.data;
+        if (obj.data && Array.isArray(obj.data)) {
+          // si viene lista vacía -> OK, si trae items -> info
+          return obj.data.length === 0 ? 'OK' : JSON.stringify(obj.data);
+        }
+        // fallback stringify
+        return JSON.stringify(obj);
+      } else {
+        return await resp.text();
+      }
+    } catch(e){
+      // si no pudo parsear como json, intentar text
+      try { return await resp.text(); } catch(_) { return String(e); }
+    }
+  }
+
+  async function callCheckEndpoint(url) {
+    try {
+      const r = await fetch(url);
+      const msg = await safeParse(r);
+      return { ok: r.ok, message: msg, status: r.status };
+    } catch (e) {
+      return { ok: false, message: e.message || String(e) };
+    }
+  }
+
+  // intenta la lista de endpoints para una categoría hasta obtener respuesta OK o agotar.
+  async function tryEndpointsForCategory(category, threshold) {
+    const list = ENDPOINTS[category] || [];
+    if (!list.length) return { ok: false, message: 'No hay endpoints configurados' };
+    let last = null;
+    for (const pattern of list) {
+      const url = pattern.replace('{t}', encodeURIComponent(threshold));
+      last = await callCheckEndpoint(url);
+      // si obtuvo OK devolvemos (si no ok seguimos probando)
+      if (last.ok) return last;
+    }
+    // si ninguno devolvió ok devolvemos el último intento (contendrá el message con el error)
+    return last;
+  }
+
+  function isBelowText(msg) {
+    if (!msg) return false;
+    const s = (typeof msg === 'string') ? msg : String(msg);
+    return /por debajo|⚠|baj[oa]|insuficient|no alcanza|below|insufficient/i.test(s);
+  }
+
+  function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+  function formatMessage(category, res) {
+    if (!res) return `<li class="text-danger">Error (${capitalize(category)}): respuesta vacía</li>`;
+    if (res.ok) {
+      if (isBelowText(res.message)) {
+        return `<li><span style="color:#c0392b">🚨 ${capitalize(category)} Insuficientes</span></li>`;
+      } else {
+        return `<li>✔ ${capitalize(category)} Suficientes</li>`;
+      }
+    } else {
+      // res.message puede ser objeto/string -> convertir a string entendible
+      const msg = (typeof res.message === 'object') ? (res.message.descripcion || res.message.message || JSON.stringify(res.message)) : res.message;
+      return `<li class="text-danger">⚠ ${capitalize(category)}: ${escapeHtml(msg)}</li>`;
+    }
+  }
+
+  async function loadLowStock() {
+    const thresholds = loadThresholds();
+    // buscar contenedor: priorizar 'lowstock-content' (página que funciona) sino 'alerta-stock' (tu home)
+    const contentEl = document.getElementById('lowstock-content') || document.getElementById('alerta-stock');
+    if (!contentEl) {
+      console.warn('lowstock: no se encontró #lowstock-content ni #alerta-stock');
+      return;
+    }
+    contentEl.innerHTML = '<p class="small text-muted mb-0">Actualizando alertas...</p>';
+    const categories = ['cervezas','barriles','lotes','maduradores'];
+    const items = [];
+    for (const cat of categories) {
+      const thr = thresholds[cat] !== undefined ? thresholds[cat] : DEFAULT_THRESHOLDS[cat];
+      const res = await tryEndpointsForCategory(cat, thr);
+      items.push(formatMessage(cat, res));
+    }
+    contentEl.innerHTML = `<ul class="mb-0">${items.join('\n')}</ul>`;
+  }
+
+  // Si existe el formulario #threshold-form, lo conectamos. Si no existe, no pasa nada (siguen funcionando defaults y localStorage).
+  function attachThresholdForm() {
+    const form = document.getElementById('threshold-form');
+    if (!form) return;
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      const categoriaEl = document.getElementById('categoria');
+      const minimoEl = document.getElementById('minimo');
+      if (!categoriaEl || !minimoEl) { alert('Formulario incompleto'); return; }
+      const categoria = categoriaEl.value;
+      const minimo = parseInt(minimoEl.value);
+      if (!Number.isFinite(minimo) || minimo < 0) { alert('Ingrese un mínimo válido'); return; }
+      const thresholds = loadThresholds();
+      thresholds[categoria] = minimo;
+      saveThresholds(thresholds);
+      alert('✅ Mínimo guardado');
+      minimoEl.value = '';
+      await loadLowStock();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    attachThresholdForm();
+    loadLowStock();
+    // refrescar cada 60s
+    setInterval(loadLowStock, 60000);
+  });
+})();
+</script>
+
+
+
 </body>
 </html>
