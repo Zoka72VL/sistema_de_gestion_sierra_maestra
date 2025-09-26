@@ -140,4 +140,22 @@ Logger log = LoggerFactory.getLogger(String.class);
 
 		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
 	}
+
+	@Override
+	public Respuesta findByEstado(String estado) {
+		respuesta = new Respuesta();
+		try {
+			respuesta.setCodigo("200");
+			respuesta.setStatus("Ok");
+			respuesta.setDescripcion("Se muestran las Cervezas por estado");
+			respuesta.setData(cervezaRepository.findByEstado(estado));
+		} catch (Exception e) {
+			respuesta.setCodigo("400");
+			respuesta.setStatus("Error");
+			respuesta.setDescripcion("No se pudieron mostrar las Cervezas por estado");
+			respuesta.setData(e.getMessage());
+		}
+		return respuesta;
+	}
+
 }
