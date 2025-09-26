@@ -47,3 +47,21 @@
         <button type="submit" class="btn btn-primary mt-3">Guardar</button>
     </form>
 </div>
+
+<div th:fragment="view">
+    <div class="card p-3">
+    <h6>Detalles de la Cerveza</h6>
+    <div><strong>Nombre:</strong> <span th:text="${cerveza.nombreCerveza}">-</span></div>
+    <div><strong>Tipo:</strong> <span th:text="${cerveza.tipoCerveza}">-</span></div>
+    <div><strong>Grado Alcoholico:</strong> <span th:text="${cerveza.gradoAlcoholico}">-</span></div>
+    <div><strong>IBU:</strong> <span th:text="${cerveza.amargorIbu}">-</span></div>
+    <div><strong>Precio/Litro:</strong> <span th:text="${cerveza.precioPorLitro}">-</span></div>
+    <div><strong>Estado:</strong> <span th:text="${cerveza.estado}">-</span></div>
+    <div class="mt-2"><strong>Descripción:</strong>
+        <p th:text="${cerveza.descripcion}">-</p>
+    </div>
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-sm btn-secondary" hx-get="/cervezas/list" hx-target="#cervezas-list" hx-swap="innerHTML">Cerrar</button>
+    </div>
+    </div>
+</div>

@@ -9,6 +9,70 @@
           <button class="btn btn-success" onclick="mostrarFormulario()">Nuevo</button>
         </div>
       </div>
+
+      <!-- Buscadores agregados -->
+      <!-- Buscar por ID -->
+      <div class="row mt-3">
+        <div class="col-md-4 d-flex">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Buscar por ID..." 
+            id="buscar-id"
+            name="id"
+            autocomplete="off"
+          >
+          <button 
+            class="btn btn-primary ms-2"
+            type="button"
+            onclick="
+              const id = document.getElementById('buscar-id').value;
+              if(id){
+                htmx.ajax('GET', '/cervezas/buscar-por-id/' + id, '#detalle-cerveza');
+              } else {
+                document.getElementById('detalle-cerveza').innerHTML = '<div class=\'alert alert-warning\'>Ingrese un ID</div>';
+              }
+            "
+          >
+            Buscar
+          </button>
+
+          <!-- Buscar por estado -->
+        </div>
+        <div class="col-md-4 d-flex">
+          <select 
+            class="form-select"
+            id="buscar-estado"
+            name="estado"
+            autocomplete="off"
+          >
+            <option value="">Buscar por estado...</option>
+            <option value="Disponible">Disponible</option>
+            <option value="Agotada">Agotada</option>
+            <option value="Producción">Producción</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+          </select>
+          <button 
+            class="btn btn-primary ms-2"
+            type="button"
+            onclick="
+              const estado = document.getElementById('buscar-estado').value;
+              if(estado){
+                htmx.ajax('GET', '/cervezas/buscar-por-estado/' + encodeURIComponent(estado), '#lista-cervezas-estado');
+                document.getElementById('descargar-excel').style.display = 'inline-block';
+                document.getElementById('descargar-pdf').style.display = 'inline-block';
+                document.getElementById('descargar-excel').setAttribute('data-estado', estado);
+                document.getElementById('descargar-pdf').setAttribute('data-estado', estado);
+              } else {
+                document.getElementById('lista-cervezas-estado').innerHTML = '<div class=\'alert alert-warning\'>Seleccione un estado</div>';
+                document.getElementById('descargar-excel').style.display = 'none';
+                document.getElementById('descargar-pdf').style.display = 'none';
+              }
+            "
+          >
+            Buscar
+          </button>
+
     </div>
 
     <div id="cervezas-list">
