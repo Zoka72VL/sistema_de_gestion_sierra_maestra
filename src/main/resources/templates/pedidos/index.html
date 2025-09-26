@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Pedidos - Gestión**</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 18px; background:#fafafa; }
+    h1 { margin-bottom: 8px; }
+    .container { display: grid; grid-template-columns: 430px 1fr; gap: 18px; align-items: start; }
+    .card { border: 1px solid #ddd; padding: 12px; border-radius: 6px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    label { display:block; margin:6px 0 2px; font-size:0.9rem; }
+    input[type="text"], input[type="number"], input[type="date"], select { width:100%; padding:6px; box-sizing:border-box; border:1px solid #ddd; border-radius:4px; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .small { width:100px; }
+    .actions button { margin-right:6px; }
+    table { width:100%; border-collapse:collapse; margin-top:8px; background:#fff; }
+    th, td { border: 1px solid #eee; padding: 8px; text-align:left; font-size:0.9rem; vertical-align: middle; }
+    th { background:#f7f7f7; }
+    .muted { color:#666; font-size:0.85rem; }
+    .error { color: #a00; margin:6px 0; }
+    .success { color: #0a0; margin:6px 0; }
+    .access-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+    .access-row input[type="number"] { width:110px; padding:6px; }
+    .btn { padding:6px 10px; border-radius:4px; border:1px solid #bbb; background:#f2f2f2; cursor:pointer; }
+    .btn.primary { background:#2b8cff; color:#fff; border-color:#1677e0; }
+    .btn.danger { background:#ff6961; color:#fff; border-color:#d04a3a; }
+    .small-muted { font-size:0.8rem; color:#777; }
+    .table-actions button { margin-right:6px; }
+    .nowrap { white-space:nowrap; }
+  </style>
+</head>
+<body>
+  <!-- 🔙 Botón de inicio (funciona con thymeleaf o sin él) -->
+  <div style="margin-bottom:12px;">
+    <a th:href="@{/home}" href="/home">Inicio</a>
+  </div>
+
+  <h1>Pedidos</h1>
+  <div id="msg"></div>
+
+  <div class="container">
+    <!-- FORM -->
+    <div class="card">
+      <h3 id="formTitle">Nuevo Pedido</h3>
+      <form id="pedidoForm" autocomplete="off">
+        <input type="hidden" id="pedidoId" value="">
+
+        <label>Fecha Pedido</label>
+        <input type="date" id="fechaPedido" required>
+
+        <label>Fecha Entrega</label>
+        <input type="date" id="fechaEntrega" required>
+
+        <div class="row">
+          <div style="flex:1">
+            <label>Envío</label>
+            <input type="checkbox" id="envio">
+          </div>
+          <div style="flex:2">
+            <label>Dirección de Entrega</label>
+            <input type="text" id="direccionEntrega" value="Sin envío" disabled>
+          </div>
+        </div>
+
+        <label>Cliente</label>
+        <select id="clienteSelect" required>
+          <option value="">-- Elegir cliente --</option>
+        </select>
+
+        <label>Usuario (Asociado)</label>
+        <select id="usuarioSelect" required>
+          <option value="">-- Elegir usuario --</option>
+        </select>
+
+        <label>Cerveza (precio por litro)</label>
+        <select id="cervezaSelect" required>
+          <option value="">-- Elegir cerveza --</option>
+        </select>
+        <div class="muted">Precio por litro seleccionado: <span id="cervezaPrecio">-</span></div>
+
+        <label>Barril (solo Disponibles)</label>
+        <select id="barrilSelect" required>
+          <option value="">-- Elegir barril --</option>
+        </select>
+        <div class="muted">Litros del barril seleccionado: <span id="barrilLitros">-</span></div>
+
+        <label>Estado</label>
+        <select id="estadoSelect" required>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Activo">Activo</option>
+          <option value="Entregado">Entregado</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+
+        <label>Accesorios (solo Disponibles) — asigná precio por accesorio</label>
+        <div id="accesoriosContainer" style="max-height:140px; overflow:auto; padding-right:6px;"></div>
+        <div class="small-muted">Los precios de accesorios se ingresan acá y se usan sólo para calcular el total (no se persisten).</div>
+
+        <label>Total general</label>
+        <input type="number" id="totalGral" step="0.01" readonly>
+
+        <div style="margin-top:10px;">
+          <button class="btn primary" type="submit">Guardar</button>
+          <button class="btn" type="button" id="resetBtn">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- LIST -->
+    <div class="card">
+      <h3>Listado de Pedidos</h3>
+      <div style="margin-bottom:10px;">
+        <label><b>Buscar pedido:</b></label>
+        <select id="searchField">
+          <option value="">-- Seleccionar campo --</option>
+          <option value="id">ID</option>
+          <option value="fechaPedido">Fecha Pedido</option>
+          <option value="fechaEntrega">Fecha Entrega</option>
+          <option value="cliente">Cliente</option>
+          <option value="usuario">Usuario</option>
+          <option value="estado">Estado</option>
+          <option value="direccion">Dirección</option>
+        </select>
+        <input type="text" id="searchValue" placeholder="Escriba búsqueda">
+        <button class="btn" id="searchBtn" type="button">Buscar</button>
+        <button class="btn" id="showAllBtn" type="button">Ver todos</button>
+      </div>
+
+      <table id="pedidosTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha Pedido</th>
+            <th>Fecha Entrega</th>
+            <th>Cliente</th>
+            <th>Usuario</th>
+            <th>Estado</th>
+            <th>Dirección de envío</th>
+            <th>Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+/* Archivo completo para front de Pedidos. Mantuvimos tu lógica y endpoints. */
+const API = ''; // si tenés prefijo p. ej. '/api' - ponlo aquí
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+function mensaje(text, type='') {
+  const el = document.getElementById('msg');
+  el.innerHTML = text ? `<div class="${type==='error' ? 'error' : 'success'}">${text}</div>` : '';
+  if (text) {
+    setTimeout(() => { el.innerHTML = ''; }, 6000);
+  }
+}
+
+/* Elementos del DOM */
+const pedidoForm = $('#pedidoForm');
+const pedidoIdInput = $('#pedidoId');
+const fechaPedidoInput = $('#fechaPedido');
+const fechaEntregaInput = $('#fechaEntrega');
+const envioInput = $('#envio');
+const direccionEntregaInput = $('#direccionEntrega');
+const clienteSelect = $('#clienteSelect');
+const usuarioSelect = $('#usuarioSelect');
+const cervezaSelect = $('#cervezaSelect');
+const cervezaPrecioSpan = $('#cervezaPrecio');
+const barrilSelect = $('#barrilSelect');
+const barrilLitrosSpan = $('#barrilLitros');
+const estadoSelect = $('#estadoSelect');
+const accesoriosContainer = $('#accesoriosContainer');
+const totalInput = $('#totalGral');
+const resetBtn = $('#resetBtn');
+const formTitle = $('#formTitle');
+const pedidosTableBody = $('#pedidosTable tbody');
+
+let accesoriosList = [];
+let cervezasList = [];
+let barrilesList = [];
+let clientesList = [];
+let asociadosList = [];
+
+/* Utils */
+function formatDateFromMillis(ms) {
+  if (ms === null || ms === undefined) return '';
+  const d = new Date(Number(ms));
+  if (isNaN(d)) return '';
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+function isoDateInputFromMillis(ms) {
+  if (ms === null || ms === undefined) return '';
+  const d = new Date(Number(ms));
+  if (isNaN(d)) return '';
+  return d.toISOString().slice(0,10);
+}
+
+/* fetch wrapper */
+async function fetchJSON(url, opts) {
+  try {
+    const res = await fetch(url, Object.assign({headers:{'Accept':'application/json'}}, opts));
+    const text = await res.text();
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} - ${text || res.statusText}`);
+    }
+    if (!text) return null;
+    return JSON.parse(text);
+  } catch (err) {
+    throw err;
+  }
+}
+
+/* Load all catalogs + pedidos */
+async function loadAll() {
+  try {
+    mensaje('Cargando datos...', '');
+    const endpoints = [
+      `${API}/getAllPedido`,
+      `${API}/getAllCerveza`,
+      `${API}/getAllAccesorio`,
+      `${API}/getAllBarril`,
+      `${API}/getAllCliente`,
+      `${API}/getAllAsociados`
+    ];
+    const [pedRes, cerRes, accRes, barRes, cliRes, asoRes] = await Promise.all(
+      endpoints.map(u => fetchJSON(u).catch(err=>({status:'Error', descripcion:err.message, data:[]})))
+    );
+    const pedidos = (pedRes && pedRes.data) ? pedRes.data : [];
+    cervezasList = (cerRes && cerRes.data) ? cerRes.data : [];
+    accesoriosList = ((accRes && accRes.data) ? accRes.data : []).filter(a => (a.estado||'').toLowerCase() === 'disponible');
+    accesoriosList = accesoriosList.filter((v,i,a) => a.findIndex(x => x.id===v.id)===i);
+    barrilesList = ((barRes && barRes.data) ? barRes.data : []).filter(b => (b.estado||'').toLowerCase() === 'disponible');
+    barrilesList = barrilesList.filter((v,i,a) => a.findIndex(x => x.id===v.id)===i);
+    clientesList = (cliRes && cliRes.data) ? cliRes.data : [];
+    asociadosList = (asoRes && asoRes.data) ? asoRes.data : [];
+
+    populateSelects();
+    renderAccesorios();
+    renderPedidosTable(pedidos);
+    window._allPedidos = pedidos;
+
+    mensaje('', '');
+  } catch (err) {
+    console.error(err);
+    mensaje('Error cargando datos: ' + err.message, 'error');
+  }
+}
+
+/* ========== FILTRO ROBUSTO ========== */
+function filterPedidosSingleField(field, value, pedidos) {
+  if (!value) return pedidos || [];
+  value = String(value).toLowerCase();
+
+  return (pedidos || []).filter(p => {
+    let compareVal = '';
+
+    switch (field) {
+      case 'id':
+        compareVal = String(p.id || '');
+        break;
+
+      case 'fechaPedido':
+        compareVal = formatDateFromMillis(p.fechaPedido);
+        break;
+
+      case 'fechaEntrega':
+        compareVal = formatDateFromMillis(p.fechaEntrega);
+        break;
+
+      case 'cliente':
+        if (p.cliente) {
+          if (typeof p.cliente === 'object') {
+            compareVal = `${p.cliente.nombre || ''} ${p.cliente.apellido || ''} ${p.cliente.documento || ''}`.trim();
+          } else {
+            compareVal = String(p.cliente);
+          }
+        }
+        break;
+
+      case 'usuario':
+        // p.usuario / p.asociado / p.asociados puede venir como:
+        // - objeto {id,nombre,apellido,legajo}
+        // - array de objetos
+        // - sólo id (number/string)
+        let parts = [];
+
+        const uField = p.usuario || p.asociado || p.asociados || null;
+
+        if (uField) {
+          if (Array.isArray(uField)) {
+            uField.forEach(item => {
+              if (item && typeof item === 'object') {
+                parts.push(((item.nombre||'') + ' ' + (item.apellido||'') + ' ' + (item.legajo ? String(item.legajo) : '') + ' ' + (item.id ? String(item.id) : '')).trim());
+              } else {
+                parts.push(String(item));
+              }
+            });
+          } else if (typeof uField === 'object') {
+            parts.push(((uField.nombre||'') + ' ' + (uField.apellido||'') + ' ' + (uField.legajo ? String(uField.legajo) : '') + ' ' + (uField.id ? String(uField.id) : '')).trim());
+          } else {
+            // uField es id o string
+            parts.push(String(uField));
+          }
+        }
+
+        // Si aun no conseguimos info, intentamos buscar por id en asociadosList
+        if (parts.length === 0 && (p.usuario || p.asociado)) {
+          const idCandidate = String(p.usuario || p.asociado);
+          const found = asociadosList.find(a => String(a.id) === idCandidate);
+          if (found) {
+            parts.push(((found.nombre||'') + ' ' + (found.apellido||'') + ' ' + (found.legajo||'')).trim());
+          }
+        }
+
+        compareVal = parts.join(' ').trim();
+        break;
+
+      case 'estado':
+        compareVal = p.estado || '';
+        break;
+
+      case 'direccion':
+        compareVal = (p.direccionEntrega && p.direccionEntrega !== "Sin envío") ? p.direccionEntrega : "Sin envío";
+        break;
+
+      default:
+        compareVal = '';
+    }
+
+    return String(compareVal).toLowerCase().includes(value);
+  });
+}
+
+/* ========== POPULATE Y RENDER ========== */
+function populateSelects() {
+  // cervezas
+  cervezaSelect.innerHTML = `<option value="">-- Elegir cerveza --</option>`;
+  cervezasList.forEach(c => {
+    const price = (c.precioPorLitro !== undefined && c.precioPorLitro !== null) ? c.precioPorLitro : '';
+    const label = (c.nombreCerveza || c.nombre || 'Sin nombre') + (price !== '' ? ` - $${price}` : '');
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = label;
+    opt.dataset.price = price;
+    cervezaSelect.appendChild(opt);
+  });
+
+  // barriles
+  barrilSelect.innerHTML = `<option value="">-- Elegir barril --</option>`;
+  barrilesList.forEach(b => {
+    const text = `#${b.id} - ${b.litros != null ? b.litros + ' L' : ''} ${b.notas ? '- ' + b.notas : ''}`;
+    const opt = document.createElement('option');
+    opt.value = b.id;
+    opt.textContent = text;
+    opt.dataset.litros = b.litros != null ? b.litros : 0;
+    barrilSelect.appendChild(opt);
+  });
+
+  // clientes
+  clienteSelect.innerHTML = `<option value="">-- Elegir cliente --</option>`;
+  clientesList.forEach(c => {
+    const name = ((c.nombre||'') + (c.apellido ? ' ' + c.apellido : '')).trim();
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${name || 'Cliente ' + c.id} ${c.documento ? '('+c.documento+')' : ''}`;
+    clienteSelect.appendChild(opt);
+  });
+
+  // asociados (usuarios)
+  usuarioSelect.innerHTML = `<option value="">-- Elegir usuario --</option>`;
+  asociadosList.forEach(a => {
+    const name = ((a.nombre||'') + (a.apellido ? ' ' + a.apellido : '')).trim();
+    const opt = document.createElement('option');
+    opt.value = a.id;
+    opt.textContent = `${name || 'Asociado ' + a.id} ${a.legajo ? '('+a.legajo+')' : ''}`;
+    usuarioSelect.appendChild(opt);
+  });
+
+  updateCervezaInfo();
+  updateBarrilInfo();
+}
+
+function renderAccesorios() {
+  accesoriosContainer.innerHTML = '';
+  accesoriosList.forEach(acc => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'access-row';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = `acc_chk_${acc.id}`;
+    checkbox.dataset.id = acc.id;
+
+    const label = document.createElement('label');
+    label.htmlFor = checkbox.id;
+    label.style.marginRight = '8px';
+    label.textContent = `${acc.nombre || 'Accesorio ' + acc.id} ${acc.notas ? '- ' + acc.notas : ''}`;
+
+    const priceInput = document.createElement('input');
+    priceInput.type = 'number';
+    priceInput.step = '0.01';
+    priceInput.placeholder = 'Precio (opcional)';
+    priceInput.className = 'acc-price';
+    priceInput.dataset.id = acc.id;
+    priceInput.disabled = true;
+
+    checkbox.addEventListener('change', () => {
+      priceInput.disabled = !checkbox.checked;
+      if (!checkbox.checked) priceInput.value = '';
+      recalcTotal();
+    });
+    priceInput.addEventListener('input', recalcTotal);
+
+    wrapper.appendChild(checkbox);
+    wrapper.appendChild(label);
+    wrapper.appendChild(priceInput);
+    accesoriosContainer.appendChild(wrapper);
+  });
+}
+
+function renderPedidosTable(items) {
+  pedidosTableBody.innerHTML = '';
+  if (!Array.isArray(items)) items = [];
+  items.forEach(p => {
+    const tr = document.createElement('tr');
+
+    const clienteNombre = (p.cliente && (typeof p.cliente === 'object')) ? ((p.cliente.nombre||'') + ' ' + (p.cliente.apellido||'')).trim()
+                        : (p.cliente && typeof p.cliente === 'number' ? 'ID:'+p.cliente : '');
+
+    let usuarioNombre = '';
+    if (p.usuario) {
+      if (typeof p.usuario === 'object') {
+        usuarioNombre = ((p.usuario.nombre||'') + ' ' + (p.usuario.apellido||'')).trim();
+      } else {
+        const aso = asociadosList.find(a => String(a.id) === String(p.usuario));
+        if (aso) {
+          usuarioNombre = ((aso.nombre||'') + ' ' + (aso.apellido||'')).trim();
+        } else {
+          usuarioNombre = 'ID:' + p.usuario;
+        }
+      }
+    } else if (p.asociado) {
+      if (typeof p.asociado === 'object') {
+        usuarioNombre = ((p.asociado.nombre||'') + ' ' + (p.asociado.apellido||'')).trim();
+      } else {
+        const aso = asociadosList.find(a => String(a.id) === String(p.asociado));
+        if (aso) usuarioNombre = ((aso.nombre||'') + ' ' + (aso.apellido||'')).trim();
+        else usuarioNombre = 'ID:' + p.asociado;
+      }
+    }
+
+    const fechaP = formatDateFromMillis(p.fechaPedido);
+    const fechaE = formatDateFromMillis(p.fechaEntrega);
+    const total = (p.totalGral != null) ? ('$' + p.totalGral) : '';
+
+    tr.innerHTML = `
+      <td class="nowrap">${p.id}</td>
+      <td>${fechaP}</td>
+      <td>${fechaE}</td>
+      <td>${clienteNombre}</td>
+      <td>${usuarioNombre}</td>
+      <td>${p.estado || ''}</td>
+      <td>${p.direccionEntrega && p.direccionEntrega !== "Sin envío" ? p.direccionEntrega : "Sin envío"}</td>
+      <td>${total}</td>
+      <td class="table-actions">
+        <button class="btn" data-action="edit" data-id="${p.id}">Editar</button>
+        <button class="btn" data-action="cancel" data-id="${p.id}">Cancelar</button>
+        <button class="btn danger" data-action="delete" data-id="${p.id}">Eliminar</button>
+      </td>
+    `;
+    pedidosTableBody.appendChild(tr);
+  });
+}
+
+/* ========== CÁLCULOS ========== */
+function recalcTotal() {
+  let total = 0;
+  const cervezaId = cervezaSelect.value;
+  if (cervezaId) {
+    const cer = cervezasList.find(c => String(c.id) === String(cervezaId));
+    const precio = cer && cer.precioPorLitro ? Number(cer.precioPorLitro) : 0;
+    const barrilId = barrilSelect.value;
+    let litros = 0;
+    if (barrilId) {
+      const br = barrilesList.find(b => String(b.id) === String(barrilId));
+      litros = br && br.litros ? Number(br.litros) : 0;
+    }
+    total += precio * litros;
+  }
+  const accPrices = Array.from(document.querySelectorAll('.acc-price')).map(inp => {
+    const chk = document.querySelector(`#acc_chk_${inp.dataset.id}`);
+    if (chk && chk.checked) {
+      const val = Number(inp.value);
+      return isNaN(val) ? 0 : val;
+    }
+    return 0;
+  });
+  total += accPrices.reduce((a,b)=>a+b, 0);
+  total = Math.round((total + Number.EPSILON) * 100) / 100;
+  totalInput.value = total;
+  return total;
+}
+
+function updateCervezaInfo() {
+  const v = cervezaSelect.value;
+  if (!v) {
+    cervezaPrecioSpan.textContent = '-';
+  } else {
+    const c = cervezasList.find(x => String(x.id) === String(v));
+    cervezaPrecioSpan.textContent = c && (c.precioPorLitro != null) ? ('$' + c.precioPorLitro) : '-';
+  }
+  recalcTotal();
+}
+function updateBarrilInfo() {
+  const v = barrilSelect.value;
+  if (!v) {
+    barrilLitrosSpan.textContent = '-';
+  } else {
+    const b = barrilesList.find(x => String(x.id) === String(v));
+    barrilLitrosSpan.textContent = b && (b.litros != null) ? (b.litros + ' L') : '-';
+  }
+  recalcTotal();
+}
+
+/* ========== FORM & CRUD ========== */
+function resetForm() {
+  pedidoIdInput.value = '';
+  pedidoForm.reset();
+  totalInput.value = '';
+  formTitle.textContent = 'Nuevo Pedido';
+  $$('.acc-price').forEach(inp => { inp.value=''; inp.disabled = true; });
+  if (envioInput.checked) {
+    direccionEntregaInput.disabled = false;
+    direccionEntregaInput.value = "";
+  } else {
+    direccionEntregaInput.disabled = true;
+    direccionEntregaInput.value = "Sin envío";
+  }
+}
+
+async function loadPedidoIntoForm(id) {
+  try {
+    mensaje('Cargando pedido...', '');
+    const res = await fetchJSON(`${API}/getByIdPedido/${id}`);
+    const p = res && res.data ? res.data : res;
+    if (!p) { mensaje('Pedido no encontrado', 'error'); return; }
+
+    pedidoIdInput.value = p.id || '';
+    fechaPedidoInput.value = isoDateInputFromMillis(p.fechaPedido);
+    fechaEntregaInput.value = isoDateInputFromMillis(p.fechaEntrega);
+    envioInput.checked = !!p.envio;
+    if (p.envio) {
+      envioInput.checked = true;
+      direccionEntregaInput.disabled = false;
+      direccionEntregaInput.value = p.direccionEntrega || '';
+    } else {
+      envioInput.checked = false;
+      direccionEntregaInput.disabled = true;
+      direccionEntregaInput.value = "Sin envío";
+    }
+
+    clienteSelect.value = p.cliente ? (typeof p.cliente === 'object' ? (p.cliente.id || '') : p.cliente) : '';
+    if (p.usuario) {
+      usuarioSelect.value = typeof p.usuario === 'object' ? (p.usuario.id || '') : p.usuario;
+    } else usuarioSelect.value = '';
+    const c = (p.cervezas && p.cervezas[0]) ? p.cervezas[0] : null;
+    cervezaSelect.value = c ? (c.id || '') : '';
+    const b = (p.barriles && p.barriles[0]) ? p.barriles[0] : null;
+    barrilSelect.value = b ? (b.id || '') : '';
+    estadoSelect.value = p.estado || 'Pendiente';
+
+    const accIds = (p.accesorios||[]).map(a => a.id);
+    $$('.acc-price').forEach(inp => {
+      const id = inp.dataset.id;
+      const chk = document.querySelector(`#acc_chk_${id}`);
+      if (chk) {
+        if (accIds.includes(Number(id)) || accIds.includes(String(id))) {
+          chk.checked = true;
+          inp.disabled = false;
+        } else {
+          chk.checked = false;
+          inp.disabled = true;
+          inp.value = '';
+        }
+      }
+    });
+
+    totalInput.value = (p.totalGral != null) ? p.totalGral : recalcTotal();
+    formTitle.textContent = 'Editar Pedido #' + (p.id || '');
+    mensaje('', '');
+    updateCervezaInfo();
+    updateBarrilInfo();
+    direccionEntregaInput.disabled = !envioInput.checked;
+  } catch (err) {
+    console.error(err);
+    mensaje('Error cargando pedido: ' + err.message, 'error');
+  }
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  try {
+    const fechaP = fechaPedidoInput.value;
+    const fechaE = fechaEntregaInput.value;
+    if (!fechaP || !fechaE) { mensaje('Fechas obligatorias', 'error'); return; }
+    const dP = new Date(fechaP);
+    const dE = new Date(fechaE);
+    if (dE < dP) { mensaje('La fecha de entrega no puede ser anterior a la fecha de pedido', 'error'); return; }
+
+    const envio = envioInput.checked;
+    const direccion = direccionEntregaInput.value.trim();
+    if (envio && !direccion) { mensaje('Si seleccionás envío, la dirección es obligatoria', 'error'); return; }
+
+    const clienteId = clienteSelect.value;
+    const usuarioId = usuarioSelect.value;
+    if (!clienteId || !usuarioId) { mensaje('Cliente y Usuario obligatorios', 'error'); return; }
+    const cervezaId = cervezaSelect.value;
+    const barrilId = barrilSelect.value;
+    if (!cervezaId || !barrilId) { mensaje('Debe seleccionar cerveza y barril', 'error'); return; }
+
+    const idVal = pedidoIdInput.value ? Number(pedidoIdInput.value) : 0;
+    const total = Number(recalcTotal()) || 0;
+
+    const accesoriosSeleccionados = [];
+    $$('.acc-price').forEach(inp => {
+      const id = inp.dataset.id;
+      const chk = document.querySelector(`#acc_chk_${id}`);
+      if (chk && chk.checked) accesoriosSeleccionados.push({ id: Number(id) });
+    });
+
+    const payload = {
+      id: idVal,
+      fechaPedido: new Date(fechaPedidoInput.value).getTime(),
+      fechaEntrega: new Date(fechaEntregaInput.value).getTime(),
+      direccionEntrega: envio ? direccion : 'Sin envío',
+      estado: estadoSelect.value || 'Pendiente',
+      envio: envio,
+      accesorios: accesoriosSeleccionados,
+      cervezas: [{ id: Number(cervezaId) }],
+      barriles: [{ id: Number(barrilId) }],
+      usuario: { id: Number(usuarioId) },
+      cliente: { id: Number(clienteId) },
+      totalGral: total
+    };
+
+    const isNew = !pedidoIdInput.value || Number(pedidoIdInput.value) === 0;
+    const url = isNew ? `${API}/addPedido` : `${API}/updatePedido`;
+
+    mensaje('Guardando pedido...', '');
+    const res = await fetchJSON(url, {
+      method: isNew ? 'POST' : 'PUT',
+      headers: {'Content-Type':'application/json', 'Accept':'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    const ok = res && (res.codigo === '200' || res.codigo === '201' || res.status === 'Ok' || res.status === 'OK');
+    if (ok) {
+      mensaje('Pedido guardado correctamente.', '');
+      await loadAll();
+      resetForm();
+    } else {
+      const txt = (res && res.descripcion) ? res.descripcion : 'No se pudo guardar el pedido';
+      mensaje(txt, 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    mensaje('Error al guardar: ' + err.message, 'error');
+  }
+}
+
+async function cancelPedido(id) {
+  if (!confirm('¿Cancelar el pedido #' + id + '?')) return;
+  try {
+    const res = await fetchJSON(`${API}/cancelPedido/${id}`, { method: 'PUT' });
+    const ok = res && (res.codigo === '200' || res.status === 'Ok');
+    if (ok) {
+      mensaje('Pedido cancelado correctamente', '');
+      await loadAll();
+    } else {
+      mensaje('No se pudo cancelar: ' + (res.descripcion || ''), 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    mensaje('Error al cancelar: ' + err.message, 'error');
+  }
+}
+
+async function deletePedido(id) {
+  if (!confirm('¿Eliminar el pedido #' + id + '? Esta acción es irreversible.')) return;
+  try {
+    const res = await fetchJSON(`${API}/deletePedido/${id}`, { method: 'DELETE' });
+    if (res && res.codigo === '200') {
+      mensaje('Pedido eliminado', '');
+      await loadAll();
+    } else {
+      mensaje('No se pudo eliminar: ' + (res.descripcion || ''), 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    mensaje('Error al eliminar: ' + err.message, 'error');
+  }
+}
+
+/* Delegación de acciones en la tabla */
+function tableClickHandler(e) {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  if (!action || !id) return;
+  if (action === 'edit') {
+    loadPedidoIntoForm(id);
+  } else if (action === 'cancel') {
+    cancelPedido(id);
+  } else if (action === 'delete') {
+    deletePedido(id);
+  }
+}
+
+/* Listeners y búsqueda */
+pedidoForm.addEventListener('submit', submitForm);
+resetBtn.addEventListener('click', () => { resetForm(); mensaje('', ''); });
+cervezaSelect.addEventListener('change', updateCervezaInfo);
+barrilSelect.addEventListener('change', updateBarrilInfo);
+
+// Envío -> activar/desactivar dirección
+envioInput.addEventListener('change', () => {
+  if (envioInput.checked) {
+    direccionEntregaInput.disabled = false;
+    direccionEntregaInput.value = "";
+    direccionEntregaInput.placeholder = "Ingrese dirección de entrega";
+    direccionEntregaInput.setAttribute("required", "true");
+  } else {
+    direccionEntregaInput.disabled = true;
+    direccionEntregaInput.value = "Sin envío";
+    direccionEntregaInput.placeholder = "";
+    direccionEntregaInput.removeAttribute("required");
+  }
+});
+
+pedidosTableBody.addEventListener('click', tableClickHandler);
+
+/* Búsqueda por botón */
+const searchField = document.getElementById('searchField');
+const searchValue = document.getElementById('searchValue');
+const searchBtn = document.getElementById('searchBtn');
+const showAllBtn = document.getElementById('showAllBtn');
+
+searchBtn.addEventListener('click', () => {
+  const field = searchField.value;
+  const value = searchValue.value.trim();
+  let pedidos = window._allPedidos || [];
+
+  if (field && value) {
+    pedidos = filterPedidosSingleField(field, value, pedidos);
+  }
+
+  renderPedidosTable(pedidos);
+  // NO limpiamos los inputs automáticamente (así ves el término buscado)
+});
+
+showAllBtn.addEventListener('click', () => {
+  const pedidos = window._allPedidos || [];
+  renderPedidosTable(pedidos);
+});
+
+/* Búsqueda en tiempo real (opcional: si querés, si no borra este evento) */
+searchValue.addEventListener('input', () => {
+  const field = searchField.value;
+  const value = searchValue.value.trim();
+  if (!field || !value) return;
+  let pedidos = window._allPedidos || [];
+  pedidos = filterPedidosSingleField(field, value, pedidos);
+  renderPedidosTable(pedidos);
+});
+
+/* Validación adicional del form para envío/dirección */
+document.addEventListener("DOMContentLoaded", function () {
+  const envioCheckbox = document.getElementById("envio");
+  const direccionInput = document.getElementById("direccionEntrega");
+  const form = document.getElementById("pedidoForm");
+
+  envioCheckbox.addEventListener("change", function () {
+    if (this.checked) {
+      direccionInput.setAttribute("required", "true");
+    } else {
+      direccionInput.removeAttribute("required");
+      direccionInput.value = "";
+    }
+  });
+
+  form.addEventListener("submit", function (e) {
+    if (envioCheckbox.checked && direccionInput.value.trim() === "") {
+      e.preventDefault();
+      alert("La dirección de entrega es obligatoria si seleccionás Envío.");
+      direccionInput.focus();
+    }
+  });
+});
+
+/* INIT */
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadAll();
+  direccionEntregaInput.required = envioInput.checked;
+  direccionEntregaInput.disabled = !envioInput.checked;
+});
+</script>
+</body>
+</html>
