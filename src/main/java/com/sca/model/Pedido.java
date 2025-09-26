@@ -103,4 +103,9 @@ public class Pedido {
     @PositiveOrZero(message = "El total general no puede ser negativo")
     @Column(name="totalGral", nullable = false)
     private Double totalGral;
+
+    @NotNull(message = "El estado de pago es obligatorio")
+    @Column(name = "estado_pago", nullable = false)
+    private String estadoPago = "Pendiente"; // valor por defecto
+
 }

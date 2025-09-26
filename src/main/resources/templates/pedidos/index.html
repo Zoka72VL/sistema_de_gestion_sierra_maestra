@@ -92,10 +92,23 @@
         <label>Estado</label>
         <select id="estadoSelect" required>
           <option value="Pendiente">Pendiente</option>
-          <option value="Activo">Activo</option>
+          <option value="Confirmado">Confirmado</option>
+          <option value="En preparación">En preparación</option>
+          <option value="En camino">En camino</option>
           <option value="Entregado">Entregado</option>
           <option value="Cancelado">Cancelado</option>
+          <option value="Rechazado">Rechazado</option>
+          <option value="Devuelto">Devuelto</option>
         </select>
+
+        <label>Estado del pago</label>
+        <div class="row">
+          <input type="checkbox" id="estadoPago">
+          <label for="estadoPago" style="margin-left:6px;">Pagado</label>
+        </div>
+
+
+
 
         <label>Accesorios (solo Disponibles) — asigná precio por accesorio</label>
         <div id="accesoriosContainer" style="max-height:140px; overflow:auto; padding-right:6px;"></div>
@@ -125,6 +138,7 @@
           <option value="cliente">Cliente</option>
           <option value="usuario">Usuario</option>
           <option value="estado">Estado</option>
+          <option value="cerveza">Cerveza</option>
           <option value="direccion">Dirección</option>
         </select>
         <input type="text" id="searchValue" placeholder="Escriba búsqueda">
@@ -140,7 +154,9 @@
             <th>Fecha Entrega</th>
             <th>Cliente</th>
             <th>Usuario</th>
+            <th>Cerveza</th>
             <th>Estado</th>
+            <th>Estado del pago</th>
             <th>Dirección de envío</th>
             <th>Total</th>
             <th>Acciones</th>
@@ -183,6 +199,7 @@ const cervezaPrecioSpan = $('#cervezaPrecio');
 const barrilSelect = $('#barrilSelect');
 const barrilLitrosSpan = $('#barrilLitros');
 const estadoSelect = $('#estadoSelect');
+const estadoPagoInput = $('#estadoPago');
 const accesoriosContainer = $('#accesoriosContainer');
 const totalInput = $('#totalGral');
 const resetBtn = $('#resetBtn');
@@ -256,6 +273,7 @@ async function loadAll() {
     renderAccesorios();
     renderPedidosTable(pedidos);
     window._allPedidos = pedidos;
+    
 
     mensaje('', '');
   } catch (err) {
@@ -321,6 +339,14 @@ case 'usuario':
       case 'estado':
         compareVal = p.estado || '';
         break;
+
+      case 'cerveza':
+      if (p.cervezas && Array.isArray(p.cervezas) && p.cervezas.length > 0) {
+        const c = p.cervezas[0];
+        compareVal = (c.nombreCerveza || c.nombre || '').toLowerCase();
+      }
+      break;
+
 
       case 'direccion':
         compareVal = (p.direccionEntrega && p.direccionEntrega !== "Sin envío") ? p.direccionEntrega : "Sin envío";
@@ -432,7 +458,20 @@ function renderPedidosTable(items) {
       ? ((p.cliente.nombre||'') + ' ' + (p.cliente.apellido||'')).trim()
       : (p.cliente && typeof p.cliente === 'number' ? 'ID:'+p.cliente : '');
 
-    // usuario/asociado: soporta ambos formatos
+    // 👇 obtener cerveza principal (siempre agarro la primera del array)
+    let cervezaNombre = '';
+    if (p.cervezas && Array.isArray(p.cervezas) && p.cervezas.length > 0) {
+      const c = p.cervezas[0];
+      cervezaNombre = c.nombreCerveza || c.nombre || ('ID:'+c.id);
+    }
+
+    tr.innerHTML = `
+      ...
+      <td>${cervezaNombre}</td> <!-- 👈 nueva celda -->
+      ...
+    `;
+
+      // usuario/asociado: soporta ambos formatos
     let usuarioNombre = '';
     const uField = p.usuario || p.asociado || null;
     if (uField) {
@@ -458,7 +497,9 @@ function renderPedidosTable(items) {
       <td>${fechaE}</td>
       <td>${clienteNombre}</td>
       <td>${usuarioNombre}</td>
+      <td>${cervezaNombre}</td>
       <td>${p.estado || ''}</td>
+      <td>${p.estadoPago === 'Pagado' ? '✔ Pagado' : '✖ Pendiente'}</td>
       <td>${p.direccionEntrega && p.direccionEntrega !== "Sin envío" ? p.direccionEntrega : "Sin envío"}</td>
       <td>${total}</td>
       <td class="table-actions">
@@ -575,6 +616,7 @@ async function loadPedidoIntoForm(id) {
     barrilSelect.value = b ? (b.id || '') : '';
 
     estadoSelect.value = p.estado || 'Pendiente';
+    estadoPagoInput.checked = (p.estadoPago === 'Pagado');
 
     // accesorios: check those present (backend doesn't provide accessory price -> keep user input empty)
     const accIds = (p.accesorios||[]).map(a => a.id);
@@ -645,6 +687,7 @@ async function submitForm(e) {
       fechaEntrega: new Date(fechaEntregaInput.value).getTime(),
       direccionEntrega: envio ? direccion : 'Sin envío',
       estado: estadoSelect.value || 'Pendiente',
+      estadoPago: estadoPagoInput.checked ? 'Pagado' : 'Pendiente',
       envio: envio,
       accesorios: accesoriosSeleccionados,
       cervezas: [{ id: Number(cervezaId) }],
