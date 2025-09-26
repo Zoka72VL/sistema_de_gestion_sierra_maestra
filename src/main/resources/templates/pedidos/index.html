@@ -743,7 +743,7 @@ async function submitForm(e) {
     if (!fechaP || !fechaE) { mensaje('Fechas obligatorias', 'error'); return; }
     const dP = new Date(fechaP);
     const dE = new Date(fechaE);
-    if (dE < dP) { mensaje('La fecha de entrega no puede ser anterior a la fecha de pedido', 'error'); return; }
+    if (dE <= dP) { mensaje('La fecha de entrega no puede ser anterior a la fecha de pedido', 'error'); return; }
 
     const envio = envioInput.checked;
     const direccion = direccionEntregaInput.value.trim();
