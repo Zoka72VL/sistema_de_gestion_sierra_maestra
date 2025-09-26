@@ -1,88 +1,49 @@
-  <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
-    <div th:if="${#lists.isEmpty(items)}">No hay cervezas.</div>
-  <div th:each="c : ${items}" class="card mb-2 p-2 position-relative" th:attr="data-view-url=@{/cervezas/view/{id}(id=${c.id})}, data-view-target='#cerveza-form'" style="cursor:pointer" role="button" tabindex="0">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <strong th:text="${c.id}">ID</strong>
-          <div class="muted" th:text="${c.nombreCerveza}">Nombre</div>
+<!-- ============================= -->
+<!-- Fragmento: Formulario Cerveza -->
+<!-- ============================= -->
+<div th:fragment="form-cerveza">
+    <form id="formCerveza">
+        <div class="form-group">
+            <label for="nombreCerveza">Nombre</label>
+            <input type="text" class="form-control" id="nombreCerveza" name="nombreCerveza" required />
         </div>
-        <div>
-          <span class="muted me-3" th:text="${c.tipoCerveza}">Tipo</span>
-          <button class="btn btn-sm btn-outline-primary me-1" th:attr="hx-get=@{/cervezas/view/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML" title="Ver" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
-          <button class="btn btn-sm btn-outline-secondary me-1" th:attr="hx-get=@{/cervezas/{id}(id=${c.id})}" hx-target="#cerveza-form" hx-swap="innerHTML" title="Editar" onclick="event.stopPropagation()"><i class="bi bi-pencil-fill"></i></button>
-          <button class="btn btn-sm btn-outline-danger" th:attr="hx-delete=@{/deleteCerveza/{id}(id=${c.id})}" hx-confirm="Eliminar?" hx-swap="none" onclick="event.stopPropagation()" hx-on:afterRequest="htmx.ajax('GET','/cervezas/list','#cervezas-list')"><i class="bi bi-trash-fill"></i></button>
+
+        <div class="form-group">
+            <label for="tipoCerveza">Tipo</label>
+            <input type="text" class="form-control" id="tipoCerveza" name="tipoCerveza" required />
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div th:fragment="form">
-  <form th:action="@{/cervezas/save}" th:object="${cerveza}" hx-post="/cervezas/save" hx-target="#cervezas-list" hx-swap="innerHTML">
-      <input type="hidden" th:field="*{id}" />
-      <div class="mb-2">
-        <label for="nombre">Nombre</label>
-        <input id="nombre" class="form-control" th:field="*{nombreCerveza}" placeholder="Nombre de la cerveza" required />
-      </div>
-
-      <div class="mb-2 row">
-        <div class="col">
-          <label for="tipo">Tipo</label>
-          <input id="tipo" class="form-control" th:field="*{tipoCerveza}" placeholder="Tipo (Ej: Lager, Ale, Otro)" />
+        <div class="form-group">
+            <label for="gradoAlcoholico">Grado Alcohólico (%)</label>
+            <input type="number" step="0.1" class="form-control" id="gradoAlcoholico" name="gradoAlcoholico" required />
         </div>
-          <div class="col">
-          <label for="grado">Grado Alcoholico</label>
-          <input id="grado" type="number" step="0.1" min="0" class="form-control" th:field="*{gradoAlcoholico}" placeholder="4.5" />
+
+        <div class="form-group">
+            <label for="amargorIbu">Amargor (IBU)</label>
+            <input type="number" min="1" class="form-control" id="amargorIbu" name="amargorIbu" required />
         </div>
-      </div>
 
-      <div class="mb-2 row">
-        <div class="col">
-          <label for="ibu">Amargor (IBU)</label>
-          <input id="ibu" type="number" min="0" class="form-control" th:field="*{amargorIbu}" placeholder="10" />
+        <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
         </div>
-        <div class="col">
-          <label for="precio">Precio por Litro</label>
-          <input id="precio" type="number" step="0.01" min="0" class="form-control" th:field="*{precioPorLitro}" placeholder="0.00" />
+
+        <div class="form-group">
+            <label for="precioPorLitro">Precio por Litro</label>
+            <input type="number" step="0.01" class="form-control" id="precioPorLitro" name="precioPorLitro" required />
         </div>
-      </div>
 
-      <div class="mb-2">
-        <label for="descripcion">Descripción</label>
-        <textarea id="descripcion" class="form-control" th:field="*{descripcion}" rows="2" placeholder="Descripción breve"></textarea>
-      </div>
+        <div class="form-group">
+            <label for="estado">Estado</label>
+            <select class="form-control" id="estado" name="estado" required>
+                <option value="">Seleccione...</option>
+                <option value="Disponible">Disponible</option>
+                <option value="Agotada">Agotada</option>
+                <option value="Produccion">Producción</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+            </select>
+        </div>
 
-      <div class="mb-2">
-        <label for="estado">Estado</label>
-        <select id="estado" class="form-select" th:field="*{estado}">
-          <option th:value="'Disponible'">Disponible</option>
-          <option th:value="'Agotada'">Agotada</option>
-          <option th:value="'Produccion'">Producción</option>
-          <option th:value="'Mantenimiento'">Mantenimiento</option>
-        </select>
-      </div>
-
-      <div class="d-flex gap-2">
-        <button class="btn btn-primary" type="submit">Guardar</button>
-        <button type="button" class="btn btn-secondary" hx-get="/cervezas/list" hx-target="#cervezas-list" hx-swap="innerHTML">Cancelar</button>
-      </div>
+        <button type="submit" class="btn btn-primary mt-3">Guardar</button>
     </form>
-  </div>
-  
-  <div th:fragment="view">
-    <div class="card p-3">
-      <h6>Detalles de la Cerveza</h6>
-      <div><strong>Nombre:</strong> <span th:text="${cerveza.nombreCerveza}">-</span></div>
-      <div><strong>Tipo:</strong> <span th:text="${cerveza.tipoCerveza}">-</span></div>
-      <div><strong>Grado Alcoholico:</strong> <span th:text="${cerveza.gradoAlcoholico}">-</span></div>
-      <div><strong>IBU:</strong> <span th:text="${cerveza.amargorIbu}">-</span></div>
-      <div><strong>Precio/Litro:</strong> <span th:text="${cerveza.precioPorLitro}">-</span></div>
-      <div><strong>Estado:</strong> <span th:text="${cerveza.estado}">-</span></div>
-      <div class="mt-2"><strong>Descripción:</strong>
-        <p th:text="${cerveza.descripcion}">-</p>
-      </div>
-      <div class="d-flex justify-content-end">
-        <button class="btn btn-sm btn-secondary" hx-get="/cervezas/list" hx-target="#cervezas-list" hx-swap="innerHTML">Cerrar</button>
-      </div>
-    </div>
-  </div>
-  
+</div>

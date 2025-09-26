@@ -9,15 +9,18 @@ import com.sca.model.Respuesta;
 
 public interface ClienteService {
 
-	public ResponseEntity<Object> save(Cliente cliente, BindingResult bindingResult) throws BindException;
-	
-	public ResponseEntity<Object> update(Cliente cliente, BindingResult bindingResult) throws BindException;
-	
-	public Respuesta delete(Long id);
-	
-	public Respuesta findAll();
-	
-	public Respuesta finById(Long id);
+    public ResponseEntity<Object> save(Cliente cliente, BindingResult bindingResult) throws BindException;
 
-	public Respuesta contarClientes();
+    public ResponseEntity<Object> update(Cliente cliente, BindingResult bindingResult) throws BindException;
+
+    public Respuesta delete(Long id);
+
+    public Respuesta findAll();
+
+    public Respuesta finById(Long id);
+
+    public Respuesta contarClientes();
+
+    // 🔹 Nuevo: login
+    public Respuesta login(String documento, String contrasenia);
 }
