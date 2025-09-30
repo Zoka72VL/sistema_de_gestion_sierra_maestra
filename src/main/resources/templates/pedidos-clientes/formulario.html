@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar Pedido - Sistema de Gestión</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" th:href="@{/css/styles-sistema.css}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #34495e;
+    }
+
+    .main-content {
+      padding: 2rem;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .form-block {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid #3498db;
+    }
+
+    .form-block.full-span {
+      grid-column: 1 / -1;
+    }
+
+    .form-block h5 {
+      margin: 0 0 1rem 0;
+      color: #2c3e50;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .form-title {
+      color: #2c3e50;
+    }
+
+    .form-title.edit-mode {
+      color: #3498db;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #555;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    input[readonly] {
+      background-color: #ecf0f1;
+      color: #7f8c8d;
+      cursor: not-allowed;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 0.5rem;
+    }
+
+    textarea {
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-success {
+      background-color: #27ae60;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      font-size: 12px;
+    }
+
+    .btn-success:hover {
+      background-color: #229954;
+    }
+
+    .btn-danger {
+      background-color: #e74c3c;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      font-size: 11px;
+    }
+
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+
+    .btn-sm {
+      padding: 0.3rem 0.6rem;
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .actions .btn {
+      flex: 1;
+      min-width: 100px;
+    }
+
+    small {
+      display: block;
+      color: #7f8c8d;
+      font-size: 12px;
+      margin-top: 0.25rem;
+    }
+
+    #productosAgregados {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      min-height: 100px;
+    }
+
+    .producto-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      background-color: white;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #ecf0f1;
+    }
+
+    .producto-info {
+      flex: 1;
+    }
+
+    .producto-acciones {
+      margin-left: 1rem;
+    }
+
+    #msg {
+      margin-bottom: 1rem;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 0.75rem;
+      border-radius: 4px;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 0.75rem;
+      border-radius: 4px;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .actions {
+        flex-direction: column;
+      }
+      
+      .actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Logo arriba a la izquierda -->
+    <div class="logo">
+      <h1>Sistema de Gestión</h1>
+    </div>
+    
+    <!-- Navegación principal -->
+    <nav>
+      <ul>
+        <li><a th:href="@{/home}">Inicio</a></li>
+        <li><a th:href="@{/pedidos-clientes}">← Volver a la lista</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="main-content">
+    <main>
+      <h2>Gestión de Pedidos de Clientes</h2>
+
+      <div id="msg"></div>
+
+      <div class="container">
+        <!-- FORM -->
+        <div class="card">
+          <h3 id="formTitle" class="form-title">Agregar Pedido</h3>
+          <form id="pedidoClienteForm" autocomplete="off">
+            <input type="hidden" id="pedidoClienteId" value="">
+
+            <div class="form-grid">
+              <div class="form-block">
+                <h5>Información del Cliente</h5>
+                <label>Nombre y Apellido / Razón Social
+                  <input type="text" id="nombreCliente" required maxlength="100">
+                </label>
+                <label>Email
+                  <input type="email" id="emailCliente" required maxlength="100">
+                </label>
+                <label>Teléfono
+                  <input type="tel" id="telefonoCliente" required maxlength="100">
+                </label>
+              </div>
+
+              <div class="form-block">
+                <h5>Fechas</h5>
+                <label>Fecha Pedido
+                  <input type="date" id="fechaPedido" required readonly>
+                </label>
+                <label>Fecha Entrega
+                  <input type="date" id="fechaEntrega" required maxlength="100">
+                </label>
+              </div>
+
+              <div class="form-block">
+                <h5>Envío</h5>
+                <label><input type="checkbox" id="envio"> Requiere envío</label>
+                <label>Lugar de Entrega
+                  <input type="text" id="lugarEntrega" maxlength="100">
+                </label>
+              </div>
+
+              <div class="form-block">
+                <h5>Productos</h5>
+                <label>Cerveza
+                  <select id="cervezaSelect">
+                    <option value="">-- Elegir cerveza --</option>
+                  </select>
+                </label>
+                <small>Precio: <span id="cervezaPrecio">-</span></small>
+                <button type="button" id="agregarCerveza" class="btn btn-sm btn-primary">+ Agregar Cerveza</button>
+              </div>
+
+              <div class="form-block">
+                <h5>Accesorios</h5>
+                <label>Accesorio
+                  <select id="accesorioSelect">
+                    <option value="">-- Elegir accesorio --</option>
+                  </select>
+                </label>
+                <small>Precio: <span id="accesorioPrecio">-</span></small>
+                <button type="button" id="agregarAccesorio" class="btn btn-sm btn-primary">+ Agregar Accesorio</button>
+              </div>
+
+              <div class="form-block full-span">
+                <h5>Productos Agregados</h5>
+                <div id="productosAgregados" style="border: 1px solid #ccc; padding: 10px; min-height: 100px; background-color: #f9f9f9;">
+                  <p style="color: #666; font-style: italic;">No hay productos agregados</p>
+                </div>
+              </div>
+
+              <div class="form-block">
+                <h5>Estado</h5>
+                <label>Estado del pedido
+                  <input type="text" id="estadoSelect" value="Pendiente" readonly maxlength="100">
+                </label>
+                <label>Estado de Pago
+                  <input type="checkbox" id="estadoPagoCheck">
+                </label>
+              </div>
+
+              <div class="form-block full-span">
+                <h5>Notas</h5>
+                <label>
+                  <textarea id="nota" rows="4" placeholder="Información adicional sobre el pedido..." style="width: 100%; resize: vertical;" maxlength="100"></textarea>
+                </label>
+              </div>
+
+              <div class="form-block full-span">
+                <h5>Total</h5>
+                <label>Total general
+                  <div id="totalGralDisplay" style="font-weight: bold; font-size: 1.2em; color: #2c3e50; padding: 8px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; min-height: 20px;">$0.00</div>
+                  <input type="hidden" id="totalGral" step="0.01" readonly>
+                </label>
+              </div>
+
+              <div class="actions full-span">
+                <button class="btn btn-primary" type="submit">Guardar</button>
+                <button class="btn btn-primary" type="button" id="resetBtn">Cancelar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </section>
+
+<script>
+/*
+ * Pedidos Cliente Form - Standalone form page
+ */
+
+/* constants */
+const API = '/api';
+
+/* DOM elements */
+const pedidoClienteForm = document.getElementById('pedidoClienteForm');
+const pedidoClienteIdInput = document.getElementById('pedidoClienteId');
+const fechaPedidoInput = $('#fechaPedido');
+const fechaEntregaInput = $('#fechaEntrega');
+const envioInput = $('#envio');
+const direccionEntregaInput = $('#lugarEntrega');
+const nombreClienteInput = $('#nombreCliente');
+const emailClienteInput = $('#emailCliente');
+const telefonoClienteInput = $('#telefonoCliente');
+const lugarEntregaInput = $('#lugarEntrega');
+const cervezaSelect = $('#cervezaSelect');
+const cervezaPrecioSpan = $('#cervezaPrecio');
+const accesorioSelect = $('#accesorioSelect');
+const accesorioPrecioSpan = $('#accesorioPrecio');
+const estadoSelect = $('#estadoSelect');
+const estadoPagoCheck = $('#estadoPagoCheck');
+const productosAgregadosContainer = $('#productosAgregados');
+const notaInput = $('#nota');
+const totalInput = $('#totalGral');
+const totalDisplay = $('#totalGralDisplay');
+
+// Función para actualizar el display del total con formato de moneda
+function updateTotalDisplay(total) {
+  const formattedTotal = `$${total.toFixed(2)}`;
+  totalDisplay.text(formattedTotal);
+}
+const resetBtn = $('#resetBtn');
+const formTitle = $('#formTitle');
+
+let accesoriosList = [];
+let cervezasList = [];
+let productosAgregados = [];
+
+/* Utils */
+function formatDateFromMillis(ms) {
+  if (ms === null || ms === undefined) return '';
+  const d = new Date(Number(ms));
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+function isoDateInputFromMillis(ms) {
+  if (ms === null || ms === undefined) return '';
+  const d = new Date(Number(ms));
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function mensaje(msg, tipo) {
+  const msgEl = document.getElementById('msg');
+  if (!msgEl) return;
+  
+  msgEl.textContent = msg || '';
+  msgEl.className = tipo || '';
+}
+
+/* Load all catalogs */
+async function loadAll() {
+  try {
+    mensaje('Cargando datos...', '');
+    const endpoints = [
+      `${API}/getAllCerveza`,
+      `${API}/getAllAccesorio`
+    ];
+    const [cerRes, accRes] = await Promise.all(
+      endpoints.map(u => fetchJSON(u).catch(err=>({status:'Error', descripcion:err.message, data:[]})))
+    );
+    cervezasList = (cerRes && cerRes.data) ? cerRes.data : (Array.isArray(cerRes) ? cerRes : []);
+    accesoriosList = ((accRes && accRes.data) ? accRes.data : (Array.isArray(accRes) ? accRes : [])).filter(a => (a.estado||'').toLowerCase() === 'disponible');
+    accesoriosList = accesoriosList.filter((v,i,a) => a.findIndex(x => x.id===v.id)===i);
+
+    populateSelects();
+    renderProductosAgregados();
+    
+    mensaje('', '');
+  } catch (err) {
+    console.error(err);
+    mensaje('Error cargando datos: ' + (err.message || err), 'error');
+  }
+}
+
+/* populate selects */
+function populateSelects() {
+  console.log('Populating selects...');
+  
+  // Cervezas predefinidas
+  cervezaSelect.html(`<option value="">-- Elegir cerveza --</option>`);
+  
+  const cervezasPredefinidas = [
+    { id: 'rubia', nombre: 'Rubia', precio: 8000 },
+    { id: 'ipa', nombre: 'IPA', precio: 9500 },
+    { id: 'negra', nombre: 'Negra', precio: 7000 },
+    { id: 'roja', nombre: 'Roja', precio: 7500 },
+    { id: 'pilsner', nombre: 'Pilsner', precio: 8200 },
+    { id: 'stout', nombre: 'Stout', precio: 9000 },
+    { id: 'porter', nombre: 'Porter', precio: 8800 },
+    { id: 'lager', nombre: 'Lager', precio: 7800 },
+    { id: 'ale', nombre: 'Ale', precio: 8500 },
+    { id: 'weiss', nombre: 'Weiss', precio: 8000 }
+  ];
+  
+  console.log('Adding predefined beers:', cervezasPredefinidas.length);
+  cervezasPredefinidas.forEach(c => {
+    cervezaSelect.append(`<option value="${c.id}" data-price="${c.precio}">${c.nombre} - $${c.precio}</option>`);
+  });
+
+  // Agregar cervezas desde la base de datos si existen
+  console.log('Total cervezas cargadas desde BD:', cervezasList.length);
+  cervezasList.forEach(c => {
+    const price = (c.precioPorLitro !== undefined && c.precioPorLitro !== null) ? c.precioPorLitro : 0;
+    const label = (c.nombreCerveza || c.nombre || 'Sin nombre') + (price > 0 ? ` - $${price}` : '');
+    cervezaSelect.append(`<option value="bd_${c.id}" data-price="${price}">${label} (BD)</option>`);
+  });
+
+  // Accesorios predefinidos
+  accesorioSelect.html(`<option value="">-- Elegir accesorio --</option>`);
+  
+  const accesoriosPredefinidos = [
+    { id: 'canilla', nombre: 'Canilla', precio: 5000 },
+    { id: 'gas', nombre: 'Gas', precio: 3500 },
+    { id: 'chopera', nombre: 'Chopera', precio: 7000 }
+  ];
+  
+  console.log('Adding predefined accessories:', accesoriosPredefinidos.length);
+  accesoriosPredefinidos.forEach(a => {
+    accesorioSelect.append(`<option value="${a.id}" data-precio="${a.precio}">${a.nombre} - $${a.precio}</option>`);
+  });
+
+  // Agregar accesorios de la base de datos si existen
+  console.log('Total accesorios cargados desde BD:', accesoriosList.length);
+  accesoriosList.forEach(a => {
+    const precio = a.precio || 0;
+    const label = `${a.nombre || 'Accesorio ' + a.id} ${precio > 0 ? `- $${precio}` : ''} ${a.notas ? '- ' + a.notas : ''}`;
+    accesorioSelect.append(`<option value="bd_${a.id}" data-precio="${precio}">${label} (BD)</option>`);
+  });
+
+  updateCervezaInfo();
+  updateAccesorioInfo();
+  
+  console.log('Selects populated successfully');
+  console.log('Cerveza options:', cervezaSelect.children.length);
+  console.log('Accesorio options:', accesorioSelect.children.length);
+}
+
+/* update displays */
+function updateCervezaInfo() {
+  const v = cervezaSelect.val();
+  if (!v) {
+    cervezaPrecioSpan.textContent = '-';
+  } else {
+    // Obtener el precio desde el atributo data-price del option seleccionado
+    const selectedOption = cervezaSelect.find('option:selected');
+    const price = selectedOption.attr('data-price');
+    cervezaPrecioSpan.textContent = price ? ('$' + price) : '-';
+  }
+  recalcTotal();
+}
+
+function updateAccesorioInfo() {
+  const v = accesorioSelect.val();
+  if (!v) {
+    accesorioPrecioSpan.textContent = '-';
+  } else {
+    // Obtener el precio desde el atributo data-precio del option seleccionado
+    const selectedOption = accesorioSelect.find('option:selected');
+    const precio = selectedOption.attr('data-precio');
+    accesorioPrecioSpan.textContent = precio ? ('$' + precio) : '-';
+  }
+}
+
+/* Funciones para manejar productos agregados */
+function agregarCerveza() {
+  const cervezaId = cervezaSelect.val();
+  if (!cervezaId) {
+    mensaje('Seleccione una cerveza', 'error');
+    return;
+  }
+  
+  // Obtener información del option seleccionado
+  const selectedOption = cervezaSelect.find('option:selected');
+  const precio = parseFloat(selectedOption.attr('data-price')) || 0;
+  const nombre = selectedOption.text().split(' - ')[0]; // Obtener solo el nombre sin el precio
+  
+  // Determinar si es una cerveza predefinida o de BD
+  let idFinal = cervezaId;
+  if (cervezaId.startsWith('bd_')) {
+    // Es de la base de datos
+    idFinal = cervezaId.replace('bd_', '');
+  }
+  
+  const producto = {
+    id: Date.now(),
+    tipo: 'cerveza',
+    cerveza: { id: idFinal, nombre: nombre, precio: precio },
+    precio: precio,
+    subtotal: precio
+  };
+  
+  productosAgregados.push(producto);
+  renderProductosAgregados();
+  recalcTotal();
+  
+  // Limpiar selección
+  cervezaSelect.val('');
+  updateCervezaInfo();
+}
+
+function agregarAccesorio() {
+  const accesorioId = accesorioSelect.val();
+  if (!accesorioId) {
+    mensaje('Seleccione un accesorio', 'error');
+    return;
+  }
+  
+  // Obtener información del option seleccionado
+  const selectedOption = accesorioSelect.find('option:selected');
+  const precio = parseFloat(selectedOption.attr('data-precio')) || 0;
+  const nombre = selectedOption.text().split(' - ')[0]; // Obtener solo el nombre sin el precio
+  
+  // Determinar si es un accesorio predefinido o de BD
+  let idFinal = accesorioId;
+  if (accesorioId.startsWith('bd_')) {
+    // Es de la base de datos
+    idFinal = accesorioId.replace('bd_', '');
+  }
+  
+  const producto = {
+    id: Date.now(),
+    tipo: 'accesorio',
+    accesorio: { id: idFinal, nombre: nombre, precio: precio },
+    precio: precio,
+    subtotal: precio
+  };
+  
+  productosAgregados.push(producto);
+  renderProductosAgregados();
+  recalcTotal();
+  
+  // Limpiar selección
+  accesorioSelect.val('');
+  updateAccesorioInfo();
+}
+
+function renderProductosAgregados() {
+  if (productosAgregados.length === 0) {
+    productosAgregadosContainer.html('<p style="color: #666; font-style: italic;">No hay productos agregados</p>');
+    return;
+  }
+  
+  let html = '';
+  productosAgregados.forEach(producto => {
+    if (producto.tipo === 'cerveza') {
+      html += `
+        <div class="producto-item">
+          <div class="producto-info">
+            <strong>Cerveza:</strong> ${producto.cerveza.nombre} 
+            <br><small>Precio: $${producto.subtotal.toFixed(2)}</small>
+          </div>
+          <div class="producto-acciones">
+            <button class="btn-danger" onclick="eliminarProducto(${producto.id})">Borrar</button>
+          </div>
+        </div>
+      `;
+    } else if (producto.tipo === 'accesorio') {
+      html += `
+        <div class="producto-item">
+          <div class="producto-info">
+            <strong>Accesorio:</strong> ${producto.accesorio.nombre} 
+            <br><small>Precio: $${producto.subtotal.toFixed(2)}</small>
+          </div>
+          <div class="producto-acciones">
+            <button class="btn-danger" onclick="eliminarProducto(${producto.id})">Borrar</button>
+          </div>
+        </div>
+      `;
+    }
+  });
+  
+  productosAgregadosContainer.html(html);
+}
+
+function eliminarProducto(id) {
+  productosAgregados = productosAgregados.filter(p => p.id !== id);
+  renderProductosAgregados();
+  recalcTotal();
+}
+
+function recalcTotal() {
+  let total = 0;
+  productosAgregados.forEach(producto => {
+    total += producto.subtotal || 0;
+  });
+  
+  total = Math.round((total + Number.EPSILON) * 100) / 100;
+  totalInput.val(total);
+  updateTotalDisplay(total);
+  return total;
+}
+
+/* reset form */
+function resetForm() {
+  pedidoClienteIdInput.value = '';
+  pedidoClienteForm.reset();
+  totalInput.val('');
+  updateTotalDisplay(0);
+  formTitle.textContent = 'Agregar Pedido';
+  formTitle.removeClass('edit-mode');
+  productosAgregados = [];
+  renderProductosAgregados();
+  updateCervezaInfo();
+  updateAccesorioInfo();
+}
+
+/* submit form (create or update) */
+async function submitForm(e) {
+  e.preventDefault();
+  try {
+    const fechaP = fechaPedidoInput.val();
+    const fechaE = fechaEntregaInput.val();
+    if (!fechaP || !fechaE) { mensaje('Fechas obligatorias', 'error'); return; }
+    const dP = new Date(fechaP);
+    const dE = new Date(fechaE);
+    if (dE <= dP) { mensaje('La fecha de entrega no puede ser anterior a la fecha de pedido', 'error'); return; }
+
+    const envio = envioInput.prop('checked');
+    const lugarEntrega = lugarEntregaInput.val().trim();
+    if (envio && !lugarEntrega) { mensaje('Si seleccionás envío, el lugar de entrega es obligatorio', 'error'); return; }
+
+    const nombreCliente = nombreClienteInput.val().trim();
+    if (!nombreCliente) { mensaje('El nombre del cliente es obligatorio', 'error'); return; }
+
+    if (productosAgregados.length === 0) { mensaje('Debe agregar al menos un producto', 'error'); return; }
+
+    const idVal = pedidoClienteIdInput.value ? Number(pedidoClienteIdInput.value) : 0;
+    const total = Number(recalcTotal()) || 0;
+
+    // Preparar productos para el payload
+    const cervezas = [];
+    const accesorios = [];
+    
+    productosAgregados.forEach(producto => {
+      if (producto.tipo === 'cerveza') {
+        cervezas.push({ id: Number(producto.cerveza.id) });
+      } else if (producto.tipo === 'accesorio') {
+        accesorios.push({ id: Number(producto.accesorio.id) });
+      }
+    });
+
+    const payload = {
+      id: idVal,
+      fechaPedido: new Date(fechaPedidoInput.val()).getTime(),
+      fechaEntrega: new Date(fechaEntregaInput.val()).getTime(),
+      direccionEntrega: envio ? lugarEntrega : 'Sin envío',
+      estado: 'Pendiente', // Siempre pendiente para clientes
+      estadoPago: estadoPagoCheck.prop('checked') ? 'Pagado' : 'Pendiente',
+      envio: envio,
+      nombreCliente: nombreCliente,
+      emailCliente: emailClienteInput.val().trim() || null,
+      telefonoCliente: telefonoClienteInput.val().trim() || null,
+      lugarEntrega: lugarEntregaInput.val().trim() || null,
+      nota: notaInput.val().trim() || null,
+      accesorios: accesorios,
+      cervezas: cervezas,
+      totalGral: total
+    };
+
+    const isNew = !pedidoClienteIdInput.value || Number(pedidoClienteIdInput.value) === 0;
+    const method = isNew ? 'POST' : 'PUT';
+    const url = isNew ? `${API}/addPedidoCliente` : `${API}/updatePedidoCliente`;
+
+    console.log('Payload enviado:', payload);
+    
+    const res = await fetchJSON(url, {
+      method,
+      headers: {'Content-Type':'application/json', 'Accept':'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    console.log('Respuesta del servidor:', res);
+
+    const ok = res && (res.codigo === '200' || res.codigo === '201' || res.status === 'Ok' || res.status === 'OK');
+    if (ok) {
+      mensaje('Pedido guardado correctamente.', 'success');
+      // Redirigir a la lista después de guardar
+      setTimeout(() => {
+        window.location.href = '/pedidos-clientes';
+      }, 1500);
+    } else {
+      const txt = (res && res.descripcion) ? res.descripcion : 'No se pudo guardar el pedido';
+      const data = (res && res.data) ? res.data : '';
+      console.error('Error detallado:', { respuesta: res, texto: txt, data: data });
+      mensaje(`${txt} ${data ? '- Detalle: ' + data : ''}`, 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    mensaje('Error al guardar: ' + err.message, 'error');
+  }
+}
+
+/* Utils */
+async function fetchJSON(url, options = {}) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    });
+    
+    const text = await response.text();
+    console.log('Response status:', response.status);
+    console.log('Response text:', text);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${text}`);
+    }
+    
+    if (!text) return null;
+    return JSON.parse(text);
+  } catch (error) {
+    console.error('Error en fetchJSON:', error);
+    throw error;
+  }
+}
+
+/* listeners */
+pedidoClienteForm.addEventListener('submit', submitForm);
+resetBtn.on('click', () => { 
+  resetForm(); 
+  mensaje('', ''); 
+});
+cervezaSelect.on('change', updateCervezaInfo);
+accesorioSelect.on('change', updateAccesorioInfo);
+
+// Botones para agregar productos
+document.getElementById('agregarCerveza').addEventListener('click', agregarCerveza);
+document.getElementById('agregarAccesorio').addEventListener('click', agregarAccesorio);
+
+/* Load pedido for editing */
+async function loadPedidoClienteForEdit(id) {
+  try {
+    const res = await fetchJSON(`${API}/getByIdPedidoCliente/${id}`);
+    if (res && res.data) {
+      const p = res.data;
+      loadPedidoClienteIntoForm(p);
+    } else {
+      mensaje('Pedido no encontrado', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    mensaje('Error cargando pedido: ' + err.message, 'error');
+  }
+}
+
+/* Load pedido into form */
+function loadPedidoClienteIntoForm(p) {
+  pedidoClienteIdInput.value = p.id || '';
+  formTitle.textContent = 'Cargar Pedido';
+  formTitle.addClass('edit-mode');
+  
+  // Fechas
+  fechaPedidoInput.val(isoDateInputFromMillis(p.fechaPedido));
+  fechaEntregaInput.val(isoDateInputFromMillis(p.fechaEntrega));
+  
+  // Cliente
+  nombreClienteInput.val(p.nombreCliente || '');
+  emailClienteInput.val(p.emailCliente || '');
+  telefonoClienteInput.val(p.telefonoCliente || '');
+  lugarEntregaInput.val(p.lugarEntrega || p.direccionEntrega || '');
+  
+  // Envío
+  envioInput.prop('checked', p.envio || false);
+  
+  // Estado
+  estadoSelect.val(p.estado || 'Pendiente');
+  estadoPagoCheck.prop('checked', (p.estadoPago || '').toLowerCase() === 'pagado');
+  
+  // Nota
+  notaInput.val(p.nota || '');
+  
+  // Total
+  const total = p.totalGral || 0;
+  totalInput.val(total);
+  updateTotalDisplay(total);
+  
+  // Cargar productos (esto requeriría endpoints adicionales para obtener los productos del pedido)
+  // Por ahora, solo mostramos el total
+  productosAgregados = [];
+  renderProductosAgregados();
+}
+
+// Validación de nombre: solo letras y espacios
+function validateNombre(value) {
+  // Solo permite letras (incluye acentos y ñ) y espacios
+  const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+  return nombreRegex.test(value);
+}
+
+// Validación de teléfono: solo números
+function validateTelefono(value) {
+  // Solo permite números
+  const telefonoRegex = /^[0-9]+$/;
+  return telefonoRegex.test(value);
+}
+
+// Validación de email: solo @gmail.com y @hotmail.com
+function validateEmail(value) {
+  // Solo permite @gmail.com y @hotmail.com
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|hotmail\.com)$/;
+  return emailRegex.test(value);
+}
+
+// Función para filtrar caracteres no válidos en tiempo real (nombre)
+function filterNombreInput(event) {
+  const input = event.target;
+  const value = input.value;
+  
+  // Filtrar caracteres no válidos (mantener solo letras y espacios)
+  const filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
+  
+  if (value !== filteredValue) {
+    input.value = filteredValue;
+    
+    // Mostrar mensaje de advertencia
+    showValidationMessage(input, 'Solo se permiten letras y espacios');
+  }
+}
+
+// Función para filtrar caracteres no válidos en tiempo real (teléfono)
+function filterTelefonoInput(event) {
+  const input = event.target;
+  const value = input.value;
+  
+  // Filtrar caracteres no válidos (mantener solo números)
+  const filteredValue = value.replace(/[^0-9]/g, '');
+  
+  if (value !== filteredValue) {
+    input.value = filteredValue;
+    
+    // Mostrar mensaje de advertencia
+    showValidationMessage(input, 'Solo se permiten números');
+  }
+}
+
+// Función para validar email en tiempo real
+function validateEmailInput(event) {
+  const input = event.target;
+  const value = input.value;
+  
+  if (value && !validateEmail(value)) {
+    showValidationMessage(input, 'Solo se permiten emails de @gmail.com y @hotmail.com');
+  } else {
+    // Remover mensaje de error si el email es válido
+    $(input).siblings('.validation-message').remove();
+  }
+}
+
+// Función para mostrar mensajes de validación
+function showValidationMessage(input, message) {
+  // Remover mensaje anterior si existe
+  $(input).siblings('.validation-message').remove();
+  
+  // Agregar nuevo mensaje
+  const messageDiv = $(`<div class="validation-message" style="color: #e74c3c; font-size: 0.8em; margin-top: 2px;">${message}</div>`);
+  $(input).after(messageDiv);
+  
+  // Remover mensaje después de 3 segundos
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 3000);
+}
+
+/* init */
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadAll();
+  
+  // Configurar validación del campo nombre
+  const nombreInput = document.getElementById('nombreCliente');
+  if (nombreInput) {
+    nombreInput.addEventListener('input', filterNombreInput);
+    nombreInput.addEventListener('blur', function() {
+      if (this.value && !validateNombre(this.value)) {
+        showValidationMessage(this, 'Solo se permiten letras y espacios');
+      }
+    });
+  }
+  
+  // Configurar validación del campo teléfono
+  const telefonoInput = document.getElementById('telefonoCliente');
+  if (telefonoInput) {
+    telefonoInput.addEventListener('input', filterTelefonoInput);
+    telefonoInput.addEventListener('blur', function() {
+      if (this.value && !validateTelefono(this.value)) {
+        showValidationMessage(this, 'Solo se permiten números');
+      }
+    });
+  }
+  
+  // Configurar validación del campo email
+  const emailInput = document.getElementById('emailCliente');
+  if (emailInput) {
+    emailInput.addEventListener('input', validateEmailInput);
+    emailInput.addEventListener('blur', validateEmailInput);
+  }
+  
+  // Verificar si estamos editando
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('edit');
+  
+  if (editId) {
+    await loadPedidoClienteForEdit(editId);
+  } else {
+    // ⚡ Setear fecha de pedido al día actual por defecto
+    const hoy = new Date();
+    const yyyy = hoy.getFullYear();
+    const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dd = String(hoy.getDate()).padStart(2, '0');
+    fechaPedidoInput.val(`${yyyy}-${mm}-${dd}`);
+
+    // Inicializar estado como pendiente
+    estadoSelect.val('Pendiente');
+    estadoPagoCheck.prop('checked', false);
+    
+    // Inicializar display del total
+    updateTotalDisplay(0);
+  }
+});
+</script>
+
+</body>
+</html>

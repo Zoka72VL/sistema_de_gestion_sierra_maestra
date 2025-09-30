@@ -75,10 +75,10 @@ public class MvcViewController {
     @Autowired
     com.sca.service.impl.FirmaServiceImpl firmaService;
 
-    @GetMapping({"/","/home"})
+    @GetMapping({"/dashboard"})
     public String home(Model model) {
         model.addAttribute("title", "Sistema - Inicio");
-    return "home";
+        return "home";
     }
 
     // Pedidos

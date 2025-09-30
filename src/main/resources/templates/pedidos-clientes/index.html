@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos de Clientes - Sistema de Gestión</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" th:href="@{/css/styles-sistema.css}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #34495e;
+    }
+
+    .main-content {
+      padding: 2rem;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+    }
+
+    h3 {
+      color: #2c3e50;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-success {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #229954;
+    }
+
+    .btn-primary {
+      background-color: #3498db;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      font-size: 11px;
+    }
+
+    .btn-primary:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-danger {
+      background-color: #e74c3c;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      font-size: 11px;
+    }
+
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+
+    .btn-warning {
+      background-color: #f39c12;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      font-size: 11px;
+    }
+
+    .btn-warning:hover {
+      background-color: #e67e22;
+    }
+
+    .btn-agregar:hover {
+      background-color: #2c3e50 !important;
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 12px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ecf0f1;
+      font-size: 13px;
+    }
+
+    th {
+      background-color: #34495e;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .actions .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 10px;
+      min-width: 60px;
+    }
+
+    #msg {
+      margin-bottom: 1rem;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 0.75rem;
+      border-radius: 4px;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 0.75rem;
+      border-radius: 4px;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+      .table-container {
+        font-size: 12px;
+      }
+      
+      th, td {
+        padding: 0.5rem 0.25rem;
+      }
+      
+      .actions {
+        flex-direction: column;
+        gap: 0.125rem;
+      }
+      
+      .actions .btn {
+        font-size: 9px;
+        padding: 0.2rem 0.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Logo arriba a la izquierda -->
+    <div class="logo">
+      <h1>Sistema de Gestión</h1>
+    </div>
+    
+    <!-- Navegación principal -->
+    <nav>
+      <ul>
+        <li><a th:href="@{/home}">Inicio</a></li>
+        <li><a th:href="@{/pedidos-clientes/formulario}">Agregar Pedido</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="main-content">
+    <main>
+      <h2>Gestión de Pedidos de Clientes</h2>
+
+      <div id="msg"></div>
+
+      <div class="container">
+        <!-- LIST -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3>Lista de pedidos</h3>
+            <a href="/pedidos-clientes/formulario" class="btn btn-sm btn-agregar" style="margin-left: auto; text-decoration: none; display: inline-block; padding: 8px 16px; background-color: #34495e; color: white; border: none;">+ Agregar</a>
+          </div>
+
+          <div class="table-container">
+            <table id="pedidosClienteTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Fecha Pedido</th>
+                  <th>Fecha Entrega</th>
+                  <th>Lugar Entrega</th>
+                  <th>Estado</th>
+                  <th>Estado Pago</th>
+                  <th>Nota</th>
+                  <th>Total</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+<script>
+/*
+ * Pedidos Cliente List - Lista de pedidos de clientes
+ */
+
+/* constants */
+const API = '/api';
+
+/* DOM elements */
+const pedidosClienteTableBody = document.querySelector('#pedidosClienteTable tbody');
+
+let pedidosList = [];
+
+/* Utils */
+function formatDateFromMillis(ms) {
+  if (ms === null || ms === undefined) return '';
+  const d = new Date(Number(ms));
+  if (isNaN(d)) return '';
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+function mensaje(text, type='') {
+  const el = document.getElementById('msg');
+  el.innerHTML = text ? `<div class="${type==='error' ? 'error' : 'success'}">${text}</div>` : '';
+  if (text) {
+    setTimeout(() => { el.innerHTML = ''; }, 6000);
+  }
+}
+
+/* fetch wrapper */
+async function fetchJSON(url, opts) {
+  try {
+    const res = await fetch(url, Object.assign({headers:{'Accept':'application/json'}}, opts));
+    const text = await res.text();
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} - ${text || res.statusText}`);
+    }
+    if (!text) return null;
+    return JSON.parse(text);
+  } catch (err) {
+    throw err;
+  }
+}
+
+/* Load pedidos */
+async function loadPedidos() {
+  try {
+    mensaje('Cargando pedidos...', '');
+    const res = await fetchJSON(`${API}/getAllPedidoCliente`);
+    pedidosList = (res && res.data) ? res.data : (Array.isArray(res) ? res : []);
+    renderPedidosClienteTable();
+    mensaje('', '');
+  } catch (err) {
+    console.error(err);
+    mensaje('Error cargando pedidos: ' + (err.message || err), 'error');
+  }
+}
+
+/* Render table */
+function renderPedidosClienteTable() {
+  if (!pedidosClienteTableBody) return;
+  
+  pedidosClienteTableBody.innerHTML = '';
+  
+  if (pedidosList.length === 0) {
+    pedidosClienteTableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666; font-style: italic;">No hay pedidos registrados</td></tr>';
+    return;
+  }
+  
+  pedidosList.forEach(p => {
+    const row = document.createElement('tr');
+    
+    // Botones de acción dinámicos
+    let actionButtons = `
+      <button class="btn-primary" onclick="editPedidoCliente(${p.id})">Editar</button>
+      <button class="btn-danger" onclick="deletePedidoCliente(${p.id})">Eliminar</button>
+    `;
+    
+    // Agregar botón Cancelar solo si el pedido está Pendiente
+    if (p.estado && p.estado.toLowerCase() === 'pendiente') {
+      actionButtons += `<button class="btn-warning" onclick="cancelPedidoCliente(${p.id})">Cancelar</button>`;
+    }
+    
+    row.innerHTML = `
+      <td>${p.id || ''}</td>
+      <td>${formatDateFromMillis(p.fechaPedido)}</td>
+      <td>${formatDateFromMillis(p.fechaEntrega)}</td>
+      <td>${p.lugarEntrega || p.direccionEntrega || ''}</td>
+      <td>${p.estado || ''}</td>
+      <td>${p.estadoPago || ''}</td>
+      <td>${p.nota || ''}</td>
+      <td>$${(p.totalGral || 0).toFixed(2)}</td>
+      <td>
+        <div class="actions">
+          ${actionButtons}
+        </div>
+      </td>
+    `;
+    pedidosClienteTableBody.appendChild(row);
+  });
+}
+
+/* Actions */
+async function editPedidoCliente(id) {
+  // Redirigir al formulario con el ID para editar
+  window.location.href = `/pedidos-clientes/formulario?edit=${id}`;
+}
+
+async function deletePedidoCliente(id) {
+  if (!confirm('¿Está seguro que desea eliminar este pedido?')) {
+    return;
+  }
+  
+  try {
+    const res = await fetchJSON(`${API}/deletePedidoCliente/${id}`, {
+      method: 'DELETE'
+    });
+    
+    const ok = res && (res.codigo === '200' || res.status === 'Ok' || res.status === 'OK');
+    if (ok) {
+      mensaje('Pedido eliminado correctamente.', 'success');
+      await loadPedidos();
+    } else {
+      const txt = (res && res.descripcion) ? res.descripcion : 'No se pudo eliminar el pedido';
+      mensaje(txt, 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    mensaje('Error al eliminar: ' + err.message, 'error');
+  }
+}
+
+async function cancelPedidoCliente(id) {
+  if (!confirm('¿Está seguro que desea cancelar este pedido?')) {
+    return;
+  }
+  
+  try {
+    const res = await fetchJSON(`${API}/cancelPedidoCliente/${id}`, {
+      method: 'PUT'
+    });
+    
+    const ok = res && (res.codigo === '200' || res.status === 'Ok' || res.status === 'OK');
+    if (ok) {
+      mensaje('Pedido cancelado correctamente.', 'success');
+      await loadPedidos();
+    } else {
+      const txt = (res && res.descripcion) ? res.descripcion : 'No se pudo cancelar el pedido';
+      mensaje(txt, 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    mensaje('Error al cancelar: ' + err.message, 'error');
+  }
+}
+
+/* init */
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadPedidos();
+});
+</script>
+
+</body>
+</html>

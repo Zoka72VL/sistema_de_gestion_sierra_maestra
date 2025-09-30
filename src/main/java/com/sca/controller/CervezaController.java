@@ -22,10 +22,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lowagie.text.Row;
 import com.sca.model.Cerveza;
 import com.sca.model.Respuesta;
 import com.sca.service.impl.CervezaServiceImpl;
+
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -147,7 +151,7 @@ public class CervezaController {
 
     @GetMapping("/cervezas/exportar-estado-excel/{estado}")
     public void exportarExcel(@PathVariable String estado, HttpServletResponse response) throws IOException {
-    List<Cerveza> cervezas = (List<Cerveza>) CervezaServiceImpl.findByEstado(estado).getData();
+    List<Cerveza> cervezas = (List<Cerveza>) cervezasServiceImpl.findByEstado(estado).getData();
 
     Workbook workbook = new XSSFWorkbook();
     Sheet sheet = workbook.createSheet("Cervezas");

@@ -21,7 +21,7 @@ public class AuthClienteController {
     public ResponseEntity<Respuesta> loginCliente(@RequestParam String documento, @RequestParam String contraseña) {
         Respuesta respuesta = new Respuesta();
         try {
-            Cliente cliente = clienteRepository.findByDocumentoAndContraseña(documento, contraseña);
+            Cliente cliente = clienteRepository.findByDocumentoAndContrasenia(documento, contraseña);
             if (cliente != null) {
                 respuesta.setCodigo("200");
                 respuesta.setStatus("Ok");
