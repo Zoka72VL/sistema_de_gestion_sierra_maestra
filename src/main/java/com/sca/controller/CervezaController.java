@@ -6,6 +6,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.PathParam;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sca.model.Cerveza;
 import com.sca.model.Respuesta;
 import com.sca.service.impl.CervezaServiceImpl;
-
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Row;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -117,37 +116,13 @@ public class CervezaController {
         return "<div class='alert alert-danger'>No se encuentra</div>";
     }
 
-    // Agregado: búsqueda por estado con respuesta HTML
-    @GetMapping(value = "/cervezas/buscar-por-estado/{estado}", produces = MediaType.TEXT_HTML_VALUE)
-    public String buscarPorEstadoHtml(@PathVariable String estado) {
-        Respuesta respuesta = cervezasServiceImpl.findByEstado(estado);
-        if (respuesta != null && respuesta.getData() != null) {
-            Object data = respuesta.getData();
-            java.util.List<?> lista = null;
-            if (data instanceof java.util.List) {
-                lista = (java.util.List<?>) data;
-            } else if (data instanceof Cerveza) {
-                lista = java.util.Arrays.asList(data);
-            }
-            if (lista != null && !lista.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("<div class='list-group'>");
-                for (Object obj : lista) {
-                    if (obj instanceof Cerveza) {
-                        Cerveza cerveza = (Cerveza) obj;
-                        sb.append("<div class='list-group-item'>")
-                        .append("<b>ID:</b> ").append(cerveza.getId()).append(" | ")
-                        .append("<b>Nombre:</b> ").append(cerveza.getNombreCerveza()).append(" | ")
-                        .append("<b>Estado:</b> ").append(cerveza.getEstado())
-                        .append("</div>");
-                    }
-                }
-                sb.append("</div>");
-                return sb.toString();
-            }
-        }
-        return "<div class='alert alert-danger'>No se encontraron cervezas con ese estado</div>";
+    // Imports ya estaban: MediaType está importado en tu archivo
+    @GetMapping(value = "/cervezas/buscar-por-estado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Consultar cervezas por estado", notes = "Devuelve la lista de cervezas filtradas por estado en JSON")
+    public Respuesta buscarPorEstado(@PathVariable String estado) {
+        return cervezasServiceImpl.findByEstado(estado);
     }
+
 
     @GetMapping("/cervezas/exportar-estado-excel/{estado}")
     public void exportarExcel(@PathVariable String estado, HttpServletResponse response) throws IOException {
