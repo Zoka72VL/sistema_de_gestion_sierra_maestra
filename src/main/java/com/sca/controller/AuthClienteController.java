@@ -24,7 +24,9 @@ public class AuthClienteController {
         
         Respuesta respuesta = new Respuesta();
         try {
+
             Cliente cliente = clienteRepository.findByDocumentoAndContrasenia(documento, contrasenia);
+
             if (cliente != null) {
                 respuesta.setCodigo("200");
                 respuesta.setStatus("Ok");

@@ -25,14 +25,7 @@
           <button 
             class="btn btn-primary ms-2"
             type="button"
-            onclick="
-              const id = document.getElementById('buscar-id').value;
-              if(id){
-                htmx.ajax('GET', '/cervezas/buscar-por-id/' + id, '#detalle-cerveza');
-              } else {
-                document.getElementById('detalle-cerveza').innerHTML = '<div class=\'alert alert-warning\'>Ingrese un ID</div>';
-              }
-            "
+            onclick="buscarPorId()"
           >
             Buscar
           </button>
@@ -55,25 +48,18 @@
           <button 
             class="btn btn-primary ms-2"
             type="button"
-            onclick="
-              const estado = document.getElementById('buscar-estado').value;
-              if(estado){
-                htmx.ajax('GET', '/cervezas/buscar-por-estado/' + encodeURIComponent(estado), '#lista-cervezas-estado');
-                document.getElementById('descargar-excel').style.display = 'inline-block';
-                document.getElementById('descargar-pdf').style.display = 'inline-block';
-                document.getElementById('descargar-excel').setAttribute('data-estado', estado);
-                document.getElementById('descargar-pdf').setAttribute('data-estado', estado);
-              } else {
-                document.getElementById('lista-cervezas-estado').innerHTML = '<div class=\'alert alert-warning\'>Seleccione un estado</div>';
-                document.getElementById('descargar-excel').style.display = 'none';
-                document.getElementById('descargar-pdf').style.display = 'none';
-              }
-            "
+            onclick="buscarPorEstado()"
           >
             Buscar
           </button>
 
     </div>
+
+    <!-- Contenedor para mostrar resultados de la búsqueda por ID -->
+    <div id="resultado-id" class="mt-3"></div>
+    <!-- Contenedor donde se mostrará la lista filtrada por estado -->
+    <div id="lista-cervezas-estado" class="mt-3"></div>
+
 
     <div id="cervezas-list">
       <p class="text-muted">Haz click en Actualizar para ver las cervezas</p>
@@ -81,7 +67,176 @@
     
     <div id="cerveza-form" class="mt-3"></div>
 
-    <script>
+<script>
+
+    function buscarPorId() {
+    const id = document.getElementById('buscar-id').value.trim();
+    const contenedor = document.getElementById('resultado-id');
+
+    if (!id) {
+        contenedor.innerHTML = '<div class="alert alert-warning">Ingrese un ID válido</div>';
+        return;
+    }
+
+    // Llamada al endpoint JSON que agregamos en el controller
+    fetch('/cervezas/id/' + encodeURIComponent(id))
+        .then(response => {
+            if (!response.ok) {
+                // si el servidor devolvió 404 o 500, mostrar alerta
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(respuesta => {
+            // tu Respuesta tiene .codigo y .data (o .status)
+            const ok = respuesta && (respuesta.codigo === '200' || respuesta.status === 'Ok');
+            const data = respuesta ? respuesta.data : null;
+
+            if (ok && data) {
+                const c = data;
+                const descripcion = c.descripcion || '-';
+                const precio = (c.precioPorLitro != null) ? ('$' + Number(c.precioPorLitro).toFixed(2)) : '-';
+                const amargor = (c.amargorIbu != null) ? c.amargorIbu : '-';
+                const tipo = c.tipoCerveza || '-';
+                const nombre = c.nombreCerveza || '-';
+                const estado = c.estado || '-';
+                const grado = (c.gradoAlcoholico != null) ? c.gradoAlcoholico : '-';
+                const idMostrar = c.id != null ? c.id : id;
+
+                contenedor.innerHTML = `
+                    <div class="card p-3">
+                        <h5 class="card-title">Cerveza ID: ${idMostrar}</h5>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <p><b>Nombre:</b> ${nombre}</p>
+                            <p><b>Tipo:</b> ${tipo}</p>
+                            <p><b>Grado Alcohólico:</b> ${grado}</p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><b>IBU:</b> ${amargor}</p>
+                            <p><b>Precio/L:</b> ${precio}</p>
+                            <p><b>Estado:</b> <span class="badge ${getBadgeClass(estado)}">${estado}</span></p>
+                          </div>
+                        </div>
+                        <div class="mt-2"><b>Descripción:</b><p>${descripcion}</p></div>
+                    </div>
+                `;
+            } else {
+                contenedor.innerHTML = '<div class="alert alert-warning">No se encontró la cerveza con ese ID</div>';
+            }
+        })
+        .catch(err => {
+            console.error('buscarPorId error:', err);
+            document.getElementById('resultado-id').innerHTML = '<div class="alert alert-danger">Error al buscar la cerveza</div>';
+        });
+}
+
+// Si ya tenés getBadgeClass en otro lugar, no hace falta; si no, pegá esto:
+function getBadgeClass(estado) {
+    switch (estado) {
+        case 'Disponible': return 'bg-success';
+        case 'Agotada': return 'bg-danger';
+        case 'Produccion': return 'bg-primary';
+        case 'Mantenimiento': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+
+
+
+        function buscarPorEstado() {
+    const estado = document.getElementById('buscar-estado').value;
+
+    if (!estado) {
+        document.getElementById('lista-cervezas-estado').innerHTML =
+            '<div class="alert alert-warning">Seleccione un estado</div>';
+        return;
+    }
+
+    // Llamada al endpoint que ahora devuelve JSON
+    fetch('/cervezas/buscar-por-estado/' + encodeURIComponent(estado))
+        .then(response => {
+            if (!response.ok) throw new Error('HTTP error ' + response.status);
+            return response.json();
+        })
+        .then(respuesta => {
+            // tu servicio devuelve un objeto Respuesta { codigo: "200", data: [...] }
+            if (respuesta && (respuesta.codigo === '200' || respuesta.status === 'Ok')) {
+                const cervezas = Array.isArray(respuesta.data) ? respuesta.data : [];
+                mostrarListaCervezasPorEstado(cervezas, estado);
+                // si tenés botones de descarga, activalos (opcional)
+                const excelBtn = document.getElementById('descargar-excel');
+                const pdfBtn = document.getElementById('descargar-pdf');
+                if (excelBtn) {
+                    excelBtn.style.display = cervezas.length ? 'inline-block' : 'none';
+                    excelBtn.setAttribute('data-estado', estado);
+                    excelBtn.href = '/cervezas/exportar-estado-excel/' + encodeURIComponent(estado);
+                }
+                if (pdfBtn) {
+                    pdfBtn.style.display = cervezas.length ? 'inline-block' : 'none';
+                    pdfBtn.setAttribute('data-estado', estado);
+                    // si tenés endpoint para pdf ajustar href
+                    pdfBtn.href = '/cervezas/exportar-estado-pdf/' + encodeURIComponent(estado);
+                }
+            } else {
+                document.getElementById('lista-cervezas-estado').innerHTML =
+                    '<div class="alert alert-warning">No se encontraron cervezas en el estado seleccionado</div>';
+            }
+        })
+        .catch(err => {
+            console.error('Error buscarPorEstado:', err);
+            document.getElementById('lista-cervezas-estado').innerHTML =
+                '<div class="alert alert-danger">⚠️ Error al buscar por estado</div>';
+        });
+}
+
+function mostrarListaCervezasPorEstado(cervezas, estadoLabel) {
+    let html = `
+        <div class="card p-3">
+            <h5>Cervezas en estado "${estadoLabel}" <span class="badge bg-secondary">${cervezas ? cervezas.length : 0}</span></h5>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th><th>Nombre</th><th>Tipo</th><th>Grado Alc.</th><th>IBU</th><th>Precio/L</th><th>Estado</th><th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+    if (cervezas && cervezas.length > 0) {
+        cervezas.forEach(c => {
+            html += `<tr>
+                <td>${c.id ?? ''}</td>
+                <td>${c.nombreCerveza ?? ''}</td>
+                <td>${c.tipoCerveza ?? ''}</td>
+                <td>${c.gradoAlcoholico != null ? c.gradoAlcoholico + '°' : ''}</td>
+                <td>${c.amargorIbu != null ? c.amargorIbu : ''}</td>
+                <td>${c.precioPorLitro != null ? '$' + Number(c.precioPorLitro).toFixed(2) : ''}</td>
+                <td><span class="badge ${getBadgeClass(c.estado)}">${c.estado ?? ''}</span></td>
+                <td>${c.descripcion ? (c.descripcion.length > 80 ? c.descripcion.substring(0,80) + '...' : c.descripcion) : 'Sin descripción'}</td>
+            </tr>`;
+        });
+    } else {
+        html += `<tr><td colspan="8" class="text-center text-muted">No hay cervezas en este estado</td></tr>`;
+    }
+
+    html += `</tbody></table></div></div>`;
+    document.getElementById('lista-cervezas-estado').innerHTML = html;
+}
+
+// (Opcional) usa ya la función que tenías; si no, agrega:
+function getBadgeClass(estado) {
+    switch (estado) {
+        case 'Disponible': return 'bg-success';
+        case 'Agotada': return 'bg-danger';
+        case 'Produccion': return 'bg-primary';
+        case 'Mantenimiento': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+
+
+
     function cargarCervezas() {
         fetch('/getAllCerveza')
             .then(response => response.json())
