@@ -42,20 +42,44 @@
       <div class="col-12 col-lg-8">
         <div class="row g-3">
           <!-- Producción -->
-          <div class="col-12">
-            <div class="card">
-              <div class="card-body d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Producción</h5>
-                <small class="text-muted">Lotes, Maduración y Cervezas</small>
-              </div>
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a th:href="@{/cervezas}" class="text-decoration-none"><i class="bi bi-droplet me-2"></i>Cervezas</a></li>
-                <li class="list-group-item"><a th:href="@{/lotes}" class="text-decoration-none"><i class="bi bi-box-seam me-2"></i>Lotes</a></li>
-                <li class="list-group-item"><a th:href="@{/maduradores}" class="text-decoration-none"><i class="bi bi-person-lines-fill me-2"></i>Maduradores</a></li>
-                <li class="list-group-item"><a th:href="@{/barriles}" class="text-decoration-none"><i class="bi bi-box2-fill me-2"></i>Barriles</a></li>
-              </ul>
-            </div>
-          </div>
+<!-- Producción -->
+<div class="col-12">
+  <div class="card">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <h5 class="card-title mb-0">Producción</h5>
+      <small class="text-muted">Lotes, Maduración, Cervezas y Accesorios</small>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <a th:href="@{/cervezas}" class="text-decoration-none">
+          <i class="bi bi-droplet me-2"></i>Cervezas
+        </a>
+      </li>
+      <li class="list-group-item">
+        <a th:href="@{/lotes}" class="text-decoration-none">
+          <i class="bi bi-box-seam me-2"></i>Lotes
+        </a>
+      </li>
+      <li class="list-group-item">
+        <a th:href="@{/maduradores}" class="text-decoration-none">
+          <i class="bi bi-person-lines-fill me-2"></i>Maduradores
+        </a>
+      </li>
+      <li class="list-group-item">
+        <a th:href="@{/barriles}" class="text-decoration-none">
+          <i class="bi bi-box2-fill me-2"></i>Barriles
+        </a>
+      </li>
+      <!-- Nuevo enlace a accesorios -->
+      <li class="list-group-item">
+        <a th:href="@{/accesorios}" class="text-decoration-none">
+          <i class="bi bi-tools me-2"></i>Accesorios
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
 
           <!-- Ventas -->
           <div class="col-12">
