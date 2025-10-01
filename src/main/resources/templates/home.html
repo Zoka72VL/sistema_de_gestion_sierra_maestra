@@ -26,7 +26,8 @@
           <form id="threshold-form" class="d-flex gap-2">
             <select id="categoria" class="form-select form-select-sm">
               <option value="cervezas">Cerveza</option>
-              <option value="barriles">Barril</option>
+              <option value="barriles">Barril Disponible</option>
+              <option value="barriles_cargados">Barril Cargado</option>
               <option value="lotes">Lote</option>
               <option value="maduradores">Madurador</option>
             </select>
@@ -128,7 +129,14 @@
 
 <script>
 (function() {
-  const DEFAULT_THRESHOLDS = { cervezas: 100, barriles: 10, lotes: 5, maduradores: 2 };
+  // Agregar barriles_cargados a los thresholds por defecto
+  const DEFAULT_THRESHOLDS = { 
+    cervezas: 100, 
+    barriles: 10, 
+    barriles_cargados: 5,  // Nuevo threshold para barriles cargados
+    lotes: 5, 
+    maduradores: 2 
+  };
 
   async function loadThresholds() {
     try {
@@ -177,15 +185,25 @@
     }
 
     const items = [];
+    
+    // Verificación de cervezas
     const resC = await callCheckEndpoint(`/reports/cervezas/check-threshold?threshold=${encodeURIComponent(thresholds.cervezas)}`);
     items.push(formatMessage('Cervezas', resC));
 
+    // Verificación de barriles disponibles (estado: Disponible)
     const resB = await callCheckEndpoint(`/reports/barriles/check-threshold?threshold=${encodeURIComponent(thresholds.barriles)}`);
-    items.push(formatMessage('Barriles', resB));
+    items.push(formatMessage('Barriles Disponibles', resB));
 
+    // NUEVA VERIFICACIÓN: Barriles cargados (estado: Cargado)
+    // Usando el mismo endpoint pero con parámetro de estado
+    const resBC = await callCheckEndpoint(`/reports/barriles/check-threshold?threshold=${encodeURIComponent(thresholds.barriles_cargados)}&estado=Cargado`);
+    items.push(formatMessage('Barriles Cargados', resBC));
+
+    // Verificación de lotes
     const resL = await callCheckEndpoint(`/reports/lotes/check-threshold?threshold=${encodeURIComponent(thresholds.lotes)}`);
     items.push(formatMessage('Lotes', resL));
 
+    // Verificación de maduradores
     const resM = await callCheckEndpoint(`/finByEstado/Activo?threshold=${encodeURIComponent(thresholds.maduradores)}`);
     items.push(formatMessage('Maduradores', resM));
 
