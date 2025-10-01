@@ -25,14 +25,7 @@
           <button 
             class="btn btn-primary ms-2"
             type="button"
-            onclick="
-              const id = document.getElementById('buscar-id').value;
-              if(id){
-                htmx.ajax('GET', '/cervezas/buscar-por-id/' + id, '#detalle-cerveza');
-              } else {
-                document.getElementById('detalle-cerveza').innerHTML = '<div class=\'alert alert-warning\'>Ingrese un ID</div>';
-              }
-            "
+            onclick="buscarPorId()"
           >
             Buscar
           </button>
@@ -61,6 +54,9 @@
           </button>
 
     </div>
+
+    <!-- Contenedor para mostrar resultados de la búsqueda por ID -->
+    <div id="resultado-id" class="mt-3"></div>
     <!-- Contenedor donde se mostrará la lista filtrada por estado -->
     <div id="lista-cervezas-estado" class="mt-3"></div>
 
@@ -71,7 +67,82 @@
     
     <div id="cerveza-form" class="mt-3"></div>
 
-    <script>
+<script>
+
+    function buscarPorId() {
+    const id = document.getElementById('buscar-id').value.trim();
+    const contenedor = document.getElementById('resultado-id');
+
+    if (!id) {
+        contenedor.innerHTML = '<div class="alert alert-warning">Ingrese un ID válido</div>';
+        return;
+    }
+
+    // Llamada al endpoint JSON que agregamos en el controller
+    fetch('/cervezas/id/' + encodeURIComponent(id))
+        .then(response => {
+            if (!response.ok) {
+                // si el servidor devolvió 404 o 500, mostrar alerta
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(respuesta => {
+            // tu Respuesta tiene .codigo y .data (o .status)
+            const ok = respuesta && (respuesta.codigo === '200' || respuesta.status === 'Ok');
+            const data = respuesta ? respuesta.data : null;
+
+            if (ok && data) {
+                const c = data;
+                const descripcion = c.descripcion || '-';
+                const precio = (c.precioPorLitro != null) ? ('$' + Number(c.precioPorLitro).toFixed(2)) : '-';
+                const amargor = (c.amargorIbu != null) ? c.amargorIbu : '-';
+                const tipo = c.tipoCerveza || '-';
+                const nombre = c.nombreCerveza || '-';
+                const estado = c.estado || '-';
+                const grado = (c.gradoAlcoholico != null) ? c.gradoAlcoholico : '-';
+                const idMostrar = c.id != null ? c.id : id;
+
+                contenedor.innerHTML = `
+                    <div class="card p-3">
+                        <h5 class="card-title">Cerveza ID: ${idMostrar}</h5>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <p><b>Nombre:</b> ${nombre}</p>
+                            <p><b>Tipo:</b> ${tipo}</p>
+                            <p><b>Grado Alcohólico:</b> ${grado}</p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><b>IBU:</b> ${amargor}</p>
+                            <p><b>Precio/L:</b> ${precio}</p>
+                            <p><b>Estado:</b> <span class="badge ${getBadgeClass(estado)}">${estado}</span></p>
+                          </div>
+                        </div>
+                        <div class="mt-2"><b>Descripción:</b><p>${descripcion}</p></div>
+                    </div>
+                `;
+            } else {
+                contenedor.innerHTML = '<div class="alert alert-warning">No se encontró la cerveza con ese ID</div>';
+            }
+        })
+        .catch(err => {
+            console.error('buscarPorId error:', err);
+            document.getElementById('resultado-id').innerHTML = '<div class="alert alert-danger">Error al buscar la cerveza</div>';
+        });
+}
+
+// Si ya tenés getBadgeClass en otro lugar, no hace falta; si no, pegá esto:
+function getBadgeClass(estado) {
+    switch (estado) {
+        case 'Disponible': return 'bg-success';
+        case 'Agotada': return 'bg-danger';
+        case 'Produccion': return 'bg-primary';
+        case 'Mantenimiento': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+
+
 
         function buscarPorEstado() {
     const estado = document.getElementById('buscar-estado').value;

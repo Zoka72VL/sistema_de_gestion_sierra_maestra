@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sca.model.Cerveza;
@@ -75,46 +76,15 @@ public class CervezaController {
 		return cervezasServiceImpl.update(cerveza, bindingResult);
 	}
 
-	// Nuevo endpoint para búsqueda por ID y respuesta HTML
-    @GetMapping(value = "/cervezas/buscar-por-id/{id}", produces = MediaType.TEXT_HTML_VALUE)
-    public String buscarPorIdHtml(@PathVariable Long id) {
-        Respuesta respuesta = cervezasServiceImpl.finById(id);
-        if (respuesta != null && respuesta.getData() != null) {
-            Object data = respuesta.getData();
-            Cerveza cerveza = null;
-            // Si el servicio devuelve directamente una Cerveza
-            if (data instanceof Cerveza) {
-                cerveza = (Cerveza) data;
-            // Si el servicio devuelve una lista y el primer elemento es una Cerveza
-            } else if (data instanceof java.util.List) {
-                java.util.List<?> lista = (java.util.List<?>) data;
-                if (!lista.isEmpty() && lista.get(0) instanceof Cerveza) {
-                    cerveza = (Cerveza) lista.get(0);
-                }
-            }
-            if (cerveza != null) {
-                // Evitar null pointer en campos opcionales
-                String descripcion = cerveza.getDescripcion() != null ? cerveza.getDescripcion() : "-";
-                String precio = cerveza.getPrecioPorLitro() != null ? cerveza.getPrecioPorLitro().toString() : "-";
-                String amargor = cerveza.getAmargorIbu() != null ? cerveza.getAmargorIbu().toString() : "-";
-                String tipo = cerveza.getTipoCerveza() != null ? cerveza.getTipoCerveza() : "-";
-                String nombre = cerveza.getNombreCerveza() != null ? cerveza.getNombreCerveza() : "-";
-                String estado = cerveza.getEstado() != null ? cerveza.getEstado() : "-";
-                String grado = cerveza.getGradoAlcoholico() != null ? cerveza.getGradoAlcoholico().toString() : "-";
-                return "<div class='card'><div class='card-body'>"
-                    + "<h5 class='card-title'>Cerveza ID: " + cerveza.getId() + "</h5>"
-                    + "<p class='card-text'><b>Nombre:</b> " + nombre + "</p>"
-                    + "<p class='card-text'><b>Tipo:</b> " + tipo + "</p>"
-                    + "<p class='card-text'><b>Grado Alcohólico:</b> " + grado + "</p>"
-                    + "<p class='card-text'><b>Amargor IBU:</b> " + amargor + "</p>"
-                    + "<p class='card-text'><b>Descripción:</b> " + descripcion + "</p>"
-                    + "<p class='card-text'><b>Precio por Litro:</b> " + precio + "</p>"
-                    + "<p class='card-text'><b>Estado:</b> " + estado + "</p>"
-                    + "</div></div>";
-            }
-        }
-        return "<div class='alert alert-danger'>No se encuentra</div>";
+    //Busqueda por ID
+	@GetMapping(value = "/cervezas/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "Consultar cerveza por id (JSON)", notes = "Devuelve la cerveza solicitada en formato JSON")
+    public Respuesta buscarPorId(@PathVariable Long id) {
+        // usa la misma instancia de servicio que ya tenés en el controller
+        return cervezasServiceImpl.finById(id);
     }
+
 
     // Imports ya estaban: MediaType está importado en tu archivo
     @GetMapping(value = "/cervezas/buscar-por-estado/{estado}", produces = MediaType.APPLICATION_JSON_VALUE)
