@@ -54,7 +54,7 @@ public class FirmaController {
 	@GetMapping(value = "/getByIdFirma/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar firma por id", notes = "Esta operación consulta un firma por su identificador personal")
 	public Respuesta getByIdFirma(@PathParam("id") @PathVariable Long id) {
-		return firmaServiceImpl.finById(id);
+		return firmaServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteFirma/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

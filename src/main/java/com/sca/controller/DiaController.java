@@ -54,7 +54,7 @@ public class DiaController {
 	@GetMapping(value = "/getByIdDia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar dia por id", notes = "Esta operación consulta un dia por su identificador personal")
 	public Respuesta getByIdDia(@PathParam("id") @PathVariable Long id) {
-		return diaServiceImpl.finById(id);
+		return diaServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteDia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

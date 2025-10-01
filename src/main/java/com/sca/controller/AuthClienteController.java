@@ -18,10 +18,13 @@ public class AuthClienteController {
     private ClienteRepository clienteRepository;
 
     @PostMapping("/loginCliente")
-    public ResponseEntity<Respuesta> loginCliente(@RequestParam String documento, @RequestParam String contraseña) {
+    public ResponseEntity<Respuesta> loginCliente(
+            @RequestParam String documento, 
+            @RequestParam String contrasenia) {
+        
         Respuesta respuesta = new Respuesta();
         try {
-            Cliente cliente = clienteRepository.findByDocumentoAndContraseña(documento, contraseña);
+            Cliente cliente = clienteRepository.findByDocumentoAndContrasenia(documento, contrasenia);
             if (cliente != null) {
                 respuesta.setCodigo("200");
                 respuesta.setStatus("Ok");

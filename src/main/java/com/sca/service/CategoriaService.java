@@ -17,5 +17,5 @@ public interface CategoriaService {
 	
 	public Respuesta findAll();
 	
-	public Respuesta finById(Long id);
+	public Respuesta findById(Long id);
 }

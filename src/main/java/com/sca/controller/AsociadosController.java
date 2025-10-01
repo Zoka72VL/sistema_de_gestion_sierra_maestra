@@ -59,7 +59,7 @@ public class AsociadosController {
 	@GetMapping(value = "/getByIdAsociados/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Asociados por id", notes = "Esta operación consulta un Asociados por su identificador personal")
 	public Respuesta getByIdAsociados(@PathParam("id") @PathVariable Long id) {
-		return asociadosServiceImpl.finById(id);
+		return asociadosServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteAsociados/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

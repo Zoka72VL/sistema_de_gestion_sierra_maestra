@@ -42,12 +42,12 @@ public class PedidoController {
     @GetMapping(value = "/getByIdPedido/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Consultar Pedido por id", notes = "Consulta un Pedido por su identificador")
     public Respuesta getByIdPedido(@PathParam("id") @PathVariable Long id) {
-        return pedidosServiceImpl.finById(id);
+        return pedidosServiceImpl.findById(id);
     }
 
     @DeleteMapping(value = "/deletePedido/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Eliminar un Pedido", notes = "Elimina un Pedido de la base de datos")
-    public Respuesta deletePedido(@PathParam("id") @PathVariable Long id) {
+    public Respuesta deletePedido(@PathVariable Long id) {
         return pedidosServiceImpl.delete(id);
     }
 

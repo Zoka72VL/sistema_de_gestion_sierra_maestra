@@ -1,5 +1,8 @@
 package com.sca.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,27 +19,52 @@ import com.sca.model.Pedido;
 import com.sca.model.Respuesta;
 import com.sca.repository.PedidoRepository;
 import com.sca.service.PedidoService;
+import com.sca.service.BarrilService;
+import com.sca.service.AccesorioService;
 
 @Service
 public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements PedidoService {
 
-    Logger log = LoggerFactory.getLogger(String.class);
+    Logger log = LoggerFactory.getLogger(PedidoServiceImpl.class);
 
     @Autowired
-    PedidoRepository pedidoRepository;
+    private PedidoRepository pedidoRepository;
 
-    Respuesta respuesta;
-    String resp = "";
+    @Autowired
+    private BarrilService barrilService;
+
+    @Autowired
+    private AccesorioService accesorioService;
+
+    private Respuesta respuesta;
+    private String resp = "";
 
     @ExceptionHandler(BindException.class)
     @Override
     public ResponseEntity<Object> save(Pedido pedido, BindingResult bindingResult) throws BindException {
         respuesta = new Respuesta();
         try {
+            Pedido pedidoGuardado = pedidoRepository.save(pedido);
+
+            // ✅ Cambiar estado de barriles a "Alquilado"
+            if (pedidoGuardado.getBarriles() != null && !pedidoGuardado.getBarriles().isEmpty()) {
+                barrilService.marcarComoAlquilados(
+                    pedidoGuardado.getBarriles().stream().map(b -> b.getId()).collect(Collectors.toList())
+                );
+            }
+
+            // ✅ Cambiar estado de accesorios a "Alquilado"
+            if (pedidoGuardado.getAccesorios() != null && !pedidoGuardado.getAccesorios().isEmpty()) {
+                accesorioService.marcarComoAlquilados(
+                    pedidoGuardado.getAccesorios().stream().map(a -> a.getId()).collect(Collectors.toList())
+                );
+            }
+
             respuesta.setCodigo("200");
             respuesta.setStatus("Ok");
             respuesta.setDescripcion("Se agregó un Pedido");
-            respuesta.setData(pedidoRepository.save(pedido));
+            respuesta.setData(pedidoGuardado);
+
         } catch (Exception e) {
             respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
             respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
@@ -45,25 +73,23 @@ public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements
                 bindingResult.getAllErrors().forEach(r -> resp = resp + r.getDefaultMessage() + ";");
                 respuesta.setData(resp);
                 resp = "";
-                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
             } else {
                 respuesta.setData(e.getMessage());
-                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
             }
+            return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
         }
-        return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
+        return new ResponseEntity<>(respuesta, null, HttpStatus.CREATED);
     }
 
     @Override
     public Respuesta delete(Long id) {
         respuesta = new Respuesta();
         try {
-            Pedido pedido = pedidoRepository.findById(id).get();
             pedidoRepository.deleteById(id);
             respuesta.setCodigo("200");
             respuesta.setStatus("Ok");
             respuesta.setDescripcion("Se eliminó un Pedido");
-            respuesta.setData(pedido);
+            respuesta.setData(null);
         } catch (Exception e) {
             respuesta.setCodigo("400");
             respuesta.setStatus("Error");
@@ -91,7 +117,7 @@ public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements
     }
 
     @Override
-    public Respuesta finById(Long id) {
+    public Respuesta findById(Long id) {
         respuesta = new Respuesta();
         try {
             respuesta.setCodigo("200");
@@ -111,10 +137,25 @@ public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements
     public ResponseEntity<Object> update(Pedido pedido, BindingResult bindingResult) throws BindException {
         respuesta = new Respuesta();
         try {
+            Pedido pedidoGuardado = pedidoRepository.save(pedido);
+
+            // ✅ Actualizar estados de barriles y accesorios
+            if (pedidoGuardado.getBarriles() != null && !pedidoGuardado.getBarriles().isEmpty()) {
+                barrilService.marcarComoAlquilados(
+                    pedidoGuardado.getBarriles().stream().map(b -> b.getId()).collect(Collectors.toList())
+                );
+            }
+            if (pedidoGuardado.getAccesorios() != null && !pedidoGuardado.getAccesorios().isEmpty()) {
+                accesorioService.marcarComoAlquilados(
+                    pedidoGuardado.getAccesorios().stream().map(a -> a.getId()).collect(Collectors.toList())
+                );
+            }
+
             respuesta.setCodigo("200");
             respuesta.setStatus("Ok");
             respuesta.setDescripcion("Se modificaron los datos del Pedido");
-            respuesta.setData(pedidoRepository.save(pedido));
+            respuesta.setData(pedidoGuardado);
+
         } catch (Exception e) {
             respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
             respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
@@ -123,16 +164,14 @@ public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements
                 bindingResult.getAllErrors().forEach(r -> resp = resp + r.getDefaultMessage() + ";");
                 respuesta.setData(resp);
                 resp = "";
-                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
             } else {
                 respuesta.setData(e.getMessage());
-                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
             }
+            return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
         }
-        return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
+        return new ResponseEntity<>(respuesta, null, HttpStatus.CREATED);
     }
 
-    // 🔹 Nuevo: pedidos por cliente
     @Override
     public Respuesta findByCliente(Long clienteId) {
         respuesta = new Respuesta();
@@ -150,7 +189,6 @@ public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements
         return respuesta;
     }
 
-    // 🔹 Nuevo: cancelar pedido
     @Override
     public Respuesta cancel(Long id) {
         respuesta = new Respuesta();
@@ -160,9 +198,24 @@ public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements
                 if ("Pendiente".equalsIgnoreCase(pedido.getEstado())) {
                     pedido.setEstado("Cancelado");
                     pedidoRepository.save(pedido);
+
+                    // 🔹 Devolver barriles a estado "Cargado"
+                    if (pedido.getBarriles() != null && !pedido.getBarriles().isEmpty()) {
+                        barrilService.marcarComoCargados(
+                            pedido.getBarriles().stream().map(b -> b.getId()).collect(Collectors.toList())
+                        );
+                    }
+
+                    // 🔹 Devolver accesorios a estado "Disponible"
+                    if (pedido.getAccesorios() != null && !pedido.getAccesorios().isEmpty()) {
+                        accesorioService.marcarComoDisponibles(
+                            pedido.getAccesorios().stream().map(a -> a.getId()).collect(Collectors.toList())
+                        );
+                    }
+
                     respuesta.setCodigo("200");
                     respuesta.setStatus("Ok");
-                    respuesta.setDescripcion("Pedido cancelado correctamente");
+                    respuesta.setDescripcion("Pedido cancelado correctamente y stock actualizado");
                     respuesta.setData(pedido);
                 } else {
                     respuesta.setCodigo("400");
@@ -183,5 +236,6 @@ public class PedidoServiceImpl extends ResponseEntityExceptionHandler implements
             respuesta.setData(e.getMessage());
         }
         return respuesta;
-    }
+        }
+
 }

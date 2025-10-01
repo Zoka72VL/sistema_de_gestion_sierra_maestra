@@ -104,7 +104,7 @@ Logger log = LoggerFactory.getLogger(String.class);
 	}
 
 	@Override
-	public Respuesta finById(Long id) {
+	public Respuesta findById(Long id) {
 		respuesta = new Respuesta();
 		try {
 			respuesta.setCodigo("200");

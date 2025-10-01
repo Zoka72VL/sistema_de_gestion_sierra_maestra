@@ -11,7 +11,7 @@ public interface PedidoService {
     ResponseEntity<Object> save(Pedido pedido, BindingResult bindingResult) throws BindException;
     ResponseEntity<Object> update(Pedido pedido, BindingResult bindingResult) throws BindException;
     Respuesta delete(Long id);
-    Respuesta finById(Long id);
+    Respuesta findById(Long id);
     Respuesta findAll();
 
     // 🔹 nuevos

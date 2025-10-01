@@ -54,7 +54,7 @@ public class PorcentajeMesController {
 	@GetMapping(value = "/getByIdPorcentajeMes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar PorcentajeMes por id", notes = "Esta operación consulta un Porcentaje Mes por su identificador personal")
 	public Respuesta getByIdPorcentajeMes(@PathParam("id") @PathVariable Long id) {
-		return porcentajeMesServiceImpl.finById(id);
+		return porcentajeMesServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deletePorcentajeMes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

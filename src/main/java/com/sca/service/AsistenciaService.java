@@ -17,5 +17,5 @@ public interface AsistenciaService {
 	
 	public Respuesta findAll();
 	
-	public Respuesta finById(Long id);
+	public Respuesta findById(Long id);
 }

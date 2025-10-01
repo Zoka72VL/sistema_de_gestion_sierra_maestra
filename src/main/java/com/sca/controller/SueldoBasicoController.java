@@ -54,7 +54,7 @@ public class SueldoBasicoController {
 	@GetMapping(value = "/getByIdSueldoBasico/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar SueldoBasico por id", notes = "Esta operación consulta un SueldoBasico por su identificador personal")
 	public Respuesta getByIdSueldoBasico(@PathParam("id") @PathVariable Long id) {
-		return sueldoBasicoServiceImpl.finById(id);
+		return sueldoBasicoServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteSueldoBasico/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

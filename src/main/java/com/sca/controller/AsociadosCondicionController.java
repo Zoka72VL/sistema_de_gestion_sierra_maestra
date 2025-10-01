@@ -54,7 +54,7 @@ public class AsociadosCondicionController {
 	@GetMapping(value = "/getByIdAsociadosCondicion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar AsociadosCondicion por id", notes = "Esta operación consulta un AsociadosCondicion por su identificador personal")
 	public Respuesta getByIdAsociadosCondicion(@PathParam("id") @PathVariable Long id) {
-		return asociadosCondicionServiceImpl.finById(id);
+		return asociadosCondicionServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteAsociadosCondicion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

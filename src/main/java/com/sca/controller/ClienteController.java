@@ -50,7 +50,7 @@ public class ClienteController {
     @GetMapping(value = "/getByIdCliente/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Consultar Cliente por id", notes = "Consulta un cliente por su identificador")
     public Respuesta getByIdCliente(@PathParam("id") @PathVariable Long id) {
-        return clientesServiceImpl.finById(id);
+        return clientesServiceImpl.findById(id);
     }
 
     @DeleteMapping(value = "/deleteCliente/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

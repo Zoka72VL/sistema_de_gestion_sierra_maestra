@@ -54,7 +54,7 @@ public class MaduradorController {
 	@GetMapping(value = "/getByIdMadurador/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Madurador por id", notes = "Esta operación consulta un Madurador por su identificador personal")
 	public Respuesta getByIdMadurador(@PathParam("id") @PathVariable Long id) {
-		return maduradorsServiceImpl.finById(id);
+		return maduradorsServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteMadurador/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

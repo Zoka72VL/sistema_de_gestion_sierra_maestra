@@ -55,7 +55,7 @@ public class MesController {
 	@GetMapping(value = "/getByIdMes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar mes por id", notes = "Esta operación consulta un mes por su identificador personal")
 	public Respuesta getByIdMes(@PathParam("id") @PathVariable Long id) {
-		return mesServiceImpl.finById(id);
+		return mesServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteMes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,4 +1,4 @@
-<div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
+fragments de barriles <div th:fragment="lista" xmlns:th="http://www.thymeleaf.org">
   <div th:if="${#lists.isEmpty(items)}">No hay barriles.</div>
   <div th:each="b : ${items}" 
        class="card mb-2 p-2 position-relative" 

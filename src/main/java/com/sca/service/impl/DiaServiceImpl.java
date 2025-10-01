@@ -99,7 +99,7 @@ public class DiaServiceImpl extends ResponseEntityExceptionHandler implements Di
 	}
 
 	@Override
-	public Respuesta finById(Long id) {
+	public Respuesta findById(Long id) {
 		respuesta = new Respuesta();
 		try {
 			respuesta.setCodigo("200");

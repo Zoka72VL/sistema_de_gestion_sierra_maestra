@@ -1,5 +1,8 @@
 package com.sca.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,144 +21,197 @@ import com.sca.repository.AccesorioRepository;
 import com.sca.service.AccesorioService;
 
 @Service
-public class AccesorioServiceImpl extends ResponseEntityExceptionHandler implements AccesorioService{
+public class AccesorioServiceImpl extends ResponseEntityExceptionHandler implements AccesorioService {
 
-Logger log = LoggerFactory.getLogger(String.class);
-	
-	@Autowired
-	AccesorioRepository accesorioRepository;
+    Logger log = LoggerFactory.getLogger(String.class);
 
-	Respuesta respuesta;
+    @Autowired
+    private AccesorioRepository accesorioRepository;
 
-	String resp = "";
+    private Respuesta respuesta;
+    private String resp = "";
 
-	//El ExceptionHandler me sirve para recuperar o en viar el status del error del pedido
-	@ExceptionHandler(BindException.class)
-	@Override
-	public ResponseEntity<Object> save(Accesorio accesorio, BindingResult bindingResult) throws BindException {
-		respuesta = new Respuesta();
-		try {
-			respuesta.setCodigo("200");
-			respuesta.setStatus("Ok");
-			respuesta.setDescripcion("Se agrego un Accesorio");
-			respuesta.setData(accesorioRepository.save(accesorio));
-		} catch (Exception e) {
-			respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
-			respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
-			respuesta.setDescripcion("No se pudo agregar el Accesorio");
-			if (bindingResult.hasErrors()) {
-				bindingResult.getAllErrors().forEach(r -> {
-					resp = resp + r.getDefaultMessage() + ";";
-				});
-				respuesta.setData(resp);
-				resp = "";
-				return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
-			} else {
-				respuesta.setData(e.getMessage());
-				return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
-			}
-		}
+    @ExceptionHandler(BindException.class)
+    @Override
+    public ResponseEntity<Object> save(Accesorio accesorio, BindingResult bindingResult) throws BindException {
+        respuesta = new Respuesta();
+        try {
+            respuesta.setCodigo("200");
+            respuesta.setStatus("Ok");
+            respuesta.setDescripcion("Se agrego un Accesorio");
+            respuesta.setData(accesorioRepository.save(accesorio));
+        } catch (Exception e) {
+            respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
+            respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
+            respuesta.setDescripcion("No se pudo agregar el Accesorio");
+            if (bindingResult.hasErrors()) {
+                bindingResult.getAllErrors().forEach(r -> {
+                    resp = resp + r.getDefaultMessage() + ";";
+                });
+                respuesta.setData(resp);
+                resp = "";
+                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
+            } else {
+                respuesta.setData(e.getMessage());
+                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
+    }
 
-		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
-	}
+    @Override
+    public Respuesta delete(Long id) {
+        respuesta = new Respuesta();
+        try {
+            Accesorio accesorio = accesorioRepository.findById(id).orElse(null);
+            if (accesorio != null) {
+                accesorioRepository.deleteById(id);
+                respuesta.setCodigo("200");
+                respuesta.setStatus("Ok");
+                respuesta.setDescripcion("Se eliminó un Accesorio");
+                respuesta.setData(accesorio);
+            } else {
+                respuesta.setCodigo("404");
+                respuesta.setStatus("Not Found");
+                respuesta.setDescripcion("Accesorio no encontrado");
+                respuesta.setData(null);
+            }
+        } catch (Exception e) {
+            respuesta.setCodigo("400");
+            respuesta.setStatus("Error");
+            respuesta.setDescripcion("No se pudo eliminar el Accesorio");
+            respuesta.setData(e.getMessage());
+        }
+        return respuesta;
+    }
 
-	@Override
-	public Respuesta delete(Long id) {
-		respuesta = new Respuesta();
-		System.out.println(id);
-		try {
-			Accesorio accesorio = accesorioRepository.findById(id).get();
-			accesorioRepository.deleteById(id);
-			respuesta.setCodigo("200");
-			respuesta.setStatus("Ok");
-			respuesta.setDescripcion("Se elimino un Accesorio");
-			respuesta.setData(accesorio);
-		} catch (Exception e) {
-			respuesta.setCodigo("400");
-			respuesta.setStatus("Error");
-			respuesta.setDescripcion("No se pudo eliminar el Accesorio");
-			respuesta.setData(e.getMessage());
-		}
-		return respuesta;
-	}
+    @Override
+    public Respuesta findAll() {
+        respuesta = new Respuesta();
+        try {
+            respuesta.setCodigo("200");
+            respuesta.setStatus("Ok");
+            respuesta.setDescripcion("Se muestran todos los Accesorios");
+            respuesta.setData(accesorioRepository.findAll());
+        } catch (Exception e) {
+            respuesta.setCodigo("400");
+            respuesta.setStatus("Error");
+            respuesta.setDescripcion("No se pudieron mostrar los Accesorios");
+            respuesta.setData(e.getMessage());
+        }
+        return respuesta;
+    }
 
-	@Override
-	public Respuesta findAll() {
-		respuesta = new Respuesta();
-		try {
-			respuesta.setCodigo("200");
-			respuesta.setStatus("Ok");
-			respuesta.setDescripcion("Se muestran todos los Accesorios");
-			respuesta.setData(accesorioRepository.findAll());
-		} catch (Exception e) {
-			respuesta.setCodigo("400");
-			respuesta.setStatus("Error");
-			respuesta.setDescripcion("No se pudieron mostrar los Accesorio");
-			respuesta.setData(e.getMessage());
-		}
-		return respuesta;
-	}
+    @Override
+    public Respuesta findById(Long id) {
+        respuesta = new Respuesta();
+        try {
+            respuesta.setCodigo("200");
+            respuesta.setStatus("Ok");
+            respuesta.setDescripcion("Datos del Accesorio");
+            respuesta.setData(accesorioRepository.findById(id));
+        } catch (Exception e) {
+            respuesta.setCodigo("400");
+            respuesta.setStatus("Error");
+            respuesta.setDescripcion("No se pudieron mostrar los datos del Accesorio");
+            respuesta.setData(e.getMessage());
+        }
+        return respuesta;
+    }
 
-	@Override
-	public Respuesta finById(Long id) {
-		respuesta = new Respuesta();
-		try {
-			respuesta.setCodigo("200");
-			respuesta.setStatus("Ok");
-			respuesta.setDescripcion("Datos de la Categoria");
-			respuesta.setData(accesorioRepository.findById(id));
-		} catch (Exception e) {
-			respuesta.setCodigo("400");
-			respuesta.setStatus("Error");
-			respuesta.setDescripcion("No se pudieron mostrar los datos del Accesorio");
-			respuesta.setData(e.getMessage());
-		}
-		return respuesta;
-	}
+    @Override
+    public ResponseEntity<Object> update(Accesorio accesorio, BindingResult bindingResult) throws BindException {
+        respuesta = new Respuesta();
+        try {
+            respuesta.setCodigo("200");
+            respuesta.setStatus("Ok");
+            respuesta.setDescripcion("Se modificaron los datos del Accesorio");
+            respuesta.setData(accesorioRepository.save(accesorio));
+        } catch (Exception e) {
+            respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
+            respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
+            respuesta.setDescripcion("No se pudo modificar el Accesorio");
+            if (bindingResult.hasErrors()) {
+                bindingResult.getAllErrors().forEach(r -> {
+                    resp = resp + r.getDefaultMessage() + ";";
+                });
+                respuesta.setData(resp);
+                resp = "";
+                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
+            } else {
+                respuesta.setData(e.getMessage());
+                return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
+            }
+        }
+        return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
+    }
 
-	@Override
-	public ResponseEntity<Object> update(Accesorio accesorio, BindingResult bindingResult) throws BindException {
-		respuesta = new Respuesta();
-		try {
-			respuesta.setCodigo("200");
-			respuesta.setStatus("Ok");
-			respuesta.setDescripcion("Se modificaron los datos del Accesorio");
-			respuesta.setData(accesorioRepository.save(accesorio));
-		} catch (Exception e) {
-			respuesta.setCodigo(String.valueOf(HttpStatus.BAD_REQUEST.value()));
-			respuesta.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
-			respuesta.setDescripcion("No se pudo modificar el Accesorio");
-			if (bindingResult.hasErrors()) {
-				bindingResult.getAllErrors().forEach(r -> {
-					resp = resp + r.getDefaultMessage() + ";";
-				});
-				respuesta.setData(resp);
-				resp = "";
-				return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
-			} else {
-				respuesta.setData(e.getMessage());
-				return handleExceptionInternal(e, respuesta, new HttpHeaders(), HttpStatus.BAD_REQUEST, null);
-			}
-		}
+    @Override
+    public Respuesta findAccesoriosPorEstado(String estado) {
+        respuesta = new Respuesta();
+        try {
+            respuesta.setCodigo("200");
+            respuesta.setStatus("Ok");
+            respuesta.setDescripcion("Datos de los Accesorios por Estado");
+            respuesta.setData(
+                accesorioRepository.findAll()
+                                   .stream()
+                                   .filter(a -> estado.equalsIgnoreCase(a.getEstado()))
+                                   .collect(Collectors.toList())
+            );
+        } catch (Exception e) {
+            respuesta.setCodigo("400");
+            respuesta.setStatus("Error");
+            respuesta.setDescripcion("No se pudieron mostrar los datos de los Accesorios");
+            respuesta.setData(e.getMessage());
+        }
+        return respuesta;
+    }
 
-		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
-	}
+    @Override
+    public void marcarComoAlquilados(List<Long> ids) {
+        ids.forEach(id -> {
+            var a = accesorioRepository.findById(id).orElse(null);
+            if (a != null) {
+                a.setEstado("Alquilado");
+                accesorioRepository.save(a);
+            }
+        });
+    }
 
-	@Override
-public Respuesta findAccesoriosPorEstado(String estado) {
-    Respuesta respuesta = new Respuesta();
+    @Override
+    public void marcarComoDisponibles(List<Long> ids) {
+    ids.forEach(id -> {
+        var a = accesorioRepository.findById(id).orElse(null);
+        if (a != null) {
+            a.setEstado("Disponible");
+            accesorioRepository.save(a);
+        }
+    });
+    }
+
+@Override
+public Respuesta findDisponiblesByNombre(String nombre) {
+    respuesta = new Respuesta();
     try {
         respuesta.setCodigo("200");
         respuesta.setStatus("Ok");
-        respuesta.setDescripcion("Datos de los Accesorios por Estado");
-        respuesta.setData(accesorioRepository.findAll().stream()
-                        .filter(a -> a.getEstado().equals(estado)));
+        respuesta.setDescripcion("Accesorios disponibles por nombre");
+        respuesta.setData(
+            accesorioRepository.findAll()
+                .stream()
+                .filter(a -> "Disponible".equalsIgnoreCase(a.getEstado()) 
+                          && nombre.equalsIgnoreCase(a.getNombre()))
+                .collect(Collectors.toList())
+        );
     } catch (Exception e) {
         respuesta.setCodigo("400");
         respuesta.setStatus("Error");
-        respuesta.setDescripcion("No se pudieron mostrar los datos de los Accesorios");
+        respuesta.setDescripcion("No se pudieron obtener los accesorios disponibles");
         respuesta.setData(e.getMessage());
     }
     return respuesta;
 }
+
+
 }

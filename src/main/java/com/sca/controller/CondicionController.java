@@ -54,7 +54,7 @@ public class CondicionController {
 	@GetMapping(value = "/getByIdCondicion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Condicion por id", notes = "Esta operación consulta un condicion por su identificador personal")
 	public Respuesta getByIdCondicion(@PathParam("id") @PathVariable Long id) {
-		return condicionServiceImpl.finById(id);
+		return condicionServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteCondicion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

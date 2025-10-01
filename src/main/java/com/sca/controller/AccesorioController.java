@@ -54,7 +54,7 @@ public class AccesorioController {
 	@GetMapping(value = "/getByIdAccesorio/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Accesorio por id", notes = "Esta operación consulta un Accesorio por su identificador personal")
 	public Respuesta getByIdAccesorio(@PathParam("id") @PathVariable Long id) {
-		return accesoriosServiceImpl.finById(id);
+		return accesoriosServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteAccesorio/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -54,7 +54,7 @@ public class AsistenciaController {
 	@GetMapping(value = "/getByIdAsistencia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Asistencia por id", notes = "Esta operación consulta un Asistencia por su identificador personal")
 	public Respuesta getByIdAsistencia(@PathParam("id") @PathVariable Long id) {
-		return asistenciasServiceImpl.finById(id);
+		return asistenciasServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteAsistencia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

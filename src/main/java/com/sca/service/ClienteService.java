@@ -17,7 +17,7 @@ public interface ClienteService {
 
     public Respuesta findAll();
 
-    public Respuesta finById(Long id);
+    public Respuesta findById(Long id);
 
     public Respuesta contarClientes();
 

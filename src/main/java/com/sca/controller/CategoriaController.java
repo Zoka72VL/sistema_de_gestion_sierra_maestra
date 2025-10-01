@@ -54,7 +54,7 @@ public class CategoriaController {
 	@GetMapping(value = "/getByIdCategoria/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar categoria por id", notes = "Esta operación consulta un categoria por su identificador personal")
 	public Respuesta getByIdCategoria(@PathParam("id") @PathVariable Long id) {
-		return categoriaServiceImpl.finById(id);
+		return categoriaServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteCategoria/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -105,7 +105,7 @@ public class MvcViewController {
 
     @GetMapping("/pedidos/{id}")
     public String pedidoById(@PathVariable Long id, Model model) {
-    model.addAttribute("pedido", unwrap(pedidoService.finById(id).getData()));
+    model.addAttribute("pedido", unwrap(pedidoService.findById(id).getData()));
     model.addAttribute("clientes", clienteService.findAll().getData());
     model.addAttribute("cervezas", cervezaService.findAll().getData());
     model.addAttribute("asociados", asociadosService.findAll().getData());
@@ -114,7 +114,7 @@ public class MvcViewController {
 
     @GetMapping("/pedidos/view/{id}")
     public String pedidoViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("pedido", unwrap(pedidoService.finById(id).getData()));
+    model.addAttribute("pedido", unwrap(pedidoService.findById(id).getData()));
         return "pedidos/fragments :: view";
     }
 
@@ -152,14 +152,14 @@ public class MvcViewController {
 
     @GetMapping("/lotes/{id}")
     public String loteById(@PathVariable Long id, Model model) {
-    model.addAttribute("lote", unwrap(loteService.finById(id).getData()));
+    model.addAttribute("lote", unwrap(loteService.findById(id).getData()));
     model.addAttribute("cervezas", cervezaService.findAll().getData());
         return "lotes/fragments :: form";
     }
 
     @GetMapping("/lotes/view/{id}")
     public String loteViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("lote", unwrap(loteService.finById(id).getData()));
+    model.addAttribute("lote", unwrap(loteService.findById(id).getData()));
         return "lotes/fragments :: view";
     }
 
@@ -169,7 +169,7 @@ public class MvcViewController {
             // If the form submitted a nested cerveza.id, load the managed Cerveza entity
             if (lote != null && lote.getCerveza() != null && lote.getCerveza().getId() != null) {
                 try {
-                    Object c = cervezaService.finById(lote.getCerveza().getId()).getData();
+                    Object c = cervezaService.findById(lote.getCerveza().getId()).getData();
                     if (c instanceof com.sca.model.Cerveza) {
                         lote.setCerveza((com.sca.model.Cerveza) c);
                     } else {
@@ -189,7 +189,7 @@ public class MvcViewController {
                 if (cervezaIdStr != null && !cervezaIdStr.trim().isEmpty()) {
                     try {
                         Long cid = Long.parseLong(cervezaIdStr);
-                        Object c = cervezaService.finById(cid).getData();
+                        Object c = cervezaService.findById(cid).getData();
                         if (c instanceof com.sca.model.Cerveza) {
                             lote.setCerveza((com.sca.model.Cerveza) c);
                         } else {
@@ -246,13 +246,13 @@ public class MvcViewController {
 
     @GetMapping("/clientes/{id}")
     public String clienteById(@PathVariable Long id, Model model) {
-    model.addAttribute("cliente", unwrap(clienteService.finById(id).getData()));
+    model.addAttribute("cliente", unwrap(clienteService.findById(id).getData()));
         return "clientes/fragments :: form";
     }
 
     @GetMapping("/clientes/view/{id}")
     public String clienteViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("cliente", unwrap(clienteService.finById(id).getData()));
+    model.addAttribute("cliente", unwrap(clienteService.findById(id).getData()));
         return "clientes/fragments :: view";
     }
 
@@ -298,13 +298,13 @@ public class MvcViewController {
 
     @GetMapping("/cervezas/{id}")
     public String cervezaById(@PathVariable Long id, Model model) {
-    model.addAttribute("cerveza", unwrap(cervezaService.finById(id).getData()));
+    model.addAttribute("cerveza", unwrap(cervezaService.findById(id).getData()));
         return "cervezas/fragments :: form";
     }
 
     @GetMapping("/cervezas/view/{id}")
     public String cervezaViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("cerveza", unwrap(cervezaService.finById(id).getData()));
+    model.addAttribute("cerveza", unwrap(cervezaService.findById(id).getData()));
         return "cervezas/fragments :: view";
     }
 
@@ -356,13 +356,13 @@ public class MvcViewController {
 
     @GetMapping("/categorias/{id}")
     public String categoriaById(@PathVariable Long id, Model model) {
-    model.addAttribute("categoria", unwrap(categoriaService.finById(id).getData()));
+    model.addAttribute("categoria", unwrap(categoriaService.findById(id).getData()));
         return "categorias/fragments :: form";
     }
 
     @GetMapping("/categorias/view/{id}")
     public String categoriaViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("categoria", unwrap(categoriaService.finById(id).getData()));
+    model.addAttribute("categoria", unwrap(categoriaService.findById(id).getData()));
         return "categorias/fragments :: view";
     }
 
@@ -397,14 +397,14 @@ public class MvcViewController {
 
     @GetMapping("/barriles/{id}")
     public String barrilById(@PathVariable Long id, Model model) {
-    model.addAttribute("barril", unwrap(barrilService.finById(id).getData()));
+    model.addAttribute("barril", unwrap(barrilService.findById(id).getData()));
         model.addAttribute("lotes", loteService.findAll().getData());
         return "barriles/fragments :: form";
     }
 
     @GetMapping("/barriles/view/{id}")
     public String barrilViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("barril", unwrap(barrilService.finById(id).getData()));
+    model.addAttribute("barril", unwrap(barrilService.findById(id).getData()));
         return "barriles/fragments :: view";
     }
 
@@ -440,13 +440,13 @@ public class MvcViewController {
 
     @GetMapping("/accesorios/{id}")
     public String accesorioById(@PathVariable Long id, Model model) {
-    model.addAttribute("accesorio", unwrap(accesorioService.finById(id).getData()));
+    model.addAttribute("accesorio", unwrap(accesorioService.findById(id).getData()));
         return "accesorios/fragments :: form";
     }
 
     @GetMapping("/accesorios/view/{id}")
     public String accesorioViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("accesorio", unwrap(accesorioService.finById(id).getData()));
+        model.addAttribute("accesorio", unwrap(accesorioService.findById(id).getData()));
         return "accesorios/fragments :: view";
     }
 
@@ -484,7 +484,7 @@ public class MvcViewController {
 
     @GetMapping("/asociados/{id}")
     public String asociadoById(@PathVariable Long id, Model model) {
-    model.addAttribute("asociado", unwrap(asociadosService.finById(id).getData()));
+    model.addAttribute("asociado", unwrap(asociadosService.findById(id).getData()));
     model.addAttribute("categorias", categoriaService.findAll().getData());
     model.addAttribute("firmas", firmaService.findAll().getData());
         return "asociados/fragments :: form";
@@ -492,7 +492,7 @@ public class MvcViewController {
 
     @GetMapping("/asociados/view/{id}")
     public String asociadoViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("asociado", unwrap(asociadosService.finById(id).getData()));
+    model.addAttribute("asociado", unwrap(asociadosService.findById(id).getData()));
         return "asociados/fragments :: view";
     }
 
@@ -542,13 +542,13 @@ public class MvcViewController {
 
     @GetMapping("/asistencias/{id}")
     public String asistenciaById(@PathVariable Long id, Model model) {
-        model.addAttribute("asistencia", unwrap(asistenciaService.finById(id).getData()));
+        model.addAttribute("asistencia", unwrap(asistenciaService.findById(id).getData()));
         return "asistencias/fragments :: form";
     }
 
     @GetMapping("/asistencias/view/{id}")
     public String asistenciaViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("asistencia", unwrap(asistenciaService.finById(id).getData()));
+        model.addAttribute("asistencia", unwrap(asistenciaService.findById(id).getData()));
         return "asistencias/fragments :: view";
     }
 
@@ -576,13 +576,13 @@ public class MvcViewController {
 
     @GetMapping("/asistencias-total/{id}")
     public String asistenciaTotalById(@PathVariable Long id, Model model) {
-        model.addAttribute("asistenciaTotal", unwrap(asistenciaTotalService.finById(id).getData()));
+        model.addAttribute("asistenciaTotal", unwrap(asistenciaTotalService.findById(id).getData()));
         return "asistencias-total/fragments :: form";
     }
 
     @GetMapping("/asistencias-total/view/{id}")
     public String asistenciaTotalViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("asistenciaTotal", unwrap(asistenciaTotalService.finById(id).getData()));
+        model.addAttribute("asistenciaTotal", unwrap(asistenciaTotalService.findById(id).getData()));
         return "asistencias-total/fragments :: view";
     }
 
@@ -647,14 +647,14 @@ public class MvcViewController {
 
     @GetMapping("/maduradores/{id}")
     public String maduradorById(@PathVariable Long id, Model model) {
-    model.addAttribute("madurador", unwrap(maduradorService.finById(id).getData()));
+    model.addAttribute("madurador", unwrap(maduradorService.findById(id).getData()));
         model.addAttribute("lotes", loteService.findAll().getData());
         return "maduradores/fragments :: form";
     }
 
     @GetMapping("/maduradores/view/{id}")
     public String maduradorViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("madurador", unwrap(maduradorService.finById(id).getData()));
+    model.addAttribute("madurador", unwrap(maduradorService.findById(id).getData()));
         return "maduradores/fragments :: view";
     }
 
@@ -670,7 +670,7 @@ public class MvcViewController {
                 if (loteIdStr != null && !loteIdStr.trim().isEmpty()) {
                     try {
                         Long lid = Long.parseLong(loteIdStr);
-                        Object l = loteService.finById(lid).getData();
+                        Object l = loteService.findById(lid).getData();
                         if (l instanceof com.sca.model.Lote) {
                             madurador.setLote((com.sca.model.Lote) l);
                         } else {
@@ -713,13 +713,13 @@ public class MvcViewController {
 
     @GetMapping("/meses/{id}")
     public String mesById(@PathVariable Long id, Model model) {
-    model.addAttribute("mes", unwrap(mesService.finById(id).getData()));
+    model.addAttribute("mes", unwrap(mesService.findById(id).getData()));
         return "meses/fragments :: form";
     }
 
     @GetMapping("/meses/view/{id}")
     public String mesViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("mes", unwrap(mesService.finById(id).getData()));
+    model.addAttribute("mes", unwrap(mesService.findById(id).getData()));
         return "meses/fragments :: view";
     }
 
@@ -754,14 +754,14 @@ public class MvcViewController {
 
     @GetMapping("/porcentajes-mes/{id}")
     public String porcentajeById(@PathVariable Long id, Model model) {
-    model.addAttribute("porcentaje", unwrap(porcentajeMesService.finById(id).getData()));
+    model.addAttribute("porcentaje", unwrap(porcentajeMesService.findById(id).getData()));
     model.addAttribute("meses", mesService.findAll().getData());
     return "porcentajes-mes/fragments :: form";
     }
 
     @GetMapping("/porcentajes-mes/view/{id}")
     public String porcentajeViewById(@PathVariable Long id, Model model) {
-    model.addAttribute("porcentaje", unwrap(porcentajeMesService.finById(id).getData()));
+    model.addAttribute("porcentaje", unwrap(porcentajeMesService.findById(id).getData()));
         return "porcentajes-mes/fragments :: view";
     }
 
@@ -771,7 +771,7 @@ public class MvcViewController {
             // Resolve Mes nested entity when binder did not populate
             if (porcentaje != null && porcentaje.getMes() != null && porcentaje.getMes().getId() != 0) {
                 try {
-                    Object m = mesService.finById(porcentaje.getMes().getId()).getData();
+                    Object m = mesService.findById(porcentaje.getMes().getId()).getData();
                     if (m instanceof com.sca.model.Mes) {
                         porcentaje.setMes((com.sca.model.Mes) m);
                     }
@@ -784,7 +784,7 @@ public class MvcViewController {
                 if (mesId != null && !mesId.trim().isEmpty()) {
                     try {
                         Long mid = Long.parseLong(mesId);
-                        Object m = mesService.finById(mid).getData();
+                        Object m = mesService.findById(mid).getData();
                         if (m instanceof com.sca.model.Mes) {
                             porcentaje.setMes((com.sca.model.Mes) m);
                         } else {
@@ -824,7 +824,7 @@ public class MvcViewController {
 
     @GetMapping("/sueldos-basicos/{id}")
     public String sueldoById(@PathVariable Long id, Model model) {
-    model.addAttribute("sueldo", sueldoBasicoService.finById(id).getData());
+    model.addAttribute("sueldo", sueldoBasicoService.findById(id).getData());
     model.addAttribute("categorias", categoriaService.findAll().getData());
     model.addAttribute("porcentajes", porcentajeMesService.findAll().getData());
     return "sueldos-basicos/fragments :: form";
@@ -832,7 +832,7 @@ public class MvcViewController {
 
     @GetMapping("/sueldos-basicos/view/{id}")
     public String sueldoViewById(@PathVariable Long id, Model model) {
-        model.addAttribute("sueldo", sueldoBasicoService.finById(id).getData());
+        model.addAttribute("sueldo", sueldoBasicoService.findById(id).getData());
         return "sueldos-basicos/fragments :: view";
     }
 
@@ -842,7 +842,7 @@ public class MvcViewController {
             // Resolve nested Categoria and PorcentajeMes if binder did not populate
             if (sueldo != null && sueldo.getCategoria() != null && sueldo.getCategoria().getId() != 0) {
                 try {
-                    Object c = categoriaService.finById(sueldo.getCategoria().getId()).getData();
+                    Object c = categoriaService.findById(sueldo.getCategoria().getId()).getData();
                     if (c instanceof com.sca.model.Categoria) {
                         sueldo.setCategoria((com.sca.model.Categoria) c);
                     }
@@ -850,7 +850,7 @@ public class MvcViewController {
             }
             if (sueldo != null && sueldo.getPorcentajeMes() != null && sueldo.getPorcentajeMes().getId() != 0) {
                 try {
-                    Object p = porcentajeMesService.finById(sueldo.getPorcentajeMes().getId()).getData();
+                    Object p = porcentajeMesService.findById(sueldo.getPorcentajeMes().getId()).getData();
                     if (p instanceof com.sca.model.PorcentajeMes) {
                         sueldo.setPorcentajeMes((com.sca.model.PorcentajeMes) p);
                     }
@@ -863,7 +863,7 @@ public class MvcViewController {
                 if (cid != null && !cid.trim().isEmpty()) {
                     try {
                         Long idc = Long.parseLong(cid);
-                        Object c = categoriaService.finById(idc).getData();
+                        Object c = categoriaService.findById(idc).getData();
                         if (c instanceof com.sca.model.Categoria) {
                             sueldo.setCategoria((com.sca.model.Categoria) c);
                         } else {
@@ -878,7 +878,7 @@ public class MvcViewController {
                 if (pid != null && !pid.trim().isEmpty()) {
                     try {
                         Long idp = Long.parseLong(pid);
-                        Object p = porcentajeMesService.finById(idp).getData();
+                        Object p = porcentajeMesService.findById(idp).getData();
                         if (p instanceof com.sca.model.PorcentajeMes) {
                             sueldo.setPorcentajeMes((com.sca.model.PorcentajeMes) p);
                         } else {

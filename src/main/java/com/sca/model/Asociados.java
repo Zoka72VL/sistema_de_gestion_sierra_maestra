@@ -82,8 +82,8 @@ public class Asociados {
 	@Column(name="rol")
 	private String rol;
 
-	@Column(name="contrasena")
-	private String contrasena;
+	@Column(name="contrasenia")
+	private String contrasenia;
 
 	@Column(name="activo")
 	@NotNull

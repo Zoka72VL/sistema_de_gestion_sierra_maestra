@@ -54,7 +54,7 @@ public class LoteController {
 	@GetMapping(value = "/getByIdLote/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Lote por id", notes = "Esta operación consulta un Lote por su identificador personal")
 	public Respuesta getByIdLote(@PathParam("id") @PathVariable Long id) {
-		return lotesServiceImpl.finById(id);
+		return lotesServiceImpl.findById(id);
 	}
 	
 	@DeleteMapping(value = "/deleteLote/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
