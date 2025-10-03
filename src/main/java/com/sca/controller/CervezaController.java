@@ -111,7 +111,7 @@ public class CervezaController {
     @ApiOperation(value = "Consultar cerveza por id (JSON)", notes = "Devuelve la cerveza solicitada en formato JSON")
     public Respuesta buscarPorId(@PathVariable Long id) {
         // usa la misma instancia de servicio que ya tenés en el controller
-        return cervezasServiceImpl.finById(id);
+        return cervezasServiceImpl.findById(id);
     }
 
 
