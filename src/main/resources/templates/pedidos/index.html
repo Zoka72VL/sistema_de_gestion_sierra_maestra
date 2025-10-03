@@ -14,9 +14,24 @@
     .btn-danger { background:#b73a2f; border-color:#b73a2f; color:#fff; }
     .btn-secondary { background:#555; color:#fff; }
     .nowrap { white-space:nowrap; }
-    #msg { min-height: 1.6rem; }
-    #msg .error { color:#ffb3b3; }
-    #msg .success { color:#bfffbf; }
+    #msg { 
+      min-height: 1.6rem; 
+      margin-bottom: 1rem;
+    }
+    #msg .error { 
+      color: #ff6b6b; 
+      background: rgba(255, 107, 107, 0.1);
+      padding: 8px 12px;
+      border-radius: 4px;
+      border-left: 4px solid #ff6b6b;
+    }
+    #msg .success { 
+      color: #51cf66; 
+      background: rgba(81, 207, 102, 0.1);
+      padding: 8px 12px;
+      border-radius: 4px;
+      border-left: 4px solid #51cf66;
+    }
     .access-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
     @media (max-width:768px) { .card { font-size:14px } }
   </style>
@@ -41,11 +56,6 @@
   </div>
 </nav>
 
-<!-- Mensajes -->
-<div class="container my-3">
-  <div id="msg"></div>
-</div>
-
 <!-- MAIN -->
 <div class="container mb-5">
 
@@ -65,8 +75,6 @@
         <label class="form-label">Cliente</label>
         <select id="cliente" class="form-select" required></select>
       </div>
-
-      
 
       <div class="col-md-6">
         <label class="form-label">Asociado (Usuario)</label>
@@ -175,6 +183,11 @@
       <div class="col-12">
         <label class="form-label">Nota</label>
         <textarea id="nota" class="form-control" rows="2"></textarea>
+      </div>
+
+      <!-- Mensajes ubicados arriba de los botones -->
+      <div class="col-12">
+        <div id="msg"></div>
       </div>
 
       <div class="col-12 d-flex justify-content-end gap-2">
@@ -291,11 +304,17 @@ function formatDateFromMillis(ms) {
   const yyyy = d.getFullYear();
   return `${dd}/${mm}/${yyyy}`;
 }
+
 function isoDateInputFromMillis(ms) {
   if (ms === null || ms === undefined || ms === '') return '';
   const d = new Date(Number(ms));
   if (isNaN(d)) return '';
-  return d.toISOString().slice(0,10);
+  
+  // CORRECCIÓN DEFINITIVA: Usar fecha local sin problemas de zona horaria
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 async function fetchJSON(url, opts) {
@@ -374,16 +393,25 @@ async function loadAll() {
 
     const pedidos = (pedRes && pedRes.data) ? pedRes.data : (Array.isArray(pedRes) ? pedRes : []);
     cervezasList = (cerRes && cerRes.data) ? cerRes.data : (Array.isArray(cerRes) ? cerRes : []);
-    accesoriosList = (accRes && accRes.data) ? accRes.data : (Array.isArray(accRes) ? accRes : []);
+    
+    // 🔹 CORRECCIÓN: Filtrar solo accesorios DISPONIBLES
+    const todosAccesorios = (accRes && accRes.data) ? accRes.data : (Array.isArray(accRes) ? accRes : []);
+    accesoriosList = todosAccesorios.filter(a => 
+      a.estado && String(a.estado).toLowerCase() === 'disponible'
+    );
+    
     barrilesList = (barRes && barRes.data) ? barRes.data : (Array.isArray(barRes) ? barRes : []);
     clientesList = (cliRes && cliRes.data) ? cliRes.data : (Array.isArray(cliRes) ? cliRes : []);
     asociadosList = (asoRes && asoRes.data) ? asoRes.data : (Array.isArray(asoRes) ? asoRes : []);
 
-    accesoriosList = accesoriosList.filter(a => !a.estado || String(a.estado).toLowerCase()==='disponible');
-    accesoriosList = accesoriosList.filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
-    barrilesList = (barRes && barRes.data) ? barRes.data : (Array.isArray(barRes) ? barRes : []);
+    // 🔹 ELIMINAR duplicados (mantener solo esta línea)
+    accesoriosList = accesoriosList.filter((v, i, a) => a.findIndex(x => x.id === v.id) === i);
+    barrilesList = barrilesList.filter((v, i, a) => a.findIndex(x => x.id === v.id) === i);
 
-    barrilesList = barrilesList.filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
+    // 🔹 DEBUG: Verificar qué accesorios se están cargando
+    console.log('Accesorios totales:', todosAccesorios.length);
+    console.log('Accesorios disponibles:', accesoriosList.length);
+    console.log('Estados de accesorios:', todosAccesorios.map(a => `${a.id}: ${a.estado}`));
 
     window._allPedidos = pedidos;
 
@@ -394,10 +422,9 @@ async function loadAll() {
     mensaje('', '');
   } catch(err) {
     console.error(err);
-    mensaje('Error cargando datos: '+(err.message||err),'error');
+    mensaje('Error cargando datos: ' + (err.message || err), 'error');
   }
 }
-
 function populateSelects() {
   // cervezas
   const cervezaSel = $('#cerveza');
@@ -470,7 +497,7 @@ function renderAccesorios() {
   if (!cont) return;
   cont.innerHTML = '';
 
-  // 🔹 Botón para agregar una nueva fila de accesorio
+  // Botón para agregar nueva fila de accesorio
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.textContent = 'Agregar accesorio';
@@ -482,6 +509,7 @@ function renderAccesorios() {
 
   cont.appendChild(addBtn);
 }
+
 
 // 🔹 Función que agrega una fila completa de selección de accesorio
 function addAccesorioRow(container) {
@@ -602,59 +630,127 @@ priceInput.addEventListener('input', () => {
 
 
 /* agregar detalle */
-function agregarDetalle(tipo,id,cantidad=1) {
-  if (!id) { mensaje('Seleccioná un artículo para agregar','error'); return; }
+function agregarDetalle(tipo, id, cantidad = 1) {
+  if (!id) { 
+    mensaje('Seleccioná un artículo para agregar','error'); 
+    return; 
+  }
+  
   if (tipo === 'Cerveza') {
-    const cer = cervezasList.find(c=>String(c.id)===String(id));
-    if (!cer) { mensaje('Cerveza no encontrada','error'); return; }
+    const cer = cervezasList.find(c => String(c.id) === String(id));
+    if (!cer) { 
+      mensaje('Cerveza no encontrada','error'); 
+      return; 
+    }
     const barrilId = $('#barril').value;
-    const barril = barrilesList.find(b=>String(b.id)===String(barrilId));
-    const litrosPorBarril = barril ? Number(barril.litros||0) : 0;
+    const barril = barrilesList.find(b => String(b.id) === String(barrilId));
+    const litrosPorBarril = barril ? Number(barril.litros || 0) : 0;
     const qty = Number($('#cantidad').value) || Number(cantidad);
-    const precioPorLitro = Number(cer.precioPorLitro||0);
+    const precioPorLitro = Number(cer.precioPorLitro || 0);
     const litrosTotales = litrosPorBarril * qty;
-    const subtotal = Math.round((precioPorLitro * litrosTotales + Number.EPSILON) * 100)/100;
+    const subtotal = Math.round((precioPorLitro * litrosTotales + Number.EPSILON) * 100) / 100;
 
-    const tr = document.createElement('tr');
-    tr.dataset.tipo = 'cerveza'; tr.dataset.id = cer.id;
-    tr.innerHTML = `
-      <td>Cerveza</td>
-      <td>${cer.nombreCerveza || cer.nombre || 'Cerveza '+cer.id}</td>
-      <td class="litros">${litrosPorBarril || ''}</td>
-      <td class="qty">${qty}</td>
-      <td class="unit">${precioPorLitro || 0}</td>
-      <td class="subtotal">${subtotal}</td>
-      <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
-    `;
-    $('#detalleTable tbody').appendChild(tr);
+    // Verificar si ya existe esta cerveza en la tabla
+    const existe = document.querySelector(`#detalleTable tbody tr[data-tipo="cerveza"][data-id="${id}"]`);
+    if (existe) {
+      // Actualizar existente
+      const existingQty = Number(existe.querySelector('.qty').textContent);
+      const newQty = existingQty + qty;
+      existe.querySelector('.qty').textContent = newQty;
+      existe.querySelector('.subtotal').textContent = Math.round((precioPorLitro * litrosPorBarril * newQty + Number.EPSILON) * 100) / 100;
+    } else {
+      // Crear nuevo
+      const tr = document.createElement('tr');
+      tr.dataset.tipo = 'cerveza'; 
+      tr.dataset.id = cer.id;
+      tr.innerHTML = `
+        <td>Cerveza</td>
+        <td>${cer.nombreCerveza || cer.nombre || 'Cerveza ' + cer.id}</td>
+        <td class="litros">${litrosPorBarril || ''}</td>
+        <td class="qty">${qty}</td>
+        <td class="unit">${precioPorLitro || 0}</td>
+        <td class="subtotal">${subtotal}</td>
+        <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
+      `;
+      $('#detalleTable tbody').appendChild(tr);
+    }
+    
   } else if (tipo === 'Accesorio') {
-    const acc = accesoriosList.find(a=>String(a.id)===String(id));
-    if (!acc) { mensaje('Accesorio no encontrado','error'); return; }
-    const priceInput = document.querySelector(`.acc-price[data-id="${id}"]`);
+    const acc = accesoriosList.find(a => String(a.id) === String(id));
+    if (!acc) { 
+      mensaje('Accesorio no encontrado','error'); 
+      return; 
+    }
+    
+    // Buscar el precio del input correspondiente - CORRECCIÓN: buscar por selector más flexible
+    const priceInput = document.querySelector(`.acc-price[data-id="${id}"]`) || 
+                      document.querySelector(`.acc-price`);
     const precio = priceInput && priceInput.value ? Number(priceInput.value) : (acc.precio || 0);
     const qty = 1;
-    const subtotal = Math.round((precio*qty + Number.EPSILON)*100)/100;
-    const tr = document.createElement('tr');
-    tr.dataset.tipo = 'accesorio'; tr.dataset.id = acc.id;
-    tr.innerHTML = `
-      <td>Accesorio</td>
-      <td>${acc.nombre || 'Accesorio '+acc.id}</td>
-      <td class="litros">-</td>
-      <td class="qty">${qty}</td>
-      <td class="unit">${precio || 0}</td>
-      <td class="subtotal">${subtotal}</td>
-      <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
-    `;
-    $('#detalleTable tbody').appendChild(tr);
+    const subtotal = Math.round((precio * qty + Number.EPSILON) * 100) / 100;
+
+    // Verificar si ya existe este accesorio en la tabla
+    const existe = document.querySelector(`#detalleTable tbody tr[data-tipo="accesorio"][data-id="${id}"]`);
+    if (existe) {
+      // Actualizar existente - solo el precio/subtotal
+      existe.querySelector('.unit').textContent = precio;
+      existe.querySelector('.subtotal').textContent = subtotal;
+    } else {
+      // Crear nuevo
+      const tr = document.createElement('tr');
+      tr.dataset.tipo = 'accesorio'; 
+      tr.dataset.id = acc.id;
+      tr.innerHTML = `
+        <td>Accesorio</td>
+        <td>${acc.nombre || 'Accesorio ' + acc.id} ${acc.notas ? '- ' + acc.notas : ''}</td>
+        <td class="litros">-</td>
+        <td class="qty">${qty}</td>
+        <td class="unit">${precio || 0}</td>
+        <td class="subtotal">${subtotal}</td>
+        <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
+      `;
+      $('#detalleTable tbody').appendChild(tr);
+      
+      // CORRECCIÓN: Configurar el data-id en el priceInput si existe
+      if (priceInput && !priceInput.dataset.id) {
+        priceInput.dataset.id = acc.id;
+      }
+    }
   }
 
-  document.querySelectorAll('#detalleTable .btn-remove').forEach(btn=>{
-    btn.onclick = (e)=>{ const tr = e.target.closest('tr'); if(tr) tr.remove(); recalcTotal(); };
+  // Agregar event listeners para botones de quitar (solo a los nuevos)
+  document.querySelectorAll('#detalleTable .btn-remove').forEach(btn => {
+    if (!btn.hasAttribute('data-listener-added')) {
+      btn.setAttribute('data-listener-added', 'true');
+      btn.onclick = (e) => { 
+        const tr = e.target.closest('tr'); 
+        if (tr) {
+          // Si es un accesorio, también limpiar el input correspondiente
+          if (tr.dataset.tipo === 'accesorio') {
+            const accId = tr.dataset.id;
+            const priceInput = document.querySelector(`.acc-price[data-id="${accId}"]`);
+            if (priceInput) {
+              priceInput.value = '';
+              priceInput.dataset.id = '';
+              priceInput.disabled = true;
+              
+              // CORRECCIÓN: También limpiar los selects de la fila de accesorio
+              const accesorioRow = priceInput.closest('.d-flex.align-items-center.mb-2.gap-2');
+              if (accesorioRow) {
+                const selects = accesorioRow.querySelectorAll('select');
+                selects.forEach(select => select.value = '');
+              }
+            }
+          }
+          tr.remove(); 
+        }
+        recalcTotal(); 
+      };
+    }
   });
 
   recalcTotal();
 }
-
 function recalcTotal() {
   let totalCervezas=0, totalAccesorios=0;
   $$('#detalleTable tbody tr').forEach(tr=>{
@@ -725,7 +821,10 @@ async function loadPedidoIntoForm(id) {
     if (u) $('#asociado').value = (typeof u === 'object') ? (u.id || '') : u;
     else $('#asociado').value = '';
 
+    // Limpiar tabla de detalles
     $('#detalleTable tbody').innerHTML = '';
+    
+    // Cargar cervezas
     if (p.cervezas && Array.isArray(p.cervezas)) {
       p.cervezas.forEach(c=>{
         const cerCat = cervezasList.find(x => String(x.id) === String(c.id));
@@ -749,31 +848,212 @@ async function loadPedidoIntoForm(id) {
       });
     }
 
-    const accIds = (p.accesorios || []).map(a => (a.id!==undefined ? String(a.id) : String(a)));
-    $$('.acc-price').forEach(inp=>{
-      const id = inp.dataset.id; const chk = document.querySelector(`#acc_chk_${id}`);
-      if (chk) {
-          if (accIds.includes(String(id))) {
-            chk.checked = true;
-            inp.disabled = false;
-            const accObj = (p.accesorios || []).find(a=>String(a.id)===String(id));
-            inp.value = accObj && accObj.precio ? accObj.precio : '';
-          } else {
-            chk.checked=false;
-            inp.disabled=true;
-            inp.value='';
-          }
-        }
+    // SOLUCIÓN DEFINITIVA: Cargar accesorios de forma directa
+    const accContainer = document.getElementById('accesoriosContainer');
+    if (accContainer) {
+      accContainer.innerHTML = '';
+      
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.textContent = 'Agregar accesorio';
+      addBtn.className = 'btn btn-sm btn-primary mb-2';
+      addBtn.addEventListener('click', () => addAccesorioRow(accContainer));
+      accContainer.appendChild(addBtn);
 
-    });
+      // Cargar accesorios del pedido
+      if (p.accesorios && Array.isArray(p.accesorios)) {
+        console.log('Cargando accesorios del pedido:', p.accesorios);
+        
+        p.accesorios.forEach(acc => {
+          // Crear la fila manualmente sin usar addAccesorioRow
+          const row = document.createElement('div');
+          row.className = 'd-flex align-items-center mb-2 gap-2';
+
+          // Select de tipo de accesorio
+          const selectNombre = document.createElement('select');
+          selectNombre.className = 'form-select form-select-sm';
+          selectNombre.style.width = '150px';
+          selectNombre.innerHTML = `<option value="">Tipo accesorio</option>`;
+          
+          const nombresUnicos = [...new Set(accesoriosList.map(a => a.nombre))];
+          nombresUnicos.forEach(nombre => {
+            const opt = document.createElement('option');
+            opt.value = nombre;
+            opt.textContent = nombre;
+            selectNombre.appendChild(opt);
+          });
+
+          // Select de accesorio específico
+          const selectAccesorio = document.createElement('select');
+          selectAccesorio.className = 'form-select form-select-sm';
+          selectAccesorio.style.width = '220px';
+          selectAccesorio.innerHTML = `<option value="">Accesorio disponible</option>`;
+
+          // Input de precio
+          const priceInput = document.createElement('input');
+          priceInput.type = 'number';
+          priceInput.step = '100';
+          priceInput.placeholder = 'Precio';
+          priceInput.className = 'form-control form-control-sm acc-price';
+          priceInput.style.width = '120px';
+          priceInput.disabled = true;
+          priceInput.dataset.id = '';
+
+          // Botón eliminar
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.textContent = 'X';
+          removeBtn.className = 'btn btn-sm btn-danger';
+          removeBtn.addEventListener('click', () => {
+            row.remove();
+            // También eliminar de la tabla de detalles
+            const tr = document.querySelector(`#detalleTable tbody tr[data-tipo="accesorio"][data-id="${acc.id}"]`);
+            if (tr) tr.remove();
+            recalcTotal();
+          });
+
+          // CONFIGURACIÓN DIRECTA SIN TIMEOUTS
+          // 1. Configurar el nombre del accesorio
+          selectNombre.value = acc.nombre || '';
+          
+          // 2. Cargar opciones del segundo select inmediatamente
+          if (selectNombre.value) {
+            const filtrados = accesoriosList.filter(a =>
+              a.nombre === selectNombre.value && a.estado === "Disponible"
+            );
+            filtrados.forEach(accesorio => {
+              const opt = document.createElement('option');
+              opt.value = accesorio.id;
+              opt.textContent = `${accesorio.nombre} ${accesorio.notas ? '- ' + accesorio.notas : ''}`;
+              selectAccesorio.appendChild(opt);
+            });
+            
+            // 3. Seleccionar el accesorio correcto
+            selectAccesorio.value = acc.id;
+            
+            // 4. Configurar precio
+            priceInput.value = acc.precio || 0;
+            priceInput.dataset.id = acc.id;
+            priceInput.disabled = false;
+            
+            // 5. AGREGAR DIRECTAMENTE A LA TABLA DE DETALLES
+            const accObj = accesoriosList.find(a => String(a.id) === String(acc.id));
+            if (accObj) {
+              const tr = document.createElement('tr');
+              tr.dataset.tipo = 'accesorio'; 
+              tr.dataset.id = acc.id;
+              tr.innerHTML = `
+                <td>Accesorio</td>
+                <td>${accObj.nombre || 'Accesorio ' + acc.id} ${accObj.notas ? '- ' + accObj.notas : ''}</td>
+                <td class="litros">-</td>
+                <td class="qty">1</td>
+                <td class="unit">${priceInput.value || 0}</td>
+                <td class="subtotal">${priceInput.value || 0}</td>
+                <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
+              `;
+              $('#detalleTable tbody').appendChild(tr);
+            }
+          }
+
+          // Event listeners para futuras interacciones
+          selectNombre.addEventListener('change', () => {
+            selectAccesorio.innerHTML = `<option value="">Accesorio disponible</option>`;
+            priceInput.value = '';
+            priceInput.disabled = true;
+
+            if (selectNombre.value) {
+              const filtrados = accesoriosList.filter(a =>
+                a.nombre === selectNombre.value && a.estado === "Disponible"
+              );
+              filtrados.forEach(accesorio => {
+                const opt = document.createElement('option');
+                opt.value = accesorio.id;
+                opt.textContent = `${accesorio.nombre} ${accesorio.notas ? '- ' + accesorio.notas : ''}`;
+                selectAccesorio.appendChild(opt);
+              });
+            }
+          });
+
+          selectAccesorio.addEventListener('change', () => {
+            if (selectAccesorio.value) {
+              priceInput.disabled = false;
+              const accId = selectAccesorio.value;
+              const acc = accesoriosList.find(a => String(a.id) === String(accId));
+              if (acc) {
+                priceInput.value = acc.precio || 0;
+                priceInput.dataset.id = accId;
+                // Actualizar o crear fila en la tabla
+                const existe = document.querySelector(`#detalleTable tbody tr[data-tipo="accesorio"][data-id="${accId}"]`);
+                if (existe) {
+                  existe.querySelector('.unit').textContent = priceInput.value;
+                  existe.querySelector('.subtotal').textContent = priceInput.value;
+                } else {
+                  const tr = document.createElement('tr');
+                  tr.dataset.tipo = 'accesorio'; 
+                  tr.dataset.id = accId;
+                  tr.innerHTML = `
+                    <td>Accesorio</td>
+                    <td>${acc.nombre || 'Accesorio ' + accId} ${acc.notas ? '- ' + acc.notas : ''}</td>
+                    <td class="litros">-</td>
+                    <td class="qty">1</td>
+                    <td class="unit">${priceInput.value || 0}</td>
+                    <td class="subtotal">${priceInput.value || 0}</td>
+                    <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
+                  `;
+                  $('#detalleTable tbody').appendChild(tr);
+                }
+                recalcTotal();
+              }
+            }
+          });
+
+          priceInput.addEventListener('input', () => {
+            const accId = selectAccesorio.value;
+            const precio = parseFloat(priceInput.value) || 0;
+            const fila = document.querySelector(`#detalleTable tbody tr[data-tipo="accesorio"][data-id="${accId}"]`);
+            if (fila) {
+              fila.querySelector('.unit').textContent = precio.toFixed(2);
+              fila.querySelector('.subtotal').textContent = (precio * 1).toFixed(2);
+            }
+            recalcTotal();
+          });
+
+          // Agregar elementos al row
+          row.appendChild(selectNombre);
+          row.appendChild(selectAccesorio);
+          row.appendChild(priceInput);
+          row.appendChild(removeBtn);
+          
+          // Agregar row al contenedor
+          accContainer.appendChild(row);
+        });
+      }
+    }
 
     $('#estado').value = p.estado || 'Pendiente';
     $('#estadoPago').checked = (p.estadoPago === 'Pagado' || p.estadoPago === true);
     $('#totalGral').value = p.totalGral != null ? ('$'+p.totalGral) : recalcTotal();
     $('#nota').value = p.nota || '';
 
+    // Agregar event listeners para botones de quitar
     document.querySelectorAll('#detalleTable .btn-remove').forEach(btn=>{
-      btn.onclick = (e)=>{ e.target.closest('tr').remove(); recalcTotal(); };
+      btn.onclick = (e)=>{ 
+        const tr = e.target.closest('tr'); 
+        if (tr) {
+          // Si es un accesorio, también limpiar el input correspondiente
+          if (tr.dataset.tipo === 'accesorio') {
+            const accId = tr.dataset.id;
+            const priceInput = document.querySelector(`.acc-price[data-id="${accId}"]`);
+            if (priceInput) {
+              priceInput.value = '';
+              priceInput.dataset.id = '';
+              priceInput.disabled = true;
+            }
+          }
+          tr.remove(); 
+        }
+        recalcTotal(); 
+      };
     });
 
     mensaje('', '');
@@ -788,48 +1068,77 @@ async function submitFormHandler(e) {
   try {
     const fechaP = $('#fechaPedido').value;
     const fechaE = $('#fechaEntrega').value;
-    if (!fechaP) { mensaje('Fecha de pedido obligatoria','error'); return; }
-    if (fechaE && new Date(fechaE) <= new Date(fechaP)) { mensaje('La fecha de entrega debe ser posterior a la fecha de pedido','error'); return; }
+    if (!fechaP) { 
+      mensaje('Fecha de pedido obligatoria','error'); 
+      return; 
+    }
+    if (fechaE && new Date(fechaE) < new Date(fechaP)) { 
+      mensaje('La fecha de entrega debe ser posterior o igual a la fecha de pedido','error'); 
+      return; 
+    }
+    
     const clienteId = $('#cliente').value;
     const usuarioId = $('#asociado').value;
-    if (!clienteId || !usuarioId) { mensaje('Cliente y Usuario obligatorios','error'); return; }
+    if (!clienteId || !usuarioId) { 
+      mensaje('Cliente y Usuario obligatorios','error'); 
+      return; 
+    }
 
-    // 🔹 FIX: construir bien accesorios seleccionados
+    // 🔹 VERIFICAR QUE HAYA PRODUCTOS EN EL DETALLE
+    const filasDetalle = $$('#detalleTable tbody tr');
+    if (filasDetalle.length === 0) {
+      mensaje('Debe agregar al menos un producto al pedido','error');
+      return;
+    }
+
+    // 🔹 CORRECCIÓN: Recolectar accesorios desde la tabla de detalles
     const accesoriosSeleccionados = [];
-    $$('.acc-price').forEach(inp => {
-      const id = inp.dataset.id;
-      const chk = document.querySelector(`#acc_chk_${id}`);
-      if (chk && chk.checked) {
-        const accObj = accesoriosList.find(x => String(x.id) === String(id));
-        if (accObj) {
-          accesoriosSeleccionados.push({
-            id: accObj.id,
-            nombre: accObj.nombre,
-            notas: accObj.notas,
-            estado: accObj.estado,
-            precio: inp.value ? Number(inp.value) : (accObj.precio || 0)
-          });
-        }
+    $$('#detalleTable tbody tr[data-tipo="accesorio"]').forEach(tr => {
+      const accId = tr.dataset.id;
+      const precio = Number(tr.querySelector('.unit').textContent || 0);
+      const acc = accesoriosList.find(x => String(x.id) === String(accId));
+      if (acc) {
+        accesoriosSeleccionados.push({
+          id: acc.id,
+          nombre: acc.nombre,
+          notas: acc.notas,
+          estado: acc.estado,
+          precio: precio
+        });
       }
     });
 
+    console.log('Accesorios a enviar:', accesoriosSeleccionados);
 
-
+    // 🔹 CORRECCIÓN: Recolectar cervezas desde la tabla de detalles
     const cervezasPayload = [];
-    $$('#detalleTable tbody tr').forEach(tr=>{
-      const tipo = tr.dataset.tipo; const id = tr.dataset.id; const qty = Number(tr.querySelector('.qty').textContent || 1);
-      if (tipo === 'cerveza') cervezasPayload.push({ id: Number(id), cantidad: qty });
-      
+    $$('#detalleTable tbody tr[data-tipo="cerveza"]').forEach(tr => {
+      const id = tr.dataset.id;
+      const qty = Number(tr.querySelector('.qty').textContent || 1);
+      cervezasPayload.push({ 
+        id: Number(id), 
+        cantidad: qty 
+      });
     });
+
+    // 🔹 VERIFICAR QUE HAYA CERVEZAS EN EL PEDIDO
+    if (cervezasPayload.length === 0) {
+      mensaje('Debe agregar al menos una cerveza al pedido','error');
+      return;
+    }
 
     const total = recalcTotal() || 0;
     const envio = $('#envio').checked;
     const direccion = envio ? ($('#direccionEntrega').value.trim() || 'Sin envío') : 'Sin envío';
 
+    // 🔹 CORRECCIÓN: Manejo seguro de fechas
+    const fechaPedidoMillis = new Date(fechaP + 'T12:00:00').getTime();
+    const fechaEntregaMillis = fechaE ? new Date(fechaE + 'T12:00:00').getTime() : null;
+
     const payload = {
       id: $('#pedidoId').value ? Number($('#pedidoId').value) : 0,
-      fechaPedido: new Date($('#fechaPedido').value).getTime(),
-      fechaEntrega: $('#fechaEntrega').value ? new Date($('#fechaEntrega').value).getTime() : null,
+      fechaPedido: fechaPedidoMillis,
+      fechaEntrega: fechaEntregaMillis,
       direccionEntrega: direccion,
       estado: $('#estado').value || 'Pendiente',
       estadoPago: $('#estadoPago').checked ? 'Pagado' : 'Pendiente',
@@ -837,12 +1146,14 @@ async function submitFormHandler(e) {
       accesorios: accesoriosSeleccionados,
       cervezas: cervezasPayload,
       barriles: ($('#barril').value ? [{ id: Number($('#barril').value) }] : []),
-      usuario: { id: Number($('#asociado').value) },
-      asociado: { id: Number($('#asociado').value) },
-      cliente: { id: Number($('#cliente').value) },
+      usuario: { id: Number(usuarioId) },
+      asociado: { id: Number(usuarioId) },
+      cliente: { id: Number(clienteId) },
       totalGral: total,
       nota: $('#nota').value || ''
     };
+
+    console.log('Payload completo:', payload);
 
     const isNew = !$('#pedidoId').value || Number($('#pedidoId').value) === 0;
     const url = isNew ? `${API}/addPedido` : `${API}/updatePedido`;
@@ -850,42 +1161,74 @@ async function submitFormHandler(e) {
 
     mensaje('Guardando pedido...');
     const res = await fetchJSON(url, {
-      method, headers: {'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload)
+      method, 
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }, 
+      body: JSON.stringify(payload)
     });
 
-    const ok = res && (res.codigo==='200' || res.codigo==='201' || /ok/i.test(res.status) || res.estado==='OK');
+    // 🔹 MEJOR MANEJO DE RESPUESTAS
+    const ok = res && (
+      res.codigo === '200' || 
+      res.codigo === '201' || 
+      res.status === 'success' ||
+      /ok/i.test(res.status) || 
+      res.estado === 'OK'
+    );
+
     if (ok) {
       mensaje('Pedido guardado correctamente.');
       await loadAll();
       resetForm();
     } else {
-      const txt = (res && (res.descripcion || res.message || res.error)) ? (res.descripcion || res.message || res.error) : 'No se pudo guardar el pedido';
-      mensaje(txt,'error');
+      let errorMsg = 'No se pudo guardar el pedido';
+      if (res) {
+        if (res.descripcion) errorMsg = res.descripcion;
+        else if (res.message) errorMsg = res.message;
+        else if (res.error) errorMsg = res.error;
+      }
+      mensaje(errorMsg, 'error');
     }
+
   } catch(err) {
-    console.error(err);
-    mensaje('Error al guardar: ' + (err.message || err),'error');
+    console.error('Error al guardar pedido:', err);
+    mensaje('Error al guardar: ' + (err.message || err), 'error');
   }
 }
-
 async function cancelPedido(id) {
   if (!confirm('¿Cancelar el pedido #' + id + '?')) return;
   try {
     const res = await fetchJSON(`${API}/cancelPedido/${id}`, { method: 'PUT' });
-    const ok = res && (res.codigo==='200' || /ok/i.test(res.status));
-    if (ok) { mensaje('Pedido cancelado correctamente.'); await loadAll(); }
-    else mensaje('No se pudo cancelar: ' + (res.descripcion || res.message || ''), 'error');
-  } catch(err) { console.error(err); mensaje('Error al cancelar: ' + (err.message || err), 'error'); }
+    const ok = res && (res.codigo === '200' || /ok/i.test(res.status));
+    if (ok) { 
+      mensaje('Pedido cancelado correctamente.'); 
+      await loadAll(); 
+    } else {
+      mensaje('No se pudo cancelar: ' + (res.descripcion || res.message || ''), 'error');
+    }
+  } catch(err) { 
+    console.error('Error al cancelar pedido:', err);
+    mensaje('Error al cancelar: ' + (err.message || err), 'error'); 
+  }
 }
 
 async function deletePedido(id) {
   if (!confirm('¿Eliminar el pedido #' + id + '? Esta acción es irreversible.')) return;
   try {
     const res = await fetchJSON(`${API}/deletePedido/${id}`, { method: 'DELETE' });
-    const ok = res && (res.codigo==='200' || /ok/i.test(res.status));
-    if (ok) { mensaje('Pedido eliminado correctamente.'); await loadAll(); }
-    else mensaje('No se pudo eliminar: ' + (res.descripcion || res.message || ''),'error');
-  } catch(err) { console.error(err); mensaje('Error al eliminar: ' + (err.message || err),'error'); }
+    const ok = res && (res.codigo === '200' || /ok/i.test(res.status));
+    if (ok) { 
+      mensaje('Pedido eliminado correctamente.'); 
+      await loadAll(); 
+    } else {
+      mensaje('No se pudo eliminar: ' + (res.descripcion || res.message || ''), 'error');
+    }
+  } catch(err) { 
+    console.error('Error al eliminar pedido:', err);
+    mensaje('Error al eliminar: ' + (err.message || err), 'error'); 
+  }
 }
 
 function renderPedidosTable(items) {
@@ -894,54 +1237,58 @@ function renderPedidosTable(items) {
   tbody.innerHTML = '';
   if (!Array.isArray(items)) items = [];
 
-  items.forEach(p=>{
+  items.forEach(p => {
     const tr = document.createElement('tr');
 
     let clienteNombre = '';
     if (p.cliente) {
-      if (typeof p.cliente === 'object') clienteNombre = ((p.cliente.nombre||'') + ' ' + (p.cliente.apellido||'')).trim();
-      else {
-        const found = clientesList.find(c=>String(c.id)===String(p.cliente));
-        clienteNombre = found ? ((found.nombre||'') + ' ' + (found.apellido||'')).trim() : ('ID:'+p.cliente);
+      if (typeof p.cliente === 'object') {
+        clienteNombre = ((p.cliente.nombre || '') + ' ' + (p.cliente.apellido || '')).trim();
+      } else {
+        const found = clientesList.find(c => String(c.id) === String(p.cliente));
+        clienteNombre = found ? ((found.nombre || '') + ' ' + (found.apellido || '')).trim() : ('ID:' + p.cliente);
       }
     }
 
     let asociadoNombre = '';
     const uField = p.usuario || p.asociado || null;
     if (uField) {
-      if (typeof uField === 'object') asociadoNombre = ((uField.nombre||'') + ' ' + (uField.apellido||'')).trim();
-      else {
-        const f = asociadosList.find(a=>String(a.id)===String(uField));
-        asociadoNombre = f ? ((f.nombre||'') + ' ' + (f.apellido||'')).trim() : ('ID:'+uField);
+      if (typeof uField === 'object') {
+        asociadoNombre = ((uField.nombre || '') + ' ' + (uField.apellido || '')).trim();
+      } else {
+        const f = asociadosList.find(a => String(a.id) === String(uField));
+        asociadoNombre = f ? ((f.nombre || '') + ' ' + (f.apellido || '')).trim() : ('ID:' + uField);
       }
     }
 
     let cervezaNombre = '';
-    if (p.cervezas && Array.isArray(p.cervezas) && p.cervezas.length>0) {
+    if (p.cervezas && Array.isArray(p.cervezas) && p.cervezas.length > 0) {
       const c = p.cervezas[0];
-      if (typeof c === 'object') cervezaNombre = c.nombreCerveza || c.nombre || String(c.id||'');
-      else {
-        const f = cervezasList.find(x=>String(x.id)===String(c));
-        cervezaNombre = f ? (f.nombreCerveza || f.nombre) : ('ID:'+c);
+      if (typeof c === 'object') {
+        cervezaNombre = c.nombreCerveza || c.nombre || String(c.id || '');
+      } else {
+        const f = cervezasList.find(x => String(x.id) === String(c));
+        cervezaNombre = f ? (f.nombreCerveza || f.nombre) : ('ID:' + c);
       }
     }
 
     let barrilNombre = '';
-    if (p.barriles && Array.isArray(p.barriles) && p.barriles.length>0) {
+    if (p.barriles && Array.isArray(p.barriles) && p.barriles.length > 0) {
       const b = p.barriles[0];
-      if (typeof b === 'object') barrilNombre = `#${b.id} ${b.litros? '- ' + b.litros + ' L' : ''}`;
-      else {
-        const f = barrilesList.find(x=>String(x.id)===String(b));
-        barrilNombre = f ? (`#${f.id} ${f.litros? '- ' + f.litros + ' L' : ''}`) : ('ID:'+b);
+      if (typeof b === 'object') {
+        barrilNombre = `#${b.id} ${b.litros ? '- ' + b.litros + ' L' : ''}`;
+      } else {
+        const f = barrilesList.find(x => String(x.id) === String(b));
+        barrilNombre = f ? (`#${f.id} ${f.litros ? '- ' + f.litros + ' L' : ''}`) : ('ID:' + b);
       }
     }
 
     let accesoriosTxt = '';
     if (p.accesorios && Array.isArray(p.accesorios)) {
-      accesoriosTxt = p.accesorios.map(a=>{
-        if (typeof a === 'object') return a.nombre || ('ID:'+a.id);
-        const found = accesoriosList.find(x=>String(x.id)===String(a));
-        return found ? found.nombre : ('ID:'+a);
+      accesoriosTxt = p.accesorios.map(a => {
+        if (typeof a === 'object') return a.nombre || ('ID:' + a.id);
+        const found = accesoriosList.find(x => String(x.id) === String(a));
+        return found ? found.nombre : ('ID:' + a);
       }).join(', ');
     }
 
@@ -972,7 +1319,6 @@ function renderPedidosTable(items) {
     tbody.appendChild(tr);
   });
 }
-
 function pedidosTableClickHandler(e) {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -1170,36 +1516,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   attachListeners();
   await loadAll();
 });
-</script>
 
-
-<script>
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    const cervezaSelect = document.getElementById("cerveza");
-    const barrilSelect = document.getElementById("barril");
-
-    // Cuando selecciona una cerveza
-    cervezaSelect.addEventListener("change", function () {
-        const cervezaId = this.value;
-        barrilSelect.innerHTML = "<option value=''>-- Seleccione un barril --</option>";
-
-        if (cervezaId) {
-            fetch("http://localhost:8080/getBarrilesDisponiblesDTO/" + cervezaId)
-                .then(response => response.json())
-                .then(barriles => {
-                    barriles.forEach(barril => {
-                        const option = document.createElement("option");
-                        option.value = barril.id;
-                        option.text = `Barril ${barril.id} - ${barril.litros}L (${barril.estado})`;
-                        barrilSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error("Error cargando barriles:", error));
-        }
-    });
-});
 </script>
 </body>
 </html>
