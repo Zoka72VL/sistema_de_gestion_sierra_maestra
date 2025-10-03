@@ -1,63 +1,60 @@
-// Minimal local shim for essential HTMX behaviors used in the app.
-// This is intentionally small: implements hx-get, hx-post and hx-delete
-// by listening to clicks and submits and fetching content to replace targets.
-// It is not a full HTMX implementation, but enough for page forms and lists.
-(function(){
-  if (window.htmx) return; // don't override real htmx if present
-  window.htmx = { // minimal stub
-    _version: 'local-shim',
-    logAll: function(){ console.info('htmx.local: logging enabled'); }
-  };
+// Underwater Background Animation
+        const underwaterBg = document.getElementById('underwater-bg');
+        
+        // Simple bubble creation - Reduced number
+        function createBubbles() {
+            for (let i = 0; i < 6; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.width = Math.random() * 10 + 5 + 'px';
+                bubble.style.height = bubble.style.width;
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDelay = Math.random() * 10 + 's';
+                bubble.style.animationDuration = Math.random() * 2 + 6 + 's';
+                underwaterBg.appendChild(bubble);
+            }
+        }
 
-  function resolveTarget(selector){
-    if (!selector) return null;
-    try { return document.querySelector(selector); } catch(e){ return null; }
-  }
+        // Simple ocean particles
+        function createOceanParticles() {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'ocean-particle';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = Math.random() * 5 + 12 + 's';
+                underwaterBg.appendChild(particle);
+            }}
+            // Research Tabs Functionality - Fixed
+        const researchTabs = document.querySelectorAll('.research-tab');
+        const researchContents = document.querySelectorAll('.research-content');
 
-  function fetchToTarget(url, options, targetSelector){
-    var target = resolveTarget(targetSelector);
-    return fetch(url, options)
-      .then(function(resp){
-        if (!resp.ok) throw new Error('Network response not ok: ' + resp.status);
-        return resp.text();
-      })
-      .then(function(html){ if (target) target.innerHTML = html; return html; });
-  }
+        if (researchTabs.length > 0 && researchContents.length > 0) {
+            researchTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    researchTabs.forEach(t => t.classList.remove('active'));
+                    researchContents.forEach(c => c.classList.remove('active'));
 
-  document.addEventListener('click', function(ev){
-    var el = ev.target.closest && ev.target.closest('[hx-get],[hx-delete]');
-    if (!el) return;
-    try { ev.preventDefault(); } catch(e){}
-    var url = el.getAttribute('hx-get') || el.getAttribute('hx-delete');
-    var method = el.hasAttribute('hx-delete') ? 'DELETE' : 'GET';
-    var target = el.getAttribute('hx-target');
-    if (!url) return;
-    fetchToTarget(url, { method: method, credentials: 'same-origin' }, target)
-      .catch(function(err){ console.error('htmx.local fetch error', err, url); });
-  }, true);
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
 
-  document.addEventListener('submit', function(ev){
-    var form = ev.target;
-    if (!form || !form.hasAttribute('hx-post')) return;
-    try { ev.preventDefault(); } catch(e){}
-    var url = form.getAttribute('hx-post') || form.getAttribute('action');
-    var target = form.getAttribute('hx-target');
-    var enctype = form.enctype || '';
-    var opts = { method: 'POST', credentials: 'same-origin' };
-    if (enctype.indexOf('application/json') !== -1) {
-      // fallback: read inputs into simple JSON
-      var data = {};
-      Array.prototype.slice.call(form.elements).forEach(function(el){
-        if (!el.name) return;
-        if (el.type === 'checkbox') data[el.name] = el.checked;
-        else data[el.name] = el.value;
-      });
-      opts.body = JSON.stringify(data);
-      opts.headers = { 'Content-Type': 'application/json' };
-    } else {
-      opts.body = new FormData(form);
-    }
-    fetchToTarget(url, opts, target)
-      .catch(function(err){ console.error('htmx.local form submit error', err, url); });
-  }, true);
-})();
+                    // Show corresponding content
+                    const tabId = tab.getAttribute('data-tab');
+                    const targetContent = document.getElementById(tabId);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Simple initialization
+        createBubbles();
+        createOceanParticles();
+
+        // Simple regeneration
+        setInterval(createBubbles, 20000); // Every 20 seconds
+        setInterval(createOceanParticles, 30000); // Every 30 seconds
