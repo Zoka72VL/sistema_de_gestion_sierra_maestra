@@ -254,7 +254,9 @@
             <th>Fecha Pedido</th>
             <th>Fecha Entrega</th>
             <th>Estado</th>
-            <th>Dirección</th>
+            <th>Estado Pago</th>
+            <th>Dirección Envío</th>
+            <th>Notas</th>
             <th>Total</th>
             <th>Acciones</th>
           </tr>
@@ -1068,6 +1070,7 @@ async function submitFormHandler(e) {
   try {
     const fechaP = $('#fechaPedido').value;
     const fechaE = $('#fechaEntrega').value;
+
     if (!fechaP) { 
       mensaje('Fecha de pedido obligatoria','error'); 
       return; 
@@ -1084,14 +1087,14 @@ async function submitFormHandler(e) {
       return; 
     }
 
-    // 🔹 VERIFICAR QUE HAYA PRODUCTOS EN EL DETALLE
+    // 🔹 Verificar que haya productos en el detalle
     const filasDetalle = $$('#detalleTable tbody tr');
     if (filasDetalle.length === 0) {
       mensaje('Debe agregar al menos un producto al pedido','error');
       return;
     }
 
-    // 🔹 CORRECCIÓN: Recolectar accesorios desde la tabla de detalles
+    // 🔹 Recolectar accesorios desde la tabla
     const accesoriosSeleccionados = [];
     $$('#detalleTable tbody tr[data-tipo="accesorio"]').forEach(tr => {
       const accId = tr.dataset.id;
@@ -1110,7 +1113,7 @@ async function submitFormHandler(e) {
 
     console.log('Accesorios a enviar:', accesoriosSeleccionados);
 
-    // 🔹 CORRECCIÓN: Recolectar cervezas desde la tabla de detalles
+    // 🔹 Recolectar cervezas
     const cervezasPayload = [];
     $$('#detalleTable tbody tr[data-tipo="cerveza"]').forEach(tr => {
       const id = tr.dataset.id;
@@ -1121,7 +1124,6 @@ async function submitFormHandler(e) {
       });
     });
 
-    // 🔹 VERIFICAR QUE HAYA CERVEZAS EN EL PEDIDO
     if (cervezasPayload.length === 0) {
       mensaje('Debe agregar al menos una cerveza al pedido','error');
       return;
@@ -1131,9 +1133,12 @@ async function submitFormHandler(e) {
     const envio = $('#envio').checked;
     const direccion = envio ? ($('#direccionEntrega').value.trim() || 'Sin envío') : 'Sin envío';
 
-    // 🔹 CORRECCIÓN: Manejo seguro de fechas
+    // 🔹 Manejo de fechas seguro
     const fechaPedidoMillis = new Date(fechaP + 'T12:00:00').getTime();
     const fechaEntregaMillis = fechaE ? new Date(fechaE + 'T12:00:00').getTime() : null;
+
+    // 🔹 Capturar correctamente la nota
+    const notaValor = $('#nota') ? $('#nota').value.trim() : '';
 
     const payload = {
       id: $('#pedidoId').value ? Number($('#pedidoId').value) : 0,
@@ -1150,7 +1155,7 @@ async function submitFormHandler(e) {
       asociado: { id: Number(usuarioId) },
       cliente: { id: Number(clienteId) },
       totalGral: total,
-      nota: $('#nota').value || ''
+      nota: notaValor
     };
 
     console.log('Payload completo:', payload);
@@ -1169,7 +1174,7 @@ async function submitFormHandler(e) {
       body: JSON.stringify(payload)
     });
 
-    // 🔹 MEJOR MANEJO DE RESPUESTAS
+    // 🔹 Manejo de respuesta
     const ok = res && (
       res.codigo === '200' || 
       res.codigo === '201' || 
@@ -1197,6 +1202,7 @@ async function submitFormHandler(e) {
     mensaje('Error al guardar: ' + (err.message || err), 'error');
   }
 }
+
 async function cancelPedido(id) {
   if (!confirm('¿Cancelar el pedido #' + id + '?')) return;
   try {
@@ -1213,6 +1219,7 @@ async function cancelPedido(id) {
     mensaje('Error al cancelar: ' + (err.message || err), 'error'); 
   }
 }
+
 
 async function deletePedido(id) {
   if (!confirm('¿Eliminar el pedido #' + id + '? Esta acción es irreversible.')) return;
@@ -1296,6 +1303,13 @@ function renderPedidosTable(items) {
     const fechaP = formatDateFromMillis(p.fechaPedido);
     const fechaE = formatDateFromMillis(p.fechaEntrega);
     const totalTxt = p.totalGral != null ? ('$' + p.totalGral) : '';
+    
+    // 🔹 CORRECCIÓN: Mostrar estado del pago y dirección de envío
+    const estadoPago = p.estadoPago || 'Pendiente';
+    const direccionEnvio = p.direccionEntrega && p.direccionEntrega !== 'Sin envío' ? p.direccionEntrega : 'Sin envío';
+    
+    // 🔹 AGREGADO: Mostrar notas del pedido
+    const notas = p.nota || '';
 
     tr.innerHTML = `
       <td class="nowrap">${p.id}</td>
@@ -1308,7 +1322,9 @@ function renderPedidosTable(items) {
       <td>${fechaP}</td>
       <td>${fechaE}</td>
       <td>${p.estado || ''}</td>
-      <td>${p.direccionEntrega && p.direccionEntrega !== 'Sin envío' ? p.direccionEntrega : 'Sin envío'}</td>
+      <td><span class="badge ${estadoPago === 'Pagado' ? 'bg-success' : 'bg-warning'}">${estadoPago}</span></td>
+      <td>${direccionEnvio}</td>
+      <td title="${notas}">${notas.length > 50 ? notas.substring(0, 50) + '...' : notas}</td>
       <td>${totalTxt}</td>
       <td class="nowrap">
         <button class="btn btn-sm btn-warning me-1" data-action="edit" data-id="${p.id}">Editar</button>

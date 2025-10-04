@@ -108,4 +108,16 @@ public class Pedido {
     @Column(name = "estado_pago", nullable = false)
     private String estadoPago = "Pendiente"; // valor por defecto
 
+    @Column(name = "nota", columnDefinition = "TEXT")
+    private String nota;
+
+    public String getNota() {
+    return nota;
+    }
+
+    public void setNota(String nota) {
+        this.nota = nota;
+    }
+
+
 }
