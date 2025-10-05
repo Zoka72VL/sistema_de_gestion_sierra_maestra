@@ -506,6 +506,13 @@ function renderAccesorios() {
   addBtn.className = 'btn btn-sm btn-primary mb-2';
 
   addBtn.addEventListener('click', () => {
+    // 🔹 VALIDACIÓN: Verificar que ya haya barriles antes de permitir agregar accesorios
+    const tieneBarriles = $$('#detalleTable tbody tr[data-tipo="cerveza"]').length > 0;
+    if (!tieneBarriles) {
+      mensaje('Primero debe agregar al menos un barril de cerveza antes de agregar accesorios', 'error');
+      return;
+    }
+
     addAccesorioRow(cont);
   });
 
@@ -850,7 +857,7 @@ async function loadPedidoIntoForm(id) {
       });
     }
 
-    // SOLUCIÓN DEFINITIVA: Cargar accesorios de forma directa
+    // 🔹 SOLUCIÓN: Cargar accesorios del pedido editado
     const accContainer = document.getElementById('accesoriosContainer');
     if (accContainer) {
       accContainer.innerHTML = '';
@@ -867,7 +874,7 @@ async function loadPedidoIntoForm(id) {
         console.log('Cargando accesorios del pedido:', p.accesorios);
         
         p.accesorios.forEach(acc => {
-          // Crear la fila manualmente sin usar addAccesorioRow
+          // Crear fila para el accesorio
           const row = document.createElement('div');
           row.className = 'd-flex align-items-center mb-2 gap-2';
 
@@ -882,6 +889,7 @@ async function loadPedidoIntoForm(id) {
             const opt = document.createElement('option');
             opt.value = nombre;
             opt.textContent = nombre;
+            if (nombre === acc.nombre) opt.selected = true;
             selectNombre.appendChild(opt);
           });
 
@@ -914,48 +922,47 @@ async function loadPedidoIntoForm(id) {
             recalcTotal();
           });
 
-          // CONFIGURACIÓN DIRECTA SIN TIMEOUTS
-          // 1. Configurar el nombre del accesorio
-          selectNombre.value = acc.nombre || '';
-          
-          // 2. Cargar opciones del segundo select inmediatamente
-          if (selectNombre.value) {
-            const filtrados = accesoriosList.filter(a =>
-              a.nombre === selectNombre.value && a.estado === "Disponible"
-            );
-            filtrados.forEach(accesorio => {
-              const opt = document.createElement('option');
-              opt.value = accesorio.id;
-              opt.textContent = `${accesorio.nombre} ${accesorio.notas ? '- ' + accesorio.notas : ''}`;
-              selectAccesorio.appendChild(opt);
-            });
-            
-            // 3. Seleccionar el accesorio correcto
-            selectAccesorio.value = acc.id;
-            
-            // 4. Configurar precio
-            priceInput.value = acc.precio || 0;
-            priceInput.dataset.id = acc.id;
-            priceInput.disabled = false;
-            
-            // 5. AGREGAR DIRECTAMENTE A LA TABLA DE DETALLES
-            const accObj = accesoriosList.find(a => String(a.id) === String(acc.id));
-            if (accObj) {
-              const tr = document.createElement('tr');
-              tr.dataset.tipo = 'accesorio'; 
-              tr.dataset.id = acc.id;
-              tr.innerHTML = `
-                <td>Accesorio</td>
-                <td>${accObj.nombre || 'Accesorio ' + acc.id} ${accObj.notas ? '- ' + accObj.notas : ''}</td>
-                <td class="litros">-</td>
-                <td class="qty">1</td>
-                <td class="unit">${priceInput.value || 0}</td>
-                <td class="subtotal">${priceInput.value || 0}</td>
-                <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
-              `;
-              $('#detalleTable tbody').appendChild(tr);
+          // 🔹 CONFIGURACIÓN INMEDIATA DEL ACCESORIO
+          const configurarAccesorio = () => {
+            if (selectNombre.value) {
+              // Cargar accesorios disponibles de este tipo
+              const filtrados = accesoriosList.filter(a =>
+                a.nombre === selectNombre.value && a.estado === "Disponible"
+              );
+              
+              selectAccesorio.innerHTML = `<option value="">Accesorio disponible</option>`;
+              filtrados.forEach(accesorio => {
+                const opt = document.createElement('option');
+                opt.value = accesorio.id;
+                opt.textContent = `${accesorio.nombre} ${accesorio.notas ? '- ' + accesorio.notas : ''}`;
+                if (String(accesorio.id) === String(acc.id)) opt.selected = true;
+                selectAccesorio.appendChild(opt);
+              });
+              
+              // Configurar precio y habilitar input
+              priceInput.value = acc.precio || 0;
+              priceInput.dataset.id = acc.id;
+              priceInput.disabled = false;
+              
+              // 🔹 AGREGAR A LA TABLA DE DETALLES
+              const accObj = accesoriosList.find(a => String(a.id) === String(acc.id));
+              if (accObj) {
+                const tr = document.createElement('tr');
+                tr.dataset.tipo = 'accesorio'; 
+                tr.dataset.id = acc.id;
+                tr.innerHTML = `
+                  <td>Accesorio</td>
+                  <td>${accObj.nombre || 'Accesorio ' + acc.id} ${accObj.notas ? '- ' + accObj.notas : ''}</td>
+                  <td class="litros">-</td>
+                  <td class="qty">1</td>
+                  <td class="unit">${priceInput.value || 0}</td>
+                  <td class="subtotal">${priceInput.value || 0}</td>
+                  <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
+                `;
+                $('#detalleTable tbody').appendChild(tr);
+              }
             }
-          }
+          };
 
           // Event listeners para futuras interacciones
           selectNombre.addEventListener('change', () => {
@@ -999,7 +1006,7 @@ async function loadPedidoIntoForm(id) {
                     <td class="litros">-</td>
                     <td class="qty">1</td>
                     <td class="unit">${priceInput.value || 0}</td>
-                    <td class="subtotal">${priceInput.value || 0}</td>
+                    <td class="subtotal').textContent = priceInput.value || 0}</td>
                     <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
                   `;
                   $('#detalleTable tbody').appendChild(tr);
@@ -1019,6 +1026,9 @@ async function loadPedidoIntoForm(id) {
             }
             recalcTotal();
           });
+
+          // Ejecutar configuración inicial
+          setTimeout(configurarAccesorio, 100);
 
           // Agregar elementos al row
           row.appendChild(selectNombre);
@@ -1087,10 +1097,26 @@ async function submitFormHandler(e) {
       return; 
     }
 
-    // 🔹 Verificar que haya productos en el detalle
+    // 🔹 NUEVA VALIDACIÓN: Verificar que haya productos en el detalle
     const filasDetalle = $$('#detalleTable tbody tr');
     if (filasDetalle.length === 0) {
       mensaje('Debe agregar al menos un producto al pedido','error');
+      return;
+    }
+
+    // 🔹 NUEVA VALIDACIÓN: Verificar que haya al menos un barril de cerveza
+    const tieneBarriles = $$('#detalleTable tbody tr[data-tipo="cerveza"]').length > 0;
+    const tieneAccesorios = $$('#detalleTable tbody tr[data-tipo="accesorio"]').length > 0;
+    
+    // Si hay accesorios pero no barriles, mostrar error
+    if (tieneAccesorios && !tieneBarriles) {
+      mensaje('No se puede crear un pedido de accesorios sin al menos un barril de cerveza', 'error');
+      return;
+    }
+
+    // Si no hay ningún producto (ni barriles ni accesorios)
+    if (!tieneBarriles && !tieneAccesorios) {
+      mensaje('Debe agregar al menos un producto al pedido', 'error');
       return;
     }
 
@@ -1123,11 +1149,6 @@ async function submitFormHandler(e) {
         cantidad: qty 
       });
     });
-
-    if (cervezasPayload.length === 0) {
-      mensaje('Debe agregar al menos una cerveza al pedido','error');
-      return;
-    }
 
     const total = recalcTotal() || 0;
     const envio = $('#envio').checked;
