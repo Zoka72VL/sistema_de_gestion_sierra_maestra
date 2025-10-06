@@ -53,7 +53,7 @@ public class AccesorioController {
 	
 	@GetMapping(value = "/getByIdAccesorio/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Consultar Accesorio por id", notes = "Esta operación consulta un Accesorio por su identificador personal")
-	public Respuesta getByIdAccesorio(@PathParam("id") @PathVariable Long id) {
+	public Respuesta getByIdAccesorio(@PathVariable Long id) {
 		return accesoriosServiceImpl.findById(id);
 	}
 	
