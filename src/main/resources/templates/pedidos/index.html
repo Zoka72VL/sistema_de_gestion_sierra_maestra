@@ -813,6 +813,8 @@ async function loadPedidoIntoForm(id) {
     const p = (res && res.data) ? res.data : res;
     if (!p) { mensaje('Pedido no encontrado','error'); return; }
 
+    console.log('Pedido cargado:', p); // Debug
+
     $('#pedidoId').value = p.id || '';
     $('#fechaPedido').value = isoDateInputFromMillis(p.fechaPedido);
     $('#fechaEntrega').value = isoDateInputFromMillis(p.fechaEntrega);
@@ -821,7 +823,11 @@ async function loadPedidoIntoForm(id) {
       $('#envio').checked = Boolean(p.envio);
       $('#direccionEntrega').disabled = false;
       $('#direccionEntrega').value = p.direccionEntrega || '';
-    } else { $('#envio').checked = false; $('#direccionEntrega').disabled = true; $('#direccionEntrega').value='Sin envío'; }
+    } else { 
+      $('#envio').checked = false; 
+      $('#direccionEntrega').disabled = true; 
+      $('#direccionEntrega').value='Sin envío'; 
+    }
 
     const clienteId = (p.cliente && p.cliente.id) ? p.cliente.id : (p.cliente||'');
     $('#cliente').value = clienteId;
@@ -835,6 +841,7 @@ async function loadPedidoIntoForm(id) {
     
     // Cargar cervezas
     if (p.cervezas && Array.isArray(p.cervezas)) {
+      console.log('Cervezas en pedido:', p.cervezas); // Debug
       p.cervezas.forEach(c=>{
         const cerCat = cervezasList.find(x => String(x.id) === String(c.id));
         const qty = (c.cantidad || 1);
@@ -843,7 +850,8 @@ async function loadPedidoIntoForm(id) {
         const precioPorLitro = (cerCat && cerCat.precioPorLitro) ? Number(cerCat.precioPorLitro) : (c.precioPorLitro || 0);
         const subtotal = Math.round((precioPorLitro * litrosPorBarril * qty + Number.EPSILON) * 100)/100;
         const tr = document.createElement('tr');
-        tr.dataset.tipo='cerveza'; tr.dataset.id = c.id;
+        tr.dataset.tipo='cerveza'; 
+        tr.dataset.id = c.id;
         tr.innerHTML = `
           <td>Cerveza</td>
           <td>${cerCat ? (cerCat.nombreCerveza||cerCat.nombre) : (c.nombreCerveza||c.nombre||c.id)}</td>
@@ -857,7 +865,35 @@ async function loadPedidoIntoForm(id) {
       });
     }
 
-    // 🔹 SOLUCIÓN: Cargar accesorios del pedido editado
+    // 🔹 SOLUCIÓN SIMPLIFICADA: Cargar accesorios del pedido editado directamente en la tabla
+    if (p.accesorios && Array.isArray(p.accesorios)) {
+      console.log('Accesorios en pedido:', p.accesorios); // Debug
+      p.accesorios.forEach(acc => {
+        // El accesorio puede venir como objeto completo o solo con ID
+        const accId = acc.id || acc;
+        const accObj = accesoriosList.find(a => String(a.id) === String(accId)) || acc;
+        
+        if (accObj) {
+          const precio = accObj.precio || 0;
+          const subtotal = precio;
+          const tr = document.createElement('tr');
+          tr.dataset.tipo = 'accesorio'; 
+          tr.dataset.id = accId;
+          tr.innerHTML = `
+            <td>Accesorio</td>
+            <td>${accObj.nombre || 'Accesorio ' + accId} ${accObj.notas ? '- ' + accObj.notas : ''}</td>
+            <td class="litros">-</td>
+            <td class="qty">1</td>
+            <td class="unit">${precio}</td>
+            <td class="subtotal">${subtotal}</td>
+            <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
+          `;
+          $('#detalleTable tbody').appendChild(tr);
+        }
+      });
+    }
+
+    // Limpiar y preparar el contenedor de accesorios para agregar nuevos
     const accContainer = document.getElementById('accesoriosContainer');
     if (accContainer) {
       accContainer.innerHTML = '';
@@ -866,185 +902,21 @@ async function loadPedidoIntoForm(id) {
       addBtn.type = 'button';
       addBtn.textContent = 'Agregar accesorio';
       addBtn.className = 'btn btn-sm btn-primary mb-2';
-      addBtn.addEventListener('click', () => addAccesorioRow(accContainer));
+      addBtn.addEventListener('click', () => {
+        const tieneBarriles = $$('#detalleTable tbody tr[data-tipo="cerveza"]').length > 0;
+        if (!tieneBarriles) {
+          mensaje('Primero debe agregar al menos un barril de cerveza antes de agregar accesorios', 'error');
+          return;
+        }
+        addAccesorioRow(accContainer);
+      });
       accContainer.appendChild(addBtn);
-
-      // Cargar accesorios del pedido
-      if (p.accesorios && Array.isArray(p.accesorios)) {
-        console.log('Cargando accesorios del pedido:', p.accesorios);
-        
-        p.accesorios.forEach(acc => {
-          // Crear fila para el accesorio
-          const row = document.createElement('div');
-          row.className = 'd-flex align-items-center mb-2 gap-2';
-
-          // Select de tipo de accesorio
-          const selectNombre = document.createElement('select');
-          selectNombre.className = 'form-select form-select-sm';
-          selectNombre.style.width = '150px';
-          selectNombre.innerHTML = `<option value="">Tipo accesorio</option>`;
-          
-          const nombresUnicos = [...new Set(accesoriosList.map(a => a.nombre))];
-          nombresUnicos.forEach(nombre => {
-            const opt = document.createElement('option');
-            opt.value = nombre;
-            opt.textContent = nombre;
-            if (nombre === acc.nombre) opt.selected = true;
-            selectNombre.appendChild(opt);
-          });
-
-          // Select de accesorio específico
-          const selectAccesorio = document.createElement('select');
-          selectAccesorio.className = 'form-select form-select-sm';
-          selectAccesorio.style.width = '220px';
-          selectAccesorio.innerHTML = `<option value="">Accesorio disponible</option>`;
-
-          // Input de precio
-          const priceInput = document.createElement('input');
-          priceInput.type = 'number';
-          priceInput.step = '100';
-          priceInput.placeholder = 'Precio';
-          priceInput.className = 'form-control form-control-sm acc-price';
-          priceInput.style.width = '120px';
-          priceInput.disabled = true;
-          priceInput.dataset.id = '';
-
-          // Botón eliminar
-          const removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.textContent = 'X';
-          removeBtn.className = 'btn btn-sm btn-danger';
-          removeBtn.addEventListener('click', () => {
-            row.remove();
-            // También eliminar de la tabla de detalles
-            const tr = document.querySelector(`#detalleTable tbody tr[data-tipo="accesorio"][data-id="${acc.id}"]`);
-            if (tr) tr.remove();
-            recalcTotal();
-          });
-
-          // 🔹 CONFIGURACIÓN INMEDIATA DEL ACCESORIO
-          const configurarAccesorio = () => {
-            if (selectNombre.value) {
-              // Cargar accesorios disponibles de este tipo
-              const filtrados = accesoriosList.filter(a =>
-                a.nombre === selectNombre.value && a.estado === "Disponible"
-              );
-              
-              selectAccesorio.innerHTML = `<option value="">Accesorio disponible</option>`;
-              filtrados.forEach(accesorio => {
-                const opt = document.createElement('option');
-                opt.value = accesorio.id;
-                opt.textContent = `${accesorio.nombre} ${accesorio.notas ? '- ' + accesorio.notas : ''}`;
-                if (String(accesorio.id) === String(acc.id)) opt.selected = true;
-                selectAccesorio.appendChild(opt);
-              });
-              
-              // Configurar precio y habilitar input
-              priceInput.value = acc.precio || 0;
-              priceInput.dataset.id = acc.id;
-              priceInput.disabled = false;
-              
-              // 🔹 AGREGAR A LA TABLA DE DETALLES
-              const accObj = accesoriosList.find(a => String(a.id) === String(acc.id));
-              if (accObj) {
-                const tr = document.createElement('tr');
-                tr.dataset.tipo = 'accesorio'; 
-                tr.dataset.id = acc.id;
-                tr.innerHTML = `
-                  <td>Accesorio</td>
-                  <td>${accObj.nombre || 'Accesorio ' + acc.id} ${accObj.notas ? '- ' + accObj.notas : ''}</td>
-                  <td class="litros">-</td>
-                  <td class="qty">1</td>
-                  <td class="unit">${priceInput.value || 0}</td>
-                  <td class="subtotal">${priceInput.value || 0}</td>
-                  <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
-                `;
-                $('#detalleTable tbody').appendChild(tr);
-              }
-            }
-          };
-
-          // Event listeners para futuras interacciones
-          selectNombre.addEventListener('change', () => {
-            selectAccesorio.innerHTML = `<option value="">Accesorio disponible</option>`;
-            priceInput.value = '';
-            priceInput.disabled = true;
-
-            if (selectNombre.value) {
-              const filtrados = accesoriosList.filter(a =>
-                a.nombre === selectNombre.value && a.estado === "Disponible"
-              );
-              filtrados.forEach(accesorio => {
-                const opt = document.createElement('option');
-                opt.value = accesorio.id;
-                opt.textContent = `${accesorio.nombre} ${accesorio.notas ? '- ' + accesorio.notas : ''}`;
-                selectAccesorio.appendChild(opt);
-              });
-            }
-          });
-
-          selectAccesorio.addEventListener('change', () => {
-            if (selectAccesorio.value) {
-              priceInput.disabled = false;
-              const accId = selectAccesorio.value;
-              const acc = accesoriosList.find(a => String(a.id) === String(accId));
-              if (acc) {
-                priceInput.value = acc.precio || 0;
-                priceInput.dataset.id = accId;
-                // Actualizar o crear fila en la tabla
-                const existe = document.querySelector(`#detalleTable tbody tr[data-tipo="accesorio"][data-id="${accId}"]`);
-                if (existe) {
-                  existe.querySelector('.unit').textContent = priceInput.value;
-                  existe.querySelector('.subtotal').textContent = priceInput.value;
-                } else {
-                  const tr = document.createElement('tr');
-                  tr.dataset.tipo = 'accesorio'; 
-                  tr.dataset.id = accId;
-                  tr.innerHTML = `
-                    <td>Accesorio</td>
-                    <td>${acc.nombre || 'Accesorio ' + accId} ${acc.notas ? '- ' + acc.notas : ''}</td>
-                    <td class="litros">-</td>
-                    <td class="qty">1</td>
-                    <td class="unit">${priceInput.value || 0}</td>
-                    <td class="subtotal').textContent = priceInput.value || 0}</td>
-                    <td class="nowrap"><button type="button" class="btn btn-sm btn-danger btn-remove">Quitar</button></td>
-                  `;
-                  $('#detalleTable tbody').appendChild(tr);
-                }
-                recalcTotal();
-              }
-            }
-          });
-
-          priceInput.addEventListener('input', () => {
-            const accId = selectAccesorio.value;
-            const precio = parseFloat(priceInput.value) || 0;
-            const fila = document.querySelector(`#detalleTable tbody tr[data-tipo="accesorio"][data-id="${accId}"]`);
-            if (fila) {
-              fila.querySelector('.unit').textContent = precio.toFixed(2);
-              fila.querySelector('.subtotal').textContent = (precio * 1).toFixed(2);
-            }
-            recalcTotal();
-          });
-
-          // Ejecutar configuración inicial
-          setTimeout(configurarAccesorio, 100);
-
-          // Agregar elementos al row
-          row.appendChild(selectNombre);
-          row.appendChild(selectAccesorio);
-          row.appendChild(priceInput);
-          row.appendChild(removeBtn);
-          
-          // Agregar row al contenedor
-          accContainer.appendChild(row);
-        });
-      }
     }
 
     $('#estado').value = p.estado || 'Pendiente';
     $('#estadoPago').checked = (p.estadoPago === 'Pagado' || p.estadoPago === true);
-    $('#totalGral').value = p.totalGral != null ? ('$'+p.totalGral) : recalcTotal();
+    recalcTotal(); // Recalcular totales después de cargar todos los elementos
+    $('#totalGral').value = p.totalGral != null ? ('$'+p.totalGral) : '';
     $('#nota').value = p.nota || '';
 
     // Agregar event listeners para botones de quitar
@@ -1052,7 +924,7 @@ async function loadPedidoIntoForm(id) {
       btn.onclick = (e)=>{ 
         const tr = e.target.closest('tr'); 
         if (tr) {
-          // Si es un accesorio, también limpiar el input correspondiente
+          // Si es un accesorio, también limpiar el input correspondiente (si existe)
           if (tr.dataset.tipo === 'accesorio') {
             const accId = tr.dataset.id;
             const priceInput = document.querySelector(`.acc-price[data-id="${accId}"]`);
@@ -1068,7 +940,7 @@ async function loadPedidoIntoForm(id) {
       };
     });
 
-    mensaje('', '');
+    mensaje('Pedido cargado correctamente', 'success');
   } catch(err) {
     console.error(err);
     mensaje('Error cargando pedido: ' + (err.message || err),'error');
