@@ -1,5 +1,8 @@
 package com.sca.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,4 +151,28 @@ Logger log = LoggerFactory.getLogger(String.class);
 
 		return new ResponseEntity<Object>(respuesta, null, HttpStatus.CREATED);
 	}
+
+
+	public Respuesta findLotesPorEstado(String estado) {
+		Respuesta respuesta = new Respuesta();
+		try {
+			List<Lote> lotes = loteRepository.findAll()
+				.stream()
+				.filter(l -> estado.equalsIgnoreCase(l.getEstado()))
+				.collect(Collectors.toList());
+
+			respuesta.setCodigo("200");
+			respuesta.setStatus("Ok");
+			respuesta.setDescripcion("Lotes por estado");
+			respuesta.setData(lotes);
+		} catch (Exception e) {
+			respuesta.setCodigo("400");
+			respuesta.setStatus("Error");
+			respuesta.setDescripcion("No se pudieron mostrar los lotes por estado");
+			respuesta.setData(e.getMessage());
+		}
+		return respuesta;
+}
+
+
 }
