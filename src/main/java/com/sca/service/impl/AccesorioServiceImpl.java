@@ -147,18 +147,19 @@ public class AccesorioServiceImpl extends ResponseEntityExceptionHandler impleme
     }
 
     @Override
-    public Respuesta findAccesoriosPorEstado(String estado) {
-        respuesta = new Respuesta();
+    public Respuesta findAccesorioPorEstado(String estado) {
+        Respuesta respuesta = new Respuesta();
         try {
+            List<Accesorio> accesorios = accesorioRepository.findAll()
+                .stream()
+                .filter(a -> a.getEstado() != null && a.getEstado().equalsIgnoreCase(estado))
+                .collect(Collectors.toList());
+
             respuesta.setCodigo("200");
             respuesta.setStatus("Ok");
             respuesta.setDescripcion("Datos de los Accesorios por Estado");
-            respuesta.setData(
-                accesorioRepository.findAll()
-                                   .stream()
-                                   .filter(a -> estado.equalsIgnoreCase(a.getEstado()))
-                                   .collect(Collectors.toList())
-            );
+            respuesta.setData(accesorios);
+
         } catch (Exception e) {
             respuesta.setCodigo("400");
             respuesta.setStatus("Error");
@@ -167,6 +168,8 @@ public class AccesorioServiceImpl extends ResponseEntityExceptionHandler impleme
         }
         return respuesta;
     }
+
+
 
     @Override
     public void marcarComoAlquilados(List<Long> ids) {

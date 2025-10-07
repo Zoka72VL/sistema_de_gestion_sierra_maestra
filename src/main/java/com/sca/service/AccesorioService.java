@@ -29,4 +29,6 @@ public interface AccesorioService {
 
     // 🔹 Nuevo método
     void marcarComoDisponibles(List<Long> accesorioIds);
+
+    Respuesta findAccesorioPorEstado(String estado);
 }
