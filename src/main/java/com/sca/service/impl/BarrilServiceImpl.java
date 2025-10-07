@@ -150,17 +150,13 @@ public class BarrilServiceImpl extends ResponseEntityExceptionHandler implements
     // Buscar por Estado
     @Override
     public Respuesta findByEstado(String estado) {
-        respuesta = new Respuesta();
+        Respuesta respuesta = new Respuesta();
         try {
+            List<Barril> lista = barrilRepository.findByEstado(estado);
             respuesta.setCodigo("200");
             respuesta.setStatus("Ok");
-            respuesta.setDescripcion("Datos de los Barriles por Estado");
-            respuesta.setData(
-                barrilRepository.findAll()
-                                .stream()
-                                .filter(n -> n.getEstado().equals(estado))
-                                .collect(Collectors.toList())
-            );
+            respuesta.setDescripcion("Barriles con estado: " + estado);
+            respuesta.setData(lista);
         } catch (Exception e) {
             respuesta.setCodigo("400");
             respuesta.setStatus("Error");
@@ -169,6 +165,7 @@ public class BarrilServiceImpl extends ResponseEntityExceptionHandler implements
         }
         return respuesta;
     }
+
 
     // Buscar por Lote
     @Override
