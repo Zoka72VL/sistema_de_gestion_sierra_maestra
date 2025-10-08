@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link th:href="@{/css/StyleCerv.css}" rel="stylesheet">
+    
 
 
 </head>
@@ -297,6 +298,69 @@
   }
 
   
+        
+      
+            // Research Tabs Functionality - Fixed
+        const researchTabs = document.querySelectorAll('.research-tab');
+        const researchContents = document.querySelectorAll('.research-content');
+
+        if (researchTabs.length > 0 && researchContents.length > 0) {
+            researchTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    researchTabs.forEach(t => t.classList.remove('active'));
+                    researchContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+
+                    // Show corresponding content
+                    const tabId = tab.getAttribute('data-tab');
+                    const targetContent = document.getElementById(tabId);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+       
+
+      
+
+  document.addEventListener("DOMContentLoaded", function(){
+    loadLowStock();
+    document.getElementById('threshold-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const categoria = document.getElementById('categoria').value;
+      const minimo = parseInt(document.getElementById('minimo').value);
+      if (!Number.isFinite(minimo) || minimo < 0) { alert('❌ Ingrese un mínimo válido'); return; }
+      await saveThreshold(categoria, minimo);
+      alert('✅ Mínimo guardado');
+      await loadLowStock();
+      document.getElementById('minimo').value='';
+    });
+    setInterval(loadLowStock, 60000);
+  });
+})();
+
+// Underwater Background Animation
+        const underwaterBg = document.getElementById('underwater-bg');
+        
+        // Simple bubble creation - Reduced number
+        function createBubbles() {
+            for (let i = 0; i < 6; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.width = Math.random() * 10 + 5 + 'px';
+                bubble.style.height = bubble.style.width;
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDelay = Math.random() * 10 + 's';
+                bubble.style.animationDuration = Math.random() * 2 + 6 + 's';
+                underwaterBg.appendChild(bubble);
+            }
+        }
+
         // Simple ocean particles
         function createOceanParticles() {
             for (let i = 0; i < 20; i++) {
@@ -309,7 +373,9 @@
                 particle.style.animationDuration = Math.random() * 5 + 12 + 's';
                 underwaterBg.appendChild(particle);
             }}
-            // Research Tabs Functionality - Fixed
+        
+
+        // Research Tabs Functionality - Fixed
         const researchTabs = document.querySelectorAll('.research-tab');
         const researchContents = document.querySelectorAll('.research-content');
 
@@ -341,19 +407,6 @@
         setInterval(createBubbles, 20000); // Every 20 seconds
         setInterval(createOceanParticles, 30000); // Every 30 seconds
 
-  document.addEventListener("DOMContentLoaded", function(){
-    loadLowStock();
-    document.getElementById('threshold-form').addEventListener('submit', async function(e){
-      e.preventDefault();
-      const categoria = document.getElementById('categoria').value;
-      const minimo = parseInt(document.getElementById('minimo').value);
-      if (!Number.isFinite(minimo) || minimo < 0) { alert('❌ Ingrese un mínimo válido'); return; }
-      await saveThreshold(categoria, minimo);
-      alert('✅ Mínimo guardado');
-      await loadLowStock();
-      document.getElementById('minimo').value='';
-    });
-    setInterval(loadLowStock, 60000);
-  });
-})();
+
+
 </script>
